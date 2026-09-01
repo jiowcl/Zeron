@@ -39,7 +39,7 @@ else
         </div>
         @if (!string.IsNullOrWhiteSpace(m_EmailMessage))
         {
-            <NotificationBanner Success="m_EmailSucceeded" Message="m_EmailMessage" />
+            <NotificationBanner Success="@m_EmailSucceeded" Message="@m_EmailMessage" />
         }
     </div>
 
@@ -68,7 +68,7 @@ else
         </div>
         @if (!string.IsNullOrWhiteSpace(m_PasswordMessage))
         {
-            <NotificationBanner Success="m_PasswordSucceeded" Message="m_PasswordMessage" />
+            <NotificationBanner Success="@m_PasswordSucceeded" Message="@m_PasswordMessage" />
         }
     </div>
 }

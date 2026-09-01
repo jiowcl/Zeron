@@ -17,19 +17,24 @@
             <div class="form-grid">
                 <label>
                     Username
-                    <input name="username" required autocomplete="username" />
-                    @if (!string.IsNullOrWhiteSpace(m_UsernameError))
-                    {
-                        <p class="field-error">@m_UsernameError</p>
-                    }
+                    <input name="username"
+                           id="login-username"
+                           required
+                           autocomplete="username"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_UsernameError))"
+                           aria-describedby="@(string.IsNullOrWhiteSpace(m_UsernameError) ? null : "login-username-error")" />
+                    <FormFieldError Id="login-username-error" Message="@m_UsernameError" />
                 </label>
                 <label>
                     Password
-                    <input name="password" type="password" required autocomplete="current-password" />
-                    @if (!string.IsNullOrWhiteSpace(m_PasswordError))
-                    {
-                        <p class="field-error">@m_PasswordError</p>
-                    }
+                    <input name="password"
+                           id="login-password"
+                           type="password"
+                           required
+                           autocomplete="current-password"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_PasswordError))"
+                           aria-describedby="@(string.IsNullOrWhiteSpace(m_PasswordError) ? null : "login-password-error")" />
+                    <FormFieldError Id="login-password-error" Message="@m_PasswordError" />
                 </label>
                 <button class="btn" type="submit">Sign In</button>
             </div>
@@ -37,7 +42,7 @@
 
         @if (!string.IsNullOrWhiteSpace(m_Error))
         {
-            <NotificationBanner Success="false" Message="m_Error" />
+            <NotificationBanner Success="false" Message="@m_Error" />
         }
     </div>
 </div>

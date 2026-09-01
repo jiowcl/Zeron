@@ -605,6 +605,22 @@ td code,
     font-size: 0.85rem;
 }
 
+.form-grid input[aria-invalid="true"],
+.form-grid select[aria-invalid="true"],
+.form-grid textarea[aria-invalid="true"] {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35);
+}
+
+.form-grid input:focus-visible,
+.form-grid select:focus-visible,
+.form-grid textarea:focus-visible,
+table input:focus-visible,
+table select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 .nav-user a.btn-link {
     text-decoration: none;
 }

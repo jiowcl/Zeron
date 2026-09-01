@@ -83,7 +83,7 @@
 
     @if (!string.IsNullOrWhiteSpace(m_Error))
     {
-        <NotificationBanner Success="false" Message="m_Error" />
+        <NotificationBanner Success="false" Message="@m_Error" />
     }
 
     @if (m_Packages.Count == 0)

@@ -42,7 +42,7 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(m_CreateMessage))
     {
-        <NotificationBanner Success="m_CreateSucceeded" Message="m_CreateMessage" />
+        <NotificationBanner Success="@m_CreateSucceeded" Message="@m_CreateMessage" />
     }
 </div>
 
@@ -139,6 +139,6 @@
 
     @if (!string.IsNullOrWhiteSpace(m_UpdateMessage))
     {
-        <NotificationBanner Success="m_UpdateSucceeded" Message="m_UpdateMessage" />
+        <NotificationBanner Success="@m_UpdateSucceeded" Message="@m_UpdateMessage" />
     }
 </div>

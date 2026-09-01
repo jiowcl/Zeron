@@ -6,6 +6,7 @@
         type="@ButtonType"
         disabled="@((Disabled || IsLoading))"
         @attributes="AdditionalAttributes"
+        aria-busy="@IsLoading"
         @onclick="OnClick">
     @if (IsLoading)
     {
@@ -26,4 +27,3 @@
         }
     }
 </button>
-

@@ -103,7 +103,7 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(m_Message))
             {
-                <NotificationBanner Success="m_Succeeded" Message="m_Message" />
+                <NotificationBanner Success="@m_Succeeded" Message="@m_Message" />
             }
         </div>
     </Authorized>
@@ -190,7 +190,7 @@
 
         @if (!string.IsNullOrWhiteSpace(m_HistoryMessage))
         {
-            <NotificationBanner Success="m_HistorySucceeded" Message="m_HistoryMessage" />
+            <NotificationBanner Success="@m_HistorySucceeded" Message="@m_HistoryMessage" />
         }
 
         @if (m_Versions.Count == 0)

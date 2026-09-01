@@ -8,7 +8,10 @@
 
 @if (!string.IsNullOrWhiteSpace(Message) || (ChildContent != null))
 {
-    <div class="notify-banner @(Success ? "notify-ok" : "notify-fail")">
+    <div class="notify-banner @(Success ? "notify-ok" : "notify-fail")"
+         role="@(Success ? "status" : "alert")"
+         aria-live="@(Success ? "polite" : "assertive")"
+         aria-atomic="true">
         <div>
             @if (ChildContent != null)
             {
@@ -31,9 +34,9 @@
         {
             <button class="btn btn-secondary"
                     type="button"
+                    aria-label="Dismiss notification"
                     disabled="@DisableDismiss"
                     @onclick="OnDismiss">Dismiss</button>
         }
     </div>
 }
-
