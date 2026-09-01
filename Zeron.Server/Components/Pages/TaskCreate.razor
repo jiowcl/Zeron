@@ -6,12 +6,9 @@
 @inject TaskDispatcherServer TaskDispatcher
 @inject NavigationManager Navigation
 
-<div class="page-header">
-    <div>
-        <h1>Create Task</h1>
-        <p>Dispatch a remote API command to selected agents.</p>
-    </div>
-</div>
+<PageHeader Title="Create Task"
+            Subtitle="Dispatch a remote API command to selected agents."
+            Breadcrumbs="c_TaskBreadcrumbs" />
 
 <div class="panel">
     <div class="form-grid">

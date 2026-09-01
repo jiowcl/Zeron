@@ -2,16 +2,19 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Reflection
 
-<nav class="nav-menu">
+<nav class="nav-menu" aria-label="Main navigation">
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator},{ServerRoles.Viewer}")">
         <Authorized>
             <NavLink href="/" Match="NavLinkMatch.All">Dashboard</NavLink>
             <NavLink href="/agents">Agents</NavLink>
             <NavLink href="/tasks">Tasks</NavLink>
             <NavLink href="/schedules">Schedules</NavLink>
-            <NavLink href="/packages">Packages</NavLink>
-            <NavLink href="/packages/catalog">Catalog</NavLink>
-            <NavLink href="/packages/sync-health">Sync Health</NavLink>
+            <div class="nav-section">
+                <span class="nav-section-label">Packages</span>
+                <NavLink href="/packages">Deploys</NavLink>
+                <NavLink href="/packages/catalog" class="nav-nested">Catalog</NavLink>
+                <NavLink href="/packages/sync-health" class="nav-nested">Sync Health</NavLink>
+            </div>
             <NavLink href="/events">Events</NavLink>
             <NavLink href="/audit">Audit</NavLink>
             <NavLink href="/alerts">Alerts</NavLink>
@@ -19,13 +22,19 @@
     </AuthorizeView>
     <AuthorizeView Roles="@ServerRoles.DeviceOwner">
         <Authorized>
-            <NavLink href="/my-devices">My Devices</NavLink>
+            <div class="nav-section">
+                <span class="nav-section-label">Portal</span>
+                <NavLink href="/my-devices">My Devices</NavLink>
+            </div>
         </Authorized>
     </AuthorizeView>
     <AuthorizeView Roles="@ServerRoles.Admin">
         <Authorized>
-            <NavLink href="/users">Users</NavLink>
-            <NavLink href="/device-bindings">Device Bindings</NavLink>
+            <div class="nav-section">
+                <span class="nav-section-label">Administration</span>
+                <NavLink href="/users">Users</NavLink>
+                <NavLink href="/device-bindings">Device Bindings</NavLink>
+            </div>
         </Authorized>
     </AuthorizeView>
 </nav>

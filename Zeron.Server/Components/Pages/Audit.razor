@@ -5,18 +5,12 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject AuditLogServer AuditLogServer
 
-<div class="page-header">
-    <div>
-        <h1>Audit</h1>
-        <p>Attributed operation history for catalog, deploy, bindings, and agent package overrides.</p>
-    </div>
-    <div class="actions">
-        <LoadingButton CssClass="btn btn-secondary"
-                        Text="Refresh"
-                        IsLoading="@m_IsBusy"
-                        OnClick="ReloadAsync" />
-    </div>
-</div>
+<PageHeader Title="Audit" Subtitle="Attributed operation history for catalog, deploy, bindings, and agent package overrides.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
+</PageHeader>
 
 <div class="panel">
     <div class="form-grid">

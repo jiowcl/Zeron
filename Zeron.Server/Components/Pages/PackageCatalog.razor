@@ -6,21 +6,17 @@
 @inject ManagedPackageCatalogServer CatalogServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="page-header">
-    <div>
-        <h1>Package Catalog</h1>
-        <p>Central ManagedPackage definitions synced to Demand agents. Local Demand overrides are preserved.</p>
-    </div>
-    <div class="actions">
-        <a class="btn btn-secondary" href="/packages">Deploys</a>
-        <a class="btn btn-secondary" href="/packages/sync-health">Sync Health</a>
-        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
-            <Authorized>
-                <a class="btn" href="/packages/deploy">Deploy Package</a>
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</div>
+<PageHeader Title="Package Catalog"
+            Subtitle="Central ManagedPackage definitions synced to Demand agents. Local Demand overrides are preserved."
+            Breadcrumbs="c_PackageBreadcrumbs">
+    <a class="btn btn-secondary" href="/packages">Deploys</a>
+    <a class="btn btn-secondary" href="/packages/sync-health">Sync Health</a>
+    <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+        <Authorized>
+            <a class="btn" href="/packages/deploy">Deploy Package</a>
+        </Authorized>
+    </AuthorizeView>
+</PageHeader>
 
 <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
     <Authorized>

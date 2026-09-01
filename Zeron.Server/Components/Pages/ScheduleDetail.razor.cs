@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.Components;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.ZCore.Type;
 using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
@@ -13,6 +14,12 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class ScheduleDetail
     {
+        // Schedule breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_ScheduleBreadcrumbs =
+        [
+            new() { Label = "Schedules", Href = "/schedules" },
+        ];
+
         // Schedule ID.
         [Parameter]
         public Guid ScheduleId { get; set; }

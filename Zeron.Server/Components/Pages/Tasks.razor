@@ -5,17 +5,13 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject TaskDispatcherServer TaskDispatcher
 
-<div class="page-header">
-    <div>
-        <h1>Tasks</h1>
-        <p>Remote commands dispatched to agents.</p>
-    </div>
+<PageHeader Title="Tasks" Subtitle="Remote commands dispatched to agents.">
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
         <Authorized>
             <a class="btn" href="/tasks/create">Create Task</a>
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
 
 <div class="panel">
     <table>

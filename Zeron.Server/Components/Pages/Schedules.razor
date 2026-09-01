@@ -5,17 +5,13 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject TaskScheduleServer TaskScheduleServer
 
-<div class="page-header">
-    <div>
-        <h1>Schedules</h1>
-        <p>Cron-based task schedules that dispatch to agents.</p>
-    </div>
+<PageHeader Title="Schedules" Subtitle="Cron-based task schedules that dispatch to agents.">
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
         <Authorized>
             <a class="btn" href="/schedules/create">Create Schedule</a>
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
 
 <div class="panel">
     @if (m_Schedules.Count == 0)

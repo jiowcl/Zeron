@@ -10,26 +10,22 @@
 @inject AgentDiagnosticServer AgentDiagnosticServer
 @inject EventIngestorServer EventIngestor
 
-<div class="page-header">
-    <div>
-        <h1>@AgentKey</h1>
-        <p>Agent details, heartbeat history, and recent events.</p>
-    </div>
+<PageHeader Title="@AgentKey"
+            Subtitle="Agent details, heartbeat history, and recent events."
+            Breadcrumbs="c_AgentBreadcrumbs">
     <AuthorizeView Roles="@ServerRoles.Admin">
         <Authorized>
-            <div class="actions">
-                @if (m_Agent?.Status != "disabled")
-                {
-                    <button class="btn btn-danger" @onclick="DisableAgentAsync">Disable Agent</button>
-                }
-                else
-                {
-                    <button class="btn btn-secondary" @onclick="EnableAgentAsync">Enable Agent</button>
-                }
-            </div>
+            @if (m_Agent?.Status != "disabled")
+            {
+                <button class="btn btn-danger" @onclick="DisableAgentAsync">Disable Agent</button>
+            }
+            else
+            {
+                <button class="btn btn-secondary" @onclick="EnableAgentAsync">Enable Agent</button>
+            }
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
 
 @if (m_Agent == null)
 {

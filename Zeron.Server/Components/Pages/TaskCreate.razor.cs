@@ -1,6 +1,7 @@
 // Zeron - Scheduled Task Application for Windows OS
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZCore.Type;
 using Zeron.ZCore.Type;
@@ -12,6 +13,12 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class TaskCreate
     {
+        // Task breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_TaskBreadcrumbs =
+        [
+            new() { Label = "Tasks", Href = "/tasks" },
+        ];
+
         // Model.
         private readonly TaskFormModelType m_Model = new();
 

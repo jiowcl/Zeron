@@ -1,0 +1,41 @@
+@namespace Zeron.Server.Components.Shared
+
+<header class="page-header">
+    <div class="page-header-main">
+        @if (Breadcrumbs is { Count: > 0 })
+        {
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <ol>
+                    @for (var i = 0; i < Breadcrumbs.Count; i++)
+                    {
+                        var item = Breadcrumbs[i];
+                        var isLast = i == Breadcrumbs.Count - 1;
+                        <li>
+                            @if (!isLast && !string.IsNullOrWhiteSpace(item.Href))
+                            {
+                                <a href="@item.Href">@item.Label</a>
+                            }
+                            else if (isLast)
+                            {
+                                <span aria-current="page">@item.Label</span>
+                            }
+                            else
+                            {
+                                <span>@item.Label</span>
+                            }
+                        </li>
+                    }
+                </ol>
+            </nav>
+        }
+        <h1>@Title</h1>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <p>@Subtitle</p>
+        }
+    </div>
+    @if (ChildContent != null)
+    {
+        <div class="actions">@ChildContent</div>
+    }
+</header>

@@ -10,17 +10,13 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>Alerts</h1>
-        <p>Agent offline and other operational alerts.</p>
-    </div>
+<PageHeader Title="Alerts" Subtitle="Agent offline and other operational alerts.">
     <FilterChipsBar Options="c_StatusOptions"
                     SelectedValue="@m_StatusFilter"
                     AriaLabel="Alert status filter"
                     IsLoading="@m_IsBusy"
                     OnSelect="SelectStatusFilterAsync" />
-</div>
+</PageHeader>
 
 <div class="panel">
     <PagerBar Title="Results"

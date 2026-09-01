@@ -6,12 +6,9 @@
 @inject TaskScheduleServer TaskScheduleServer
 @inject NavigationManager Navigation
 
-<div class="page-header">
-    <div>
-        <h1>Create Schedule</h1>
-        <p>Define a cron expression and the remote API to dispatch when due.</p>
-    </div>
-</div>
+<PageHeader Title="Create Schedule"
+            Subtitle="Define a cron expression and the remote API to dispatch when due."
+            Breadcrumbs="c_ScheduleBreadcrumbs" />
 
 <div class="panel">
     <div class="form-grid">

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Security.Claims;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.Hubs;
 using Zeron.Server.ZCore.Type;
@@ -18,6 +19,12 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class MyDeviceDetail : IAsyncDisposable
     {
+        // My device breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_MyDeviceBreadcrumbs =
+        [
+            new() { Label = "My Devices", Href = "/my-devices" },
+        ];
+
         /// <summary>
         /// AgentKey
         /// </summary>

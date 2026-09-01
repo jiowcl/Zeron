@@ -12,19 +12,15 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>@(m_Device?.MachineName ?? AgentKey)</h1>
-        <p>Zeron.Demand status and self-service package install for your bound agent.</p>
-    </div>
-    <div class="actions">
-        <a class="btn btn-secondary" href="/my-devices">Back</a>
-        <LoadingButton CssClass="btn btn-secondary"
-                        Text="Refresh"
-                        IsLoading="@m_IsBusy"
-                        OnClick="ReloadAsync" />
-    </div>
-</div>
+<PageHeader Title="@(m_Device?.MachineName ?? AgentKey)"
+            Subtitle="Zeron.Demand status and self-service package install for your bound agent."
+            Breadcrumbs="c_MyDeviceBreadcrumbs">
+    <a class="btn btn-secondary" href="/my-devices">Back</a>
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
+</PageHeader>
 
 @if (m_Notifications.Count > 0)
 {

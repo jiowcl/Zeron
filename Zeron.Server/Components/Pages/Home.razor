@@ -8,23 +8,17 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>Dashboard</h1>
-        <p>Operational summary of agents, catalog sync, tasks, alerts, and events.</p>
-    </div>
-    <div class="actions">
-        <LoadingButton CssClass="btn btn-secondary"
-                        Text="Refresh"
-                        IsLoading="@m_IsLoading"
-                        OnClick="ReloadAsync" />
-        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
-            <Authorized>
-                <a class="btn" href="/tasks/create">Create Task</a>
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</div>
+<PageHeader Title="Dashboard" Subtitle="Operational summary of agents, catalog sync, tasks, alerts, and events.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsLoading"
+                    OnClick="ReloadAsync" />
+    <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+        <Authorized>
+            <a class="btn" href="/tasks/create">Create Task</a>
+        </Authorized>
+    </AuthorizeView>
+</PageHeader>
 
 @if (m_PasswordChanged)
 {

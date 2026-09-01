@@ -13,6 +13,13 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class CatalogSyncHealth
     {
+        // Catalog sync health breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_SyncHealthBreadcrumbs =
+        [
+            new() { Label = "Packages", Href = "/packages" },
+            new() { Label = "Catalog", Href = "/packages/catalog" },
+        ];
+
         // Summary.
         private CatalogSyncHealthSummaryType? m_Summary;
 

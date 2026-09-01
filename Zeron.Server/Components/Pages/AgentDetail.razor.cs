@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Components;
 using System.Text.Json;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
@@ -14,6 +15,12 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class AgentDetail
     {
+        // Agent breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_AgentBreadcrumbs =
+        [
+            new() { Label = "Agents", Href = "/agents" },
+        ];
+
         // Agent key.
         [Parameter]
         public string AgentKey { get; set; } = "";

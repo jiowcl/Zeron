@@ -11,13 +11,9 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>Agents</h1>
-        <p>Registered Windows agents, connection diagnostics, and heartbeat status.</p>
-    </div>
+<PageHeader Title="Agents" Subtitle="Registered Windows agents, connection diagnostics, and heartbeat status.">
     <button class="btn btn-secondary" @onclick="ReloadAsync">Refresh</button>
-</div>
+</PageHeader>
 
 <div class="panel">
     @if (m_Agents.Count == 0)

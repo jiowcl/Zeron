@@ -29,6 +29,14 @@ body {
     min-height: 100vh;
 }
 
+.mobile-topbar {
+    display: none;
+}
+
+.sidebar-backdrop {
+    display: none;
+}
+
 .sidebar {
     background: rgba(15, 20, 25, 0.95);
     border-right: 1px solid var(--border);
@@ -36,6 +44,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    min-height: 100vh;
+    overflow-y: auto;
 }
 
 .brand {
@@ -67,16 +80,55 @@ body {
     flex: 1;
 }
 
+.nav-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.nav-section-label {
+    padding: 0.35rem 1rem 0.15rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
 .nav-menu a {
     color: var(--muted);
     text-decoration: none;
     padding: 0.75rem 1rem;
     border-radius: 10px;
+    border-left: 3px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-menu a.nav-nested {
+    padding-left: 1.5rem;
+    font-size: 0.92rem;
+}
+
+.nav-menu a:hover {
+    color: var(--text);
+    background: rgba(36, 48, 68, 0.55);
 }
 
 .nav-menu a.active {
     background: var(--panel-alt);
     color: var(--text);
+    border-left-color: var(--accent);
+    font-weight: 600;
+}
+
+.nav-menu a:focus-visible,
+.sidebar-toggle:focus-visible,
+.btn:focus-visible,
+.btn-link:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 .nav-user {
@@ -100,8 +152,15 @@ body {
 .page-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 1rem;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.page-header-main {
+    min-width: 0;
+    flex: 1 1 240px;
 }
 
 .page-header h1 {
@@ -112,6 +171,42 @@ body {
 .page-header p {
     margin: 0.35rem 0 0;
     color: var(--muted);
+}
+
+.breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    font-size: 0.85rem;
+}
+
+.breadcrumb li {
+    display: inline-flex;
+    align-items: center;
+    color: var(--muted);
+}
+
+.breadcrumb li:not(:last-child)::after {
+    content: "/";
+    margin-left: 0.35rem;
+    color: var(--border);
+}
+
+.breadcrumb a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    color: var(--text);
+}
+
+.breadcrumb [aria-current="page"] {
+    color: var(--text);
 }
 
 .cards {
@@ -623,11 +718,79 @@ table select {
 @media (max-width: 900px) {
     .page {
         grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .mobile-topbar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        padding: 0.75rem 1rem;
+        background: rgba(15, 20, 25, 0.98);
+        border-bottom: 1px solid var(--border);
+        grid-column: 1;
+    }
+
+    .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .mobile-brand .brand-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+    }
+
+    .sidebar-toggle {
+        flex-shrink: 0;
+    }
+
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 35;
+    }
+
+    .page.sidebar-open .sidebar-backdrop {
+        display: block;
     }
 
     .sidebar {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(280px, 88vw);
+        z-index: 40;
+        min-height: 100vh;
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        box-shadow: 8px 0 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .page.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    .main {
+        padding: 1.25rem;
+        grid-column: 1;
+    }
+
+    .page-header {
+        align-items: stretch;
+    }
+
+    .page-header .actions {
+        width: 100%;
     }
 
     .dashboard-grid {

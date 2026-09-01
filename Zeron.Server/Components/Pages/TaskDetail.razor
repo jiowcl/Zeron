@@ -5,11 +5,9 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject TaskDispatcherServer TaskDispatcher
 
-<div class="page-header">
-    <div>
-        <h1>@(m_Task?.Name ?? "Task")</h1>
-        <p>Assignment progress and results.</p>
-    </div>
+<PageHeader Title="@(m_Task?.Name ?? "Task")"
+            Subtitle="Assignment progress and results."
+            Breadcrumbs="c_TaskBreadcrumbs">
     <AuthorizeView Roles="@ServerRoles.Admin">
         <Authorized>
             @if (m_Task != null && m_Task.Status is not "completed" and not "failed" and not "cancelled")
@@ -18,7 +16,7 @@
             }
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
 
 @if (m_Task == null)
 {

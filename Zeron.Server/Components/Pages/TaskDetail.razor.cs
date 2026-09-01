@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.Components;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 
 namespace Zeron.Server.Components.Pages
@@ -11,6 +12,12 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class TaskDetail
     {
+        // Task breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_TaskBreadcrumbs =
+        [
+            new() { Label = "Tasks", Href = "/tasks" },
+        ];
+
         // Task ID.
         [Parameter]
         public Guid TaskId { get; set; }
