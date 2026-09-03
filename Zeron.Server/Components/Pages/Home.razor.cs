@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
 
@@ -25,6 +26,9 @@ namespace Zeron.Server.Components.Pages
         // Refresh cancellation token source.
         private CancellationTokenSource? m_RefreshCts;
 
+        // Hub reload throttle.
+        private readonly ThrottledAction m_HubReloadThrottle = new(750);
+
         // Is loading.
         private bool m_IsLoading;
 
@@ -43,19 +47,33 @@ namespace Zeron.Server.Components.Pages
         {
             m_PasswordChanged = PasswordChanged == "1";
 
-            await ReloadAsync();
+            await ReloadAsync(showBusy: true);
             await ConnectHubAsync();
 
             StartRefreshTimer();
         }
 
         /// <summary>
-        /// ReloadAsync
+        /// ManualRefreshAsync
         /// </summary>
         /// <returns>Returns Task.</returns>
-        private async Task ReloadAsync()
+        private Task ManualRefreshAsync()
         {
-            m_IsLoading = true;
+            return ReloadAsync(showBusy: true);
+        }
+
+        /// <summary>
+        /// ReloadAsync
+        /// </summary>
+        /// <param name="showBusy"></param>
+        /// <returns>Returns Task.</returns>
+        private async Task ReloadAsync(
+            bool showBusy = true)
+        {
+            if (showBusy)
+            {
+                m_IsLoading = true;
+            }
 
             try
             {
@@ -63,7 +81,10 @@ namespace Zeron.Server.Components.Pages
             }
             finally
             {
-                m_IsLoading = false;
+                if (showBusy)
+                {
+                    m_IsLoading = false;
+                }
             }
         }
 
@@ -90,7 +111,7 @@ namespace Zeron.Server.Components.Pages
             {
                 while (await m_RefreshTimer!.WaitForNextTickAsync(cancellationToken))
                 {
-                    await ReloadAsync();
+                    await ReloadAsync(showBusy: false);
                     await InvokeAsync(StateHasChanged);
                 }
             }
@@ -107,21 +128,24 @@ namespace Zeron.Server.Components.Pages
         {
             m_HubConnection = DashboardHubClient.Create(Navigation, HttpContextAccessor);
 
-            m_HubConnection.On<object>("AgentStatusChanged", async _ => await RefreshFromHubAsync());
-            m_HubConnection.On<object>("AlertReceived", async _ => await RefreshFromHubAsync());
-            m_HubConnection.On<object>("EventReceived", async _ => await RefreshFromHubAsync());
+            m_HubConnection.On<object>("AgentStatusChanged", async _ => await ScheduleHubReloadAsync());
+            m_HubConnection.On<object>("AlertReceived", async _ => await ScheduleHubReloadAsync());
+            m_HubConnection.On<object>("EventReceived", async _ => await ScheduleHubReloadAsync());
 
             await DashboardHubClient.TryStartAsync(m_HubConnection);
         }
 
         /// <summary>
-        /// RefreshFromHubAsync
+        /// ScheduleHubReloadAsync
         /// </summary>
         /// <returns>Returns Task.</returns>
-        private async Task RefreshFromHubAsync()
+        private Task ScheduleHubReloadAsync()
         {
-            await ReloadAsync();
-            await InvokeAsync(StateHasChanged);
+            return m_HubReloadThrottle.InvokeAsync(async () =>
+            {
+                await ReloadAsync(showBusy: false);
+                await InvokeAsync(StateHasChanged);
+            });
         }
 
         /// <summary>
@@ -133,6 +157,8 @@ namespace Zeron.Server.Components.Pages
             m_RefreshCts?.Cancel();
             m_RefreshTimer?.Dispose();
             m_RefreshCts?.Dispose();
+
+            await m_HubReloadThrottle.DisposeAsync();
 
             if (m_HubConnection != null)
             {

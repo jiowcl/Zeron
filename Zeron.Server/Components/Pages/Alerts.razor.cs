@@ -29,6 +29,9 @@ namespace Zeron.Server.Components.Pages
         // Current status filter.
         private string? m_StatusFilter = AlertStatusesType.Open;
 
+        // Hub reload throttle.
+        private readonly ThrottledAction m_HubReloadThrottle = new(750);
+
         // Pagination.
         private const int c_PageSize = 50;
 
@@ -66,7 +69,7 @@ namespace Zeron.Server.Components.Pages
         {
             m_StatusFilter = status;
             m_PageIndex = 0;
-            await ReloadPageAsync();
+            await ReloadPageAsync(showBusy: true);
         }
 
         /// <summary>
@@ -83,10 +86,15 @@ namespace Zeron.Server.Components.Pages
         /// <summary>
         /// ReloadPageAsync
         /// </summary>
+        /// <param name="showBusy"></param>
         /// <returns>Returns Task.</returns>
-        private async Task ReloadPageAsync()
+        private async Task ReloadPageAsync(
+            bool showBusy = true)
         {
-            m_IsBusy = true;
+            if (showBusy)
+            {
+                m_IsBusy = true;
+            }
 
             try
             {
@@ -101,8 +109,24 @@ namespace Zeron.Server.Components.Pages
             }
             finally
             {
-                m_IsBusy = false;
+                if (showBusy)
+                {
+                    m_IsBusy = false;
+                }
             }
+        }
+
+        /// <summary>
+        /// ScheduleHubReloadAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ScheduleHubReloadAsync()
+        {
+            return m_HubReloadThrottle.InvokeAsync(async () =>
+            {
+                await ReloadPageAsync(showBusy: false);
+                await InvokeAsync(StateHasChanged);
+            });
         }
 
         /// <summary>
@@ -114,7 +138,7 @@ namespace Zeron.Server.Components.Pages
             Guid alertId)
         {
             await AlertRuleServer.AcknowledgeAlertAsync(alertId);
-            await ReloadPageAsync();
+            await ReloadPageAsync(showBusy: true);
         }
 
         /// <summary>
@@ -129,8 +153,7 @@ namespace Zeron.Server.Components.Pages
                 "AlertReceived",
                 async (_, __, ___, ____, _____, ______, _______, ________) =>
             {
-                await ReloadPageAsync();
-                await InvokeAsync(StateHasChanged);
+                await ScheduleHubReloadAsync();
             });
 
             await DashboardHubClient.TryStartAsync(m_HubConnection);
@@ -142,6 +165,8 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns ValueTask.</returns>
         public async ValueTask DisposeAsync()
         {
+            await m_HubReloadThrottle.DisposeAsync();
+
             if (m_HubConnection != null)
             {
                 await m_HubConnection.DisposeAsync();
@@ -160,7 +185,7 @@ namespace Zeron.Server.Components.Pages
             }
 
             m_PageIndex--;
-            await ReloadPageAsync();
+            await ReloadPageAsync(showBusy: true);
         }
 
         /// <summary>
@@ -175,7 +200,7 @@ namespace Zeron.Server.Components.Pages
             }
 
             m_PageIndex++;
-            await ReloadPageAsync();
+            await ReloadPageAsync(showBusy: true);
         }
 
         /// <summary>

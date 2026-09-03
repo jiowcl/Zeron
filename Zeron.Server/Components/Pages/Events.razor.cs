@@ -35,6 +35,9 @@ namespace Zeron.Server.Components.Pages
         // Filter debounce.
         private readonly DebouncedAction m_FilterDebounce = new(350);
 
+        // Hub reload throttle.
+        private readonly ThrottledAction m_HubReloadThrottle = new(750);
+
         // Pagination.
         private const int c_PageSize = 50;
 
@@ -68,7 +71,7 @@ namespace Zeron.Server.Components.Pages
                 m_AgentKey = AgentKeyQuery;
             }
 
-            await ReloadAsync();
+            await ReloadAsync(showBusy: true);
             await ConnectHubAsync();
         }
 
@@ -76,18 +79,23 @@ namespace Zeron.Server.Components.Pages
         /// ManualRefreshAsync
         /// </summary>
         /// <returns>Returns Task.</returns>
-        private async Task ManualRefreshAsync()
+        private Task ManualRefreshAsync()
         {
-            await ReloadAsync();
+            return ReloadAsync(showBusy: true);
         }
 
         /// <summary>
         /// ReloadAsync
         /// </summary>
+        /// <param name="showBusy"></param>
         /// <returns>Returns Task.</returns>
-        private async Task ReloadAsync()
+        private async Task ReloadAsync(
+            bool showBusy = true)
         {
-            m_IsBusy = true;
+            if (showBusy)
+            {
+                m_IsBusy = true;
+            }
 
             try
             {
@@ -103,8 +111,24 @@ namespace Zeron.Server.Components.Pages
             }
             finally
             {
-                m_IsBusy = false;
+                if (showBusy)
+                {
+                    m_IsBusy = false;
+                }
             }
+        }
+
+        /// <summary>
+        /// ScheduleHubReloadAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ScheduleHubReloadAsync()
+        {
+            return m_HubReloadThrottle.InvokeAsync(async () =>
+            {
+                await ReloadAsync(showBusy: false);
+                await InvokeAsync(StateHasChanged);
+            });
         }
 
         /// <summary>
@@ -127,8 +151,7 @@ namespace Zeron.Server.Components.Pages
                     return;
                 }
 
-                await ReloadAsync();
-                await InvokeAsync(StateHasChanged);
+                await ScheduleHubReloadAsync();
             });
 
             await DashboardHubClient.TryStartAsync(m_HubConnection);
@@ -141,6 +164,7 @@ namespace Zeron.Server.Components.Pages
         public async ValueTask DisposeAsync()
         {
             await m_FilterDebounce.DisposeAsync();
+            await m_HubReloadThrottle.DisposeAsync();
 
             if (m_HubConnection != null)
             {
@@ -157,7 +181,8 @@ namespace Zeron.Server.Components.Pages
             return m_FilterDebounce.InvokeAsync(async () =>
             {
                 m_PageIndex = 0;
-                await ReloadAsync();
+                
+                await ReloadAsync(showBusy: true);
                 await InvokeAsync(StateHasChanged);
             });
         }
@@ -169,7 +194,8 @@ namespace Zeron.Server.Components.Pages
         private async Task ApplyFiltersAsync()
         {
             m_PageIndex = 0;
-            await ReloadAsync();
+
+            await ReloadAsync(showBusy: true);
         }
 
         /// <summary>
@@ -184,7 +210,8 @@ namespace Zeron.Server.Components.Pages
             }
 
             m_PageIndex--;
-            await ReloadAsync();
+
+            await ReloadAsync(showBusy: true);
         }
 
         /// <summary>
@@ -199,7 +226,8 @@ namespace Zeron.Server.Components.Pages
             }
 
             m_PageIndex++;
-            await ReloadAsync();
+
+            await ReloadAsync(showBusy: true);
         }
 
         /// <summary>

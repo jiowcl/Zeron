@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.SignalR.Client;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
@@ -27,6 +28,9 @@ namespace Zeron.Server.Components.Pages
 
         // Refresh cancellation token source.
         private CancellationTokenSource? m_RefreshCts;
+
+        // Hub reload throttle.
+        private readonly ThrottledAction m_HubReloadThrottle = new(750);
 
         // Manual refresh busy state.
         private bool m_IsBusy;
@@ -72,6 +76,19 @@ namespace Zeron.Server.Components.Pages
         }
 
         /// <summary>
+        /// ScheduleHubReloadAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ScheduleHubReloadAsync()
+        {
+            return m_HubReloadThrottle.InvokeAsync(async () =>
+            {
+                await ReloadAsync();
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+
+        /// <summary>
         /// StartRefreshTimer
         /// </summary>
         /// <returns>Returns void.</returns>
@@ -114,8 +131,7 @@ namespace Zeron.Server.Components.Pages
 
             m_HubConnection.On<string, string, string, DateTime>("AgentStatusChanged", async (_, __, ___, ____) =>
             {
-                await ReloadAsync();
-                await InvokeAsync(StateHasChanged);
+                await ScheduleHubReloadAsync();
             });
 
             await DashboardHubClient.TryStartAsync(m_HubConnection);
@@ -130,6 +146,8 @@ namespace Zeron.Server.Components.Pages
             m_RefreshCts?.Cancel();
             m_RefreshTimer?.Dispose();
             m_RefreshCts?.Dispose();
+
+            await m_HubReloadThrottle.DisposeAsync();
 
             if (m_HubConnection != null)
             {

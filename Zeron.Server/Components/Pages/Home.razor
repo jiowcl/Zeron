@@ -9,10 +9,10 @@
 @implements IAsyncDisposable
 
 <PageHeader Title="Dashboard" Subtitle="Operational summary of agents, catalog sync, tasks, alerts, and events.">
-    <LoadingButton CssClass="btn btn-secondary"
-                    Text="Refresh"
-                    IsLoading="@m_IsLoading"
-                    OnClick="ReloadAsync" />
+        <LoadingButton CssClass="btn btn-secondary"
+                        Text="Refresh"
+                        IsLoading="@m_IsLoading"
+                        OnClick="ManualRefreshAsync" />
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
         <Authorized>
             <a class="btn" href="/tasks/create">Create Task</a>
