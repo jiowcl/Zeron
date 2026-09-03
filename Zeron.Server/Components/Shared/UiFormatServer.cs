@@ -76,5 +76,31 @@ namespace Zeron.Server.Components.Shared
 
             return text.Length <= maxLength ? text : text[..maxLength] + "...";
         }
+
+        /// <summary>
+        /// FormatPageRange
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="rowCount"></param>
+        /// <param name="unit"></param>
+        /// <returns>Returns pager summary like "1–50 · Page 1".</returns>
+        public static string FormatPageRange(
+            int pageIndex,
+            int pageSize,
+            int rowCount,
+            string unit = "record")
+        {
+            if (rowCount <= 0)
+            {
+                return "No records";
+            }
+
+            int start = (pageIndex * pageSize) + 1;
+            int end = start + rowCount - 1;
+            string unitLabel = rowCount == 1 ? unit : $"{unit}s";
+
+            return $"{start}–{end} · Page {pageIndex + 1} · {rowCount} {unitLabel}";
+        }
     }
 }

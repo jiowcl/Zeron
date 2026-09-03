@@ -19,7 +19,10 @@
 <div class="panel">
     <div class="panel-header">
         <h2>Recent Deploys</h2>
-        <button class="btn btn-secondary" @onclick="ReloadAsync">Refresh</button>
+        <LoadingButton CssClass="btn btn-secondary"
+                        Text="Refresh"
+                        IsLoading="@m_IsBusy"
+                        OnClick="ReloadAsync" />
     </div>
 
     @if (m_Deploys.Count == 0)

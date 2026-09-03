@@ -12,7 +12,10 @@
 @implements IAsyncDisposable
 
 <PageHeader Title="Agents" Subtitle="Registered Windows agents, connection diagnostics, and heartbeat status.">
-    <button class="btn btn-secondary" @onclick="ReloadAsync">Refresh</button>
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ManualRefreshAsync" />
 </PageHeader>
 
 <div class="panel">

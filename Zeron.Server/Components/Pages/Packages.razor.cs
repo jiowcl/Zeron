@@ -17,6 +17,9 @@ namespace Zeron.Server.Components.Pages
         // Install events.
         private List<EventEntity> m_InstallEvents = [];
 
+        // Busy.
+        private bool m_IsBusy;
+
         /// <summary>
         /// OnInitializedAsync
         /// </summary>
@@ -24,7 +27,7 @@ namespace Zeron.Server.Components.Pages
         protected override async Task OnInitializedAsync()
         {
             await ReloadAsync();
-        }   
+        }
 
         /// <summary>
         /// ReloadAsync
@@ -32,8 +35,17 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns Task.</returns>
         private async Task ReloadAsync()
         {
-            m_Deploys = await PackageDeployServer.GetRecentDeploysAsync(20);
-            m_InstallEvents = await PackageDeployServer.GetInstallEventsAsync(limit: 15);
+            m_IsBusy = true;
+
+            try
+            {
+                m_Deploys = await PackageDeployServer.GetRecentDeploysAsync(20);
+                m_InstallEvents = await PackageDeployServer.GetInstallEventsAsync(limit: 15);
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
 
         /// <summary>

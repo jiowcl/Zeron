@@ -31,7 +31,11 @@ namespace Zeron.Server.Components.Pages
 
         // Pagination.
         private const int c_PageSize = 50;
+
+        // Page index.
         private int m_PageIndex;
+
+        // Has next page.
         private bool m_HasNextPage;
 
         // Status filter options.
@@ -178,8 +182,6 @@ namespace Zeron.Server.Components.Pages
         /// PageSummary
         /// </summary>
         private string PageSummary =>
-            m_PageRows.Count == 0
-                ? "No records"
-                : $"Page {m_PageIndex + 1} · showing {m_PageRows.Count} alert(s)";
+            UiFormatServer.FormatPageRange(m_PageIndex, c_PageSize, m_PageRows.Count, "alert");
     }
 }

@@ -28,6 +28,9 @@ namespace Zeron.Server.Components.Pages
         // Refresh cancellation token source.
         private CancellationTokenSource? m_RefreshCts;
 
+        // Manual refresh busy state.
+        private bool m_IsBusy;
+
         /// <summary>
         /// OnInitializedAsync
         /// </summary>
@@ -38,6 +41,24 @@ namespace Zeron.Server.Components.Pages
             await ConnectHubAsync();
 
             StartRefreshTimer();
+        }
+
+        /// <summary>
+        /// ManualRefreshAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ManualRefreshAsync()
+        {
+            m_IsBusy = true;
+
+            try
+            {
+                await ReloadAsync();
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZServers;
 
@@ -31,9 +32,16 @@ namespace Zeron.Server.Components.Pages
         // Busy.
         private bool m_IsBusy;
 
+        // Filter debounce.
+        private readonly DebouncedAction m_FilterDebounce = new(350);
+
         // Pagination.
         private const int c_PageSize = 50;
+
+        // Page index.
         private int m_PageIndex;
+
+        // Has next page.
         private bool m_HasNextPage;
 
         // Topic query.
@@ -62,6 +70,15 @@ namespace Zeron.Server.Components.Pages
 
             await ReloadAsync();
             await ConnectHubAsync();
+        }
+
+        /// <summary>
+        /// ManualRefreshAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ManualRefreshAsync()
+        {
+            await ReloadAsync();
         }
 
         /// <summary>
@@ -123,10 +140,26 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns ValueTask.</returns>
         public async ValueTask DisposeAsync()
         {
+            await m_FilterDebounce.DisposeAsync();
+
             if (m_HubConnection != null)
             {
                 await m_HubConnection.DisposeAsync();
             }
+        }
+
+        /// <summary>
+        /// ScheduleFilterAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ScheduleFilterAsync()
+        {
+            return m_FilterDebounce.InvokeAsync(async () =>
+            {
+                m_PageIndex = 0;
+                await ReloadAsync();
+                await InvokeAsync(StateHasChanged);
+            });
         }
 
         /// <summary>
@@ -173,8 +206,6 @@ namespace Zeron.Server.Components.Pages
         /// PageSummary
         /// </summary>
         private string PageSummary =>
-            m_PageRows.Count == 0
-                ? "No records"
-                : $"Page {m_PageIndex + 1} · showing {m_PageRows.Count} event(s)";
+            UiFormatServer.FormatPageRange(m_PageIndex, c_PageSize, m_PageRows.Count, "event");
     }
 }
