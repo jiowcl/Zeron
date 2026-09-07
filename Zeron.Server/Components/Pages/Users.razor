@@ -14,11 +14,20 @@
     <div class="form-grid">
         <label>
             Username
-            <InputText @bind-Value="m_CreateModel.Username" />
+            <InputText id="user-create-username"
+                       @bind-Value="m_CreateModel.Username"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_UsernameError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("user-create-username-error", m_UsernameError)" />
+            <FormFieldError Id="user-create-username-error" Message="@m_UsernameError" />
         </label>
         <label>
             Password
-            <InputText type="password" @bind-Value="m_CreateModel.Password" />
+            <InputText id="user-create-password"
+                       type="password"
+                       @bind-Value="m_CreateModel.Password"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_PasswordError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("user-create-password-error", m_PasswordError)" />
+            <FormFieldError Id="user-create-password-error" Message="@m_PasswordError" />
         </label>
         <label>
             Role
@@ -31,7 +40,11 @@
         </label>
         <label>
             Email (optional)
-            <InputText @bind-Value="m_CreateModel.Email" />
+            <InputText id="user-create-email"
+                       @bind-Value="m_CreateModel.Email"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_EmailError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("user-create-email-error", m_EmailError)" />
+            <FormFieldError Id="user-create-email-error" Message="@m_EmailError" />
         </label>
         <div class="actions">
             <LoadingButton CssClass="btn"

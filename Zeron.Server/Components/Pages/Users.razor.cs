@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.Components.Authorization;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.ZCore;
 using Zeron.Server.ZCore.Type;
 using Zeron.ZCore.Type;
@@ -39,6 +40,11 @@ namespace Zeron.Server.Components.Pages
 
         // Pending deactivate.
         private UserEditRowType? m_PendingDeactivate;
+
+        // Create field errors.
+        private string? m_UsernameError;
+        private string? m_PasswordError;
+        private string? m_EmailError;
 
         /// <summary>
         /// OnInitializedAsync
@@ -81,6 +87,12 @@ namespace Zeron.Server.Components.Pages
         private async Task CreateUserAsync()
         {
             m_CreateMessage = null;
+
+            if (!ValidateCreateForm())
+            {
+                return;
+            }
+
             m_IsBusy = true;
 
             try
@@ -96,8 +108,7 @@ namespace Zeron.Server.Components.Pages
                 if (error != null)
                 {
                     m_CreateSucceeded = false;
-                    m_CreateMessage = error;
-
+                    MapCreateServerError(error);
                     return;
                 }
 
@@ -107,6 +118,7 @@ namespace Zeron.Server.Components.Pages
                 m_CreateModel.Password = "";
                 m_CreateModel.Email = "";
                 m_CreateModel.Role = ServerRoles.Viewer;
+                ClearCreateFieldErrors();
 
                 await ReloadAsync();
             }
@@ -114,6 +126,64 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// ValidateCreateForm
+        /// </summary>
+        /// <returns>Returns true when valid.</returns>
+        private bool ValidateCreateForm()
+        {
+            ClearCreateFieldErrors();
+
+            m_UsernameError = FormFieldValidation.Required(m_CreateModel.Username, "Username");
+            m_PasswordError = FormFieldValidation.MinLength(m_CreateModel.Password, 6, "Password");
+            m_EmailError = FormFieldValidation.OptionalEmail(m_CreateModel.Email);
+
+            return m_UsernameError == null
+                && m_PasswordError == null
+                && m_EmailError == null;
+        }
+
+        /// <summary>
+        /// MapCreateServerError
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns>Returns void.</returns>
+        private void MapCreateServerError(
+            string error)
+        {
+            if (error.Contains("Username", StringComparison.OrdinalIgnoreCase))
+            {
+                m_UsernameError = error;
+                return;
+            }
+
+            if (error.Contains("Password", StringComparison.OrdinalIgnoreCase))
+            {
+                m_PasswordError = error;
+                return;
+            }
+
+            if (error.Contains("Email", StringComparison.OrdinalIgnoreCase)
+                || error.Contains("email", StringComparison.OrdinalIgnoreCase))
+            {
+                m_EmailError = error;
+                return;
+            }
+
+            m_CreateMessage = error;
+        }
+
+        /// <summary>
+        /// ClearCreateFieldErrors
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void ClearCreateFieldErrors()
+        {
+            m_UsernameError = null;
+            m_PasswordError = null;
+            m_EmailError = null;
         }
 
         /// <summary>
