@@ -1,0 +1,26 @@
+@namespace Zeron.Server.Components.Shared
+
+<div class="empty-state @(Compact ? "empty-state-compact" : null)" role="status">
+    <strong class="empty-state-title">@Title</strong>
+    @if (ChildContent != null)
+    {
+        <div class="empty-state-message">@ChildContent</div>
+    }
+    else if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <p class="empty-state-message">@Message</p>
+    }
+    @if (Actions != null || (!string.IsNullOrWhiteSpace(ActionText) && !string.IsNullOrWhiteSpace(ActionHref)))
+    {
+        <div class="empty-state-actions actions">
+            @if (Actions != null)
+            {
+                @Actions
+            }
+            else
+            {
+                <a class="btn" href="@ActionHref">@ActionText</a>
+            }
+        </div>
+    }
+</div>

@@ -6,18 +6,19 @@
 @inject TaskDispatcherServer TaskDispatcher
 @inject NavigationManager Navigation
 
-<div class="page-header">
-    <div>
-        <h1>Create Task</h1>
-        <p>Dispatch a remote API command to selected agents.</p>
-    </div>
-</div>
+<PageHeader Title="Create Task"
+            Subtitle="Dispatch a remote API command to selected agents."
+            Breadcrumbs="c_TaskBreadcrumbs" />
 
 <div class="panel">
     <div class="form-grid">
         <label>
             Name
-            <InputText @bind-Value="m_Model.Name" />
+            <InputText id="task-name"
+                       @bind-Value="m_Model.Name"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_NameError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("task-name-error", m_NameError)" />
+            <FormFieldError Id="task-name-error" Message="@m_NameError" />
         </label>
         <label>
             Description
@@ -25,11 +26,19 @@
         </label>
         <label>
             Target API
-            <InputText @bind-Value="m_Model.TargetApi" />
+            <InputText id="task-target-api"
+                       @bind-Value="m_Model.TargetApi"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_TargetApiError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("task-target-api-error", m_TargetApiError)" />
+            <FormFieldError Id="task-target-api-error" Message="@m_TargetApiError" />
         </label>
         <label>
             Command
-            <InputText @bind-Value="m_Model.Command" />
+            <InputText id="task-command"
+                       @bind-Value="m_Model.Command"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_CommandError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("task-command-error", m_CommandError)" />
+            <FormFieldError Id="task-command-error" Message="@m_CommandError" />
         </label>
         <label>
             Target Type
@@ -43,14 +52,22 @@
         {
             <label>
                 Agent Id
-                <InputText @bind-Value="m_Model.AgentId" />
+                <InputText id="task-agent-id"
+                           @bind-Value="m_Model.AgentId"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_AgentIdError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("task-agent-id-error", m_AgentIdError)" />
+                <FormFieldError Id="task-agent-id-error" Message="@m_AgentIdError" />
             </label>
         }
         @if (m_Model.TargetType == "filter")
         {
             <label>
                 Hostname Pattern
-                <InputText @bind-Value="m_Model.HostnamePattern" />
+                <InputText id="task-hostname"
+                           @bind-Value="m_Model.HostnamePattern"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_HostnameError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("task-hostname-error", m_HostnameError)" />
+                <FormFieldError Id="task-hostname-error" Message="@m_HostnameError" />
             </label>
         }
         <div class="actions">
@@ -64,6 +81,6 @@
 
     @if (!string.IsNullOrWhiteSpace(m_Error))
     {
-        <NotificationBanner Success="false" Message="m_Error" />
+        <NotificationBanner Success="false" Message="@m_Error" />
     }
 </div>

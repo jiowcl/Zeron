@@ -33,26 +33,26 @@ namespace Zeron.Server.Endpoints
             {
                 if (string.IsNullOrWhiteSpace(username))
                 {
-                    return Results.Redirect("/login?failed=username");
+                    return Results.Redirect(BuildLoginFailedUrl("username", null));
                 }
 
                 if (string.IsNullOrWhiteSpace(password))
                 {
-                    return Results.Redirect("/login?failed=password");
+                    return Results.Redirect(BuildLoginFailedUrl("password", username));
                 }
 
                 LoginResponseType response = await authServer.LoginAsync(username, password);
 
                 if (!response.Success || response.User == null || !Guid.TryParse(response.User.Id, out Guid userId))
                 {
-                    return Results.Redirect("/login?failed=credentials");
+                    return Results.Redirect(BuildLoginFailedUrl("credentials", username));
                 }
 
                 UserEntity? userEntity = await authServer.GetUserEntityAsync(userId);
 
                 if (userEntity == null)
                 {
-                    return Results.Redirect("/login?failed=credentials");
+                    return Results.Redirect(BuildLoginFailedUrl("credentials", username));
                 }
 
                 await SignInUserAsync(context, userEntity);
@@ -91,6 +91,7 @@ namespace Zeron.Server.Endpoints
                 [FromForm] string currentPassword,
                 [FromForm] string newPassword,
                 [FromForm] string confirmPassword,
+                [FromForm] string? required,
                 AuthServer authServer) =>
             {
                 if (!TryGetUserId(context.User, out Guid userId))
@@ -98,9 +99,13 @@ namespace Zeron.Server.Endpoints
                     return Results.Redirect("/login");
                 }
 
+                string requiredQuery = string.Equals(required, "1", StringComparison.Ordinal)
+                    ? "&required=1"
+                    : "";
+
                 if (!string.Equals(newPassword, confirmPassword, StringComparison.Ordinal))
                 {
-                    return Results.Redirect("/account/change-password?error=mismatch");
+                    return Results.Redirect("/account/change-password?error=mismatch" + requiredQuery);
                 }
 
                 (UserInfoType? user, string? error) = await authServer.ChangePasswordAsync(
@@ -117,7 +122,7 @@ namespace Zeron.Server.Endpoints
                         _ => "invalid"
                     };
 
-                    return Results.Redirect("/account/change-password?error=" + code);
+                    return Results.Redirect("/account/change-password?error=" + code + requiredQuery);
                 }
 
                 UserEntity? userEntity = await authServer.GetUserEntityAsync(userId);
@@ -207,6 +212,26 @@ namespace Zeron.Server.Endpoints
             }).RequireAuthorization(ServerPolicies.DeviceOwnerOrStaff);
 
             return app;
+        }
+
+        /// <summary>
+        /// BuildLoginFailedUrl
+        /// </summary>
+        /// <param name="failed"></param>
+        /// <param name="username"></param>
+        /// <returns>Returns login redirect URL with failure code and optional username.</returns>
+        private static string BuildLoginFailedUrl(
+            string failed,
+            string? username)
+        {
+            string url = "/login?failed=" + Uri.EscapeDataString(failed);
+
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                url += "&username=" + Uri.EscapeDataString(username.Trim());
+            }
+
+            return url;
         }
 
         /// <summary>

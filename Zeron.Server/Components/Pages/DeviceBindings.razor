@@ -8,12 +8,7 @@
 @inject AgentManagerServer AgentManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="page-header">
-    <div>
-        <h1>Device Bindings</h1>
-        <p>Bind dashboard accounts to Demand agents for self-service status.</p>
-    </div>
-</div>
+<PageHeader Title="Device Bindings" Subtitle="Bind dashboard accounts to Demand agents for self-service status." />
 
 <div class="panel">
     <h2>Bind User to Agent</h2>
@@ -47,7 +42,7 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(m_Message))
     {
-        <NotificationBanner Success="m_Succeeded" Message="m_Message" />
+        <NotificationBanner Success="@m_Succeeded" Message="@m_Message" />
     }
 </div>
 
@@ -59,7 +54,8 @@
 
     @if (m_Bindings.Count == 0)
     {
-        <p class="muted">No bindings yet.</p>
+        <EmptyState Title="No bindings yet"
+                    Message="Bind a DeviceOwner account to a Demand agent so they can view status and install packages." />
     }
     else
     {
@@ -85,7 +81,7 @@
                             <LoadingButton CssClass="btn btn-danger"
                                             Text="Unbind"
                                             IsLoading="@m_IsBusy"
-                                            OnClick="() => UnbindAsync(binding)" />
+                                            OnClick="() => RequestUnbind(binding)" />
                         </td>
                     </tr>
                 }
@@ -93,3 +89,11 @@
         </table>
     }
 </div>
+
+<ConfirmDialog IsOpen="@(m_PendingUnbind != null)"
+               Title="Remove binding?"
+               Message="@($"Unbind '{m_PendingUnbind?.Username}' from agent '{m_PendingUnbind?.AgentKey}'? The user will lose self-service access to that device.")"
+               ConfirmText="Unbind"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmUnbindAsync"
+               OnCancel="CloseUnbindConfirm" />

@@ -6,35 +6,31 @@
 @inject CatalogSyncHealthServer SyncHealthServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="page-header">
-    <div>
-        <h1>Catalog Sync Health</h1>
-        <p>ManagedPackage catalog sync status across Demand agents. Stale threshold: @m_Summary?.StaleThresholdMinutes min.</p>
-    </div>
-    <div class="actions">
-        <a class="btn btn-secondary" href="/packages/catalog">Catalog</a>
-        <LoadingButton CssClass="btn btn-secondary"
-                        Text="Refresh"
-                        IsLoading="@m_IsBusy"
-                        OnClick="ReloadAsync" />
-        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
-            <Authorized>
-                <LoadingButton CssClass="btn"
-                                Text="Push Unhealthy"
-                                IsLoading="@m_IsBusy"
-                                OnClick="() => PushAsync(onlyUnhealthy: true)" />
-                <LoadingButton CssClass="btn btn-secondary"
-                                Text="Push All Online"
-                                IsLoading="@m_IsBusy"
-                                OnClick="() => PushAsync(onlyUnhealthy: false)" />
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</div>
+<PageHeader Title="Catalog Sync Health"
+            Subtitle="@($"ManagedPackage catalog sync status across Demand agents. Stale threshold: {m_Summary?.StaleThresholdMinutes} min.")"
+            Breadcrumbs="c_SyncHealthBreadcrumbs">
+    <a class="btn btn-secondary" href="/packages/catalog">Catalog</a>
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
+    <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+        <Authorized>
+            <LoadingButton CssClass="btn"
+                            Text="Push Unhealthy"
+                            IsLoading="@m_IsBusy"
+                            OnClick="() => PushAsync(onlyUnhealthy: true)" />
+            <LoadingButton CssClass="btn btn-secondary"
+                            Text="Push All Online"
+                            IsLoading="@m_IsBusy"
+                            OnClick="() => PushAsync(onlyUnhealthy: false)" />
+        </Authorized>
+    </AuthorizeView>
+</PageHeader>
 
 @if (!string.IsNullOrWhiteSpace(m_Message))
 {
-    <NotificationBanner Success="m_Succeeded" Message="m_Message" />
+    <NotificationBanner Success="@m_Succeeded" Message="@m_Message" />
 }
 
 @if (m_Summary != null)
@@ -60,7 +56,8 @@
 
     @if (FilteredAgents.Count == 0)
     {
-        <p class="muted">No agents in this filter.</p>
+        <EmptyState Title="No agents in this filter"
+                    Message="Try another sync state filter, or wait for agents to report catalog health." />
     }
     else
     {

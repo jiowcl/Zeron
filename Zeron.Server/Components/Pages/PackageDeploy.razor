@@ -8,12 +8,9 @@
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="page-header">
-    <div>
-        <h1>Deploy Package</h1>
-        <p>Dispatch ManagedPackage install or uninstall to selected agents.</p>
-    </div>
-</div>
+<PageHeader Title="Deploy Package"
+            Subtitle="Dispatch ManagedPackage install or uninstall to selected agents."
+            Breadcrumbs="c_PackageBreadcrumbs" />
 
 <div class="panel">
     <div class="form-grid">
@@ -26,13 +23,17 @@
         </label>
         <label>
             Package
-            <InputSelect @bind-Value="m_Model.PackageName">
+            <InputSelect id="deploy-package"
+                         @bind-Value="m_Model.PackageName"
+                         aria-invalid="@(!string.IsNullOrWhiteSpace(m_PackageError))"
+                         aria-describedby="@FormFieldValidation.DescribedBy("deploy-package-error", m_PackageError)">
                 <option value="">Select package</option>
                 @foreach (ManagedPackageInfoType package in m_Packages)
                 {
                     <option value="@package.Name">@package.Name</option>
                 }
             </InputSelect>
+            <FormFieldError Id="deploy-package-error" Message="@m_PackageError" />
             <small class="muted">From the Server catalog. Agents sync this list (local overrides are preserved).</small>
         </label>
         <label>
@@ -57,14 +58,22 @@
         {
             <label>
                 Agent Id
-                <InputText @bind-Value="m_Model.AgentId" />
+                <InputText id="deploy-agent-id"
+                           @bind-Value="m_Model.AgentId"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_AgentIdError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("deploy-agent-id-error", m_AgentIdError)" />
+                <FormFieldError Id="deploy-agent-id-error" Message="@m_AgentIdError" />
             </label>
         }
         @if (m_Model.TargetType == "filter")
         {
             <label>
                 Hostname Pattern
-                <InputText @bind-Value="m_Model.HostnamePattern" />
+                <InputText id="deploy-hostname"
+                           @bind-Value="m_Model.HostnamePattern"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_HostnameError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("deploy-hostname-error", m_HostnameError)" />
+                <FormFieldError Id="deploy-hostname-error" Message="@m_HostnameError" />
             </label>
         }
         <div class="actions">
@@ -86,14 +95,15 @@
 
     @if (!string.IsNullOrWhiteSpace(m_Error))
     {
-        <NotificationBanner Success="false" Message="m_Error" />
+        <NotificationBanner Success="false" Message="@m_Error" />
     }
 
     @if (m_Packages.Count == 0)
     {
-        <NotificationBanner Success="false"
-                             Message="No enabled packages in the catalog. Add one under Package Catalog first."
-                             />
+        <EmptyState Title="No enabled packages"
+                    Message="Add an enabled package under Package Catalog before deploying."
+                    ActionText="Open Catalog"
+                    ActionHref="/packages/catalog" />
     }
 </div>
 

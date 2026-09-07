@@ -8,22 +8,22 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>Events</h1>
-        <p>Live timeline of agent-published events.</p>
-    </div>
-</div>
+<PageHeader Title="Events" Subtitle="Live timeline of agent-published events.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ManualRefreshAsync" />
+</PageHeader>
 
 <div class="panel">
     <div class="form-grid" style="margin-bottom: 1rem; max-width: 100%; grid-template-columns: 1fr 1fr auto;">
         <label>
             Agent Key
-            <InputText @bind-Value="m_AgentKey" />
+            <input @bind="m_AgentKey" @bind:event="oninput" @bind:after="ScheduleFilterAsync" />
         </label>
         <label>
             Topic
-            <InputText @bind-Value="m_Topic" />
+            <input @bind="m_Topic" @bind:event="oninput" @bind:after="ScheduleFilterAsync" />
         </label>
         <div class="actions" style="align-items: end;">
             <LoadingButton CssClass="btn btn-secondary"
@@ -43,7 +43,8 @@
 
     @if (m_PageRows.Count == 0)
     {
-        <p class="muted">No events found.</p>
+        <EmptyState Title="No events found"
+                    Message="Try clearing filters, or wait for agents to publish events." />
     }
     else
     {

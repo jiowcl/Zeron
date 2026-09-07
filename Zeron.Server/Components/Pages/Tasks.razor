@@ -5,42 +5,58 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject TaskDispatcherServer TaskDispatcher
 
-<div class="page-header">
-    <div>
-        <h1>Tasks</h1>
-        <p>Remote commands dispatched to agents.</p>
-    </div>
+<PageHeader Title="Tasks" Subtitle="Remote commands dispatched to agents.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
         <Authorized>
             <a class="btn" href="/tasks/create">Create Task</a>
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
 
 <div class="panel">
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Target API</th>
-                <th>Status</th>
-                <th>Assignments</th>
-                <th>Created</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (TaskEntity task in m_Tasks)
-            {
+    @if (m_Tasks.Count == 0)
+    {
+        <EmptyState Title="No tasks yet"
+                    Message="Dispatch a remote command to one or more agents.">
+            <Actions>
+                <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+                    <Authorized>
+                        <a class="btn" href="/tasks/create">Create Task</a>
+                    </Authorized>
+                </AuthorizeView>
+            </Actions>
+        </EmptyState>
+    }
+    else
+    {
+        <table>
+            <thead>
                 <tr>
-                    <td>@task.Name</td>
-                    <td>@task.TargetApi</td>
-                    <td><span class="status @task.Status">@task.Status</span></td>
-                    <td>@task.Assignments.Count</td>
-                    <td>@task.CreatedAt.ToLocalTime()</td>
-                    <td><a href="@($"/tasks/{task.Id}")">Details</a></td>
+                    <th>Name</th>
+                    <th>Target API</th>
+                    <th>Status</th>
+                    <th>Assignments</th>
+                    <th>Created</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (TaskEntity task in m_Tasks)
+                {
+                    <tr>
+                        <td>@task.Name</td>
+                        <td>@task.TargetApi</td>
+                        <td><span class="status @task.Status">@task.Status</span></td>
+                        <td>@task.Assignments.Count</td>
+                        <td>@task.CreatedAt.ToLocalTime()</td>
+                        <td><a href="@($"/tasks/{task.Id}")">Details</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>

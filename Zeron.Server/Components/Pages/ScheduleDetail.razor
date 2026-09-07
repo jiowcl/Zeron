@@ -6,47 +6,51 @@
 @inject TaskScheduleServer TaskScheduleServer
 @inject NavigationManager Navigation
 
-<div class="page-header">
-    <div>
-        <h1>@(m_Schedule?.Name ?? "Schedule")</h1>
-        <p>Cron schedule details and controls.</p>
-    </div>
-    <div class="actions">
-        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
-            <Authorized>
-                @if (m_Schedule != null)
-                {
-                    <LoadingButton CssClass="btn"
-                                    Text="Run Now"
-                                    IsLoading="@m_IsBusy"
-                                    OnClick="RunNowAsync" />
-                    @if (m_Schedule.Enabled)
-                    {
-                        <LoadingButton CssClass="btn btn-secondary"
-                                        Text="Disable"
-                                        IsLoading="@m_IsBusy"
-                                        OnClick="() => SetEnabledAsync(false)" />
-                    }
-                    else
-                    {
-                        <LoadingButton CssClass="btn btn-secondary"
-                                        Text="Enable"
-                                        IsLoading="@m_IsBusy"
-                                        OnClick="() => SetEnabledAsync(true)" />
-                    }
-                }
-            </Authorized>
-        </AuthorizeView>
-        <AuthorizeView Roles="@ServerRoles.Admin">
-            <Authorized>
-                <LoadingButton CssClass="btn btn-danger"
-                                Text="Delete"
+<PageHeader Title="@(m_Schedule?.Name ?? "Schedule")"
+            Subtitle="Cron schedule details and controls."
+            Breadcrumbs="c_ScheduleBreadcrumbs">
+    <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+        <Authorized>
+            @if (m_Schedule != null)
+            {
+                <LoadingButton CssClass="btn"
+                                Text="Run Now"
                                 IsLoading="@m_IsBusy"
-                                OnClick="DeleteAsync" />
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</div>
+                                OnClick="RunNowAsync" />
+                @if (m_Schedule.Enabled)
+                {
+                    <LoadingButton CssClass="btn btn-secondary"
+                                    Text="Disable"
+                                    IsLoading="@m_IsBusy"
+                                    OnClick="() => SetEnabledAsync(false)" />
+                }
+                else
+                {
+                    <LoadingButton CssClass="btn btn-secondary"
+                                    Text="Enable"
+                                    IsLoading="@m_IsBusy"
+                                    OnClick="() => SetEnabledAsync(true)" />
+                }
+            }
+        </Authorized>
+    </AuthorizeView>
+    <AuthorizeView Roles="@ServerRoles.Admin">
+        <Authorized>
+            <LoadingButton CssClass="btn btn-danger"
+                            Text="Delete"
+                            IsLoading="@m_IsBusy"
+                            OnClick="RequestDelete" />
+        </Authorized>
+    </AuthorizeView>
+</PageHeader>
+
+<ConfirmDialog IsOpen="@m_ShowDeleteConfirm"
+               Title="Delete schedule?"
+               Message="@($"This permanently deletes '{m_Schedule?.Name ?? "this schedule"}'. Scheduled runs will stop.")"
+               ConfirmText="Delete"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDeleteAsync"
+               OnCancel="CloseDeleteConfirm" />
 
 @if (m_Schedule == null)
 {
@@ -169,6 +173,6 @@ else
 
     @if (!string.IsNullOrWhiteSpace(m_Message))
     {
-        <NotificationBanner Success="m_Succeeded" Message="m_Message" />
+        <NotificationBanner Success="@m_Succeeded" Message="@m_Message" />
     }
 }

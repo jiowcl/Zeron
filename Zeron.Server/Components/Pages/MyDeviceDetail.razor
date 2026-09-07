@@ -12,19 +12,15 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>@(m_Device?.MachineName ?? AgentKey)</h1>
-        <p>Zeron.Demand status and self-service package install for your bound agent.</p>
-    </div>
-    <div class="actions">
-        <a class="btn btn-secondary" href="/my-devices">Back</a>
-        <LoadingButton CssClass="btn btn-secondary"
-                        Text="Refresh"
-                        IsLoading="@m_IsBusy"
-                        OnClick="ReloadAsync" />
-    </div>
-</div>
+<PageHeader Title="@(m_Device?.MachineName ?? AgentKey)"
+            Subtitle="Zeron.Demand status and self-service package install for your bound agent."
+            Breadcrumbs="c_MyDeviceBreadcrumbs">
+    <a class="btn btn-secondary" href="/my-devices">Back</a>
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
+</PageHeader>
 
 @if (m_Notifications.Count > 0)
 {
@@ -46,7 +42,7 @@
 
 @if (!string.IsNullOrWhiteSpace(m_Error))
 {
-    <NotificationBanner Success="false" Message="m_Error" />
+    <NotificationBanner Success="false" Message="@m_Error" />
 }
 else if (m_Device == null)
 {
@@ -99,8 +95,8 @@ else
         </div>
         @if (!string.IsNullOrWhiteSpace(m_DeployMessage))
         {
-            <NotificationBanner Success="m_DeploySucceeded"
-                                 Message="m_DeployMessage" />
+            <NotificationBanner Success="@m_DeploySucceeded"
+                                 Message="@m_DeployMessage" />
         }
     </div>
 
@@ -108,7 +104,9 @@ else
         <h2>Recent Install Events</h2>
         @if (m_Events.Count == 0)
         {
-            <p class="muted">No recent install events.</p>
+            <EmptyState Title="No recent install events"
+                        Message="Install activity for this device will show up here."
+                        Compact="true" />
         }
         else
         {

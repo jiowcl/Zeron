@@ -1,6 +1,7 @@
 // Zeron - Scheduled Task Application for Windows OS
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
+using Zeron.Server.Components.Shared;
 using Zeron.ZCore.Type;
 
 namespace Zeron.Server.Components.Pages
@@ -8,7 +9,7 @@ namespace Zeron.Server.Components.Pages
     /// <summary>
     /// Audit
     /// </summary>
-    public partial class Audit
+    public partial class Audit : IAsyncDisposable
     {
         // Rows.
         private List<AuditLogInfoType> m_Rows = [];
@@ -28,9 +29,16 @@ namespace Zeron.Server.Components.Pages
         // Busy.
         private bool m_IsBusy;
 
+        // Filter debounce.
+        private readonly DebouncedAction m_FilterDebounce = new(350);
+
         // Pagination.
         private const int c_PageSize = 50;
+
+        // Page index.
         private int m_PageIndex;
+
+        // Has next page.
         private bool m_HasNextPage;
 
         // Current page rows.
@@ -74,6 +82,20 @@ namespace Zeron.Server.Components.Pages
         }
 
         /// <summary>
+        /// ScheduleFilterAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ScheduleFilterAsync()
+        {
+            return m_FilterDebounce.InvokeAsync(async () =>
+            {
+                m_PageIndex = 0;
+                await ReloadAsync();
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+
+        /// <summary>
         /// ApplyFiltersAsync
         /// </summary>
         /// <returns>Returns Task.</returns>
@@ -114,11 +136,18 @@ namespace Zeron.Server.Components.Pages
         }
 
         /// <summary>
+        /// DisposeAsync
+        /// </summary>
+        /// <returns>Returns ValueTask.</returns>
+        public ValueTask DisposeAsync()
+        {
+            return m_FilterDebounce.DisposeAsync();
+        }
+
+        /// <summary>
         /// PageSummary
         /// </summary>
         private string PageSummary =>
-            m_PageRows.Count == 0
-                ? "No records"
-                : $"Page {m_PageIndex + 1} · showing {m_PageRows.Count} record(s)";
+            UiFormatServer.FormatPageRange(m_PageIndex, c_PageSize, m_PageRows.Count, "record");
     }
 }

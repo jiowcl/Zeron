@@ -8,23 +8,17 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>Dashboard</h1>
-        <p>Operational summary of agents, catalog sync, tasks, alerts, and events.</p>
-    </div>
-    <div class="actions">
+<PageHeader Title="Dashboard" Subtitle="Operational summary of agents, catalog sync, tasks, alerts, and events.">
         <LoadingButton CssClass="btn btn-secondary"
                         Text="Refresh"
                         IsLoading="@m_IsLoading"
-                        OnClick="ReloadAsync" />
-        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
-            <Authorized>
-                <a class="btn" href="/tasks/create">Create Task</a>
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</div>
+                        OnClick="ManualRefreshAsync" />
+    <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+        <Authorized>
+            <a class="btn" href="/tasks/create">Create Task</a>
+        </Authorized>
+    </AuthorizeView>
+</PageHeader>
 
 @if (m_PasswordChanged)
 {
@@ -146,7 +140,9 @@ else
             </div>
             @if (m_Summary.RecentAlerts.Count == 0)
             {
-                <p class="muted">No open alerts.</p>
+                <EmptyState Title="No open alerts"
+                            Message="Operational alerts will appear here when agents go offline or rules fire."
+                            Compact="true" />
             }
             else
             {
@@ -171,7 +167,17 @@ else
             </div>
             @if (m_Summary.RecentTasks.Count == 0)
             {
-                <p class="muted">No tasks yet.</p>
+                <EmptyState Title="No tasks yet"
+                            Message="Recent remote commands will show up here."
+                            Compact="true">
+                    <Actions>
+                        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+                            <Authorized>
+                                <a class="btn" href="/tasks/create">Create Task</a>
+                            </Authorized>
+                        </AuthorizeView>
+                    </Actions>
+                </EmptyState>
             }
             else
             {
@@ -208,7 +214,11 @@ else
             </div>
             @if (m_Summary.RecentAgents.Count == 0)
             {
-                <p class="muted">No agents registered. Start Zeron.Demand with server_enabled=true.</p>
+                <EmptyState Title="No agents registered"
+                            Message="Start Zeron.Demand with server_enabled=true."
+                            Compact="true"
+                            ActionText="Agents"
+                            ActionHref="/agents" />
             }
             else
             {
@@ -245,7 +255,9 @@ else
             </div>
             @if (m_Summary.RecentEvents.Count == 0)
             {
-                <p class="muted">No events received yet.</p>
+                <EmptyState Title="No events yet"
+                            Message="Agent-published events will appear in this feed."
+                            Compact="true" />
             }
             else
             {

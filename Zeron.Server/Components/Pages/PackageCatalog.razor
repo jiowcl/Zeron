@@ -6,21 +6,17 @@
 @inject ManagedPackageCatalogServer CatalogServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="page-header">
-    <div>
-        <h1>Package Catalog</h1>
-        <p>Central ManagedPackage definitions synced to Demand agents. Local Demand overrides are preserved.</p>
-    </div>
-    <div class="actions">
-        <a class="btn btn-secondary" href="/packages">Deploys</a>
-        <a class="btn btn-secondary" href="/packages/sync-health">Sync Health</a>
-        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
-            <Authorized>
-                <a class="btn" href="/packages/deploy">Deploy Package</a>
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</div>
+<PageHeader Title="Package Catalog"
+            Subtitle="Central ManagedPackage definitions synced to Demand agents. Local Demand overrides are preserved."
+            Breadcrumbs="c_PackageBreadcrumbs">
+    <a class="btn btn-secondary" href="/packages">Deploys</a>
+    <a class="btn btn-secondary" href="/packages/sync-health">Sync Health</a>
+    <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+        <Authorized>
+            <a class="btn" href="/packages/deploy">Deploy Package</a>
+        </Authorized>
+    </AuthorizeView>
+</PageHeader>
 
 <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
     <Authorized>
@@ -107,7 +103,7 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(m_Message))
             {
-                <NotificationBanner Success="m_Succeeded" Message="m_Message" />
+                <NotificationBanner Success="@m_Succeeded" Message="@m_Message" />
             }
         </div>
     </Authorized>
@@ -124,7 +120,8 @@
 
     @if (m_Packages.Count == 0)
     {
-        <p class="muted">No packages in the Server catalog yet.</p>
+        <EmptyState Title="No packages in the catalog"
+                    Message="Create a ManagedPackage definition above. Demand agents sync this list while keeping local overrides." />
     }
     else
     {
@@ -169,7 +166,7 @@
                                         <LoadingButton CssClass="btn btn-danger"
                                                         Text="Delete"
                                                         IsLoading="@m_IsBusy"
-                                                        OnClick="() => DeleteAsync(package)" />
+                                                        OnClick="() => RequestDelete(package)" />
                                     </Authorized>
                                 </AuthorizeView>
                             </div>
@@ -194,12 +191,14 @@
 
         @if (!string.IsNullOrWhiteSpace(m_HistoryMessage))
         {
-            <NotificationBanner Success="m_HistorySucceeded" Message="m_HistoryMessage" />
+            <NotificationBanner Success="@m_HistorySucceeded" Message="@m_HistoryMessage" />
         }
 
         @if (m_Versions.Count == 0)
         {
-            <p class="muted">No versions recorded for this package.</p>
+            <EmptyState Title="No versions recorded"
+                        Message="Version history appears after catalog edits are saved."
+                        Compact="true" />
         }
         else
         {
@@ -337,3 +336,11 @@
         }
     </div>
 }
+
+<ConfirmDialog IsOpen="@(m_PendingDeletePackage != null)"
+               Title="Delete package?"
+               Message="@($"This permanently deletes '{m_PendingDeletePackage?.Name}' from the catalog. Agents keep local overrides.")"
+               ConfirmText="Delete"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDeleteAsync"
+               OnCancel="CloseDeleteConfirm" />

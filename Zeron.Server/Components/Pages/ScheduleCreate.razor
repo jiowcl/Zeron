@@ -6,18 +6,19 @@
 @inject TaskScheduleServer TaskScheduleServer
 @inject NavigationManager Navigation
 
-<div class="page-header">
-    <div>
-        <h1>Create Schedule</h1>
-        <p>Define a cron expression and the remote API to dispatch when due.</p>
-    </div>
-</div>
+<PageHeader Title="Create Schedule"
+            Subtitle="Define a cron expression and the remote API to dispatch when due."
+            Breadcrumbs="c_ScheduleBreadcrumbs" />
 
 <div class="panel">
     <div class="form-grid">
         <label>
             Name
-            <InputText @bind-Value="m_Model.Name" />
+            <InputText id="schedule-name"
+                       @bind-Value="m_Model.Name"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_NameError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("schedule-name-error", m_NameError)" />
+            <FormFieldError Id="schedule-name-error" Message="@m_NameError" />
         </label>
         <label>
             Description
@@ -25,16 +26,28 @@
         </label>
         <label>
             Cron Expression
-            <InputText @bind-Value="m_Model.Cron" />
+            <InputText id="schedule-cron"
+                       @bind-Value="m_Model.Cron"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_CronError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("schedule-cron-error", m_CronError)" />
+            <FormFieldError Id="schedule-cron-error" Message="@m_CronError" />
             <small class="muted">5-field NCrontab, evaluated in server local time. Example: <code>0 8 * * *</code> daily at 08:00</small>
         </label>
         <label>
             Target API
-            <InputText @bind-Value="m_Model.TargetApi" />
+            <InputText id="schedule-target-api"
+                       @bind-Value="m_Model.TargetApi"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_TargetApiError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("schedule-target-api-error", m_TargetApiError)" />
+            <FormFieldError Id="schedule-target-api-error" Message="@m_TargetApiError" />
         </label>
         <label>
             Command
-            <InputText @bind-Value="m_Model.Command" />
+            <InputText id="schedule-command"
+                       @bind-Value="m_Model.Command"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_CommandError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("schedule-command-error", m_CommandError)" />
+            <FormFieldError Id="schedule-command-error" Message="@m_CommandError" />
         </label>
         <label>
             Target Type
@@ -48,14 +61,22 @@
         {
             <label>
                 Agent Id
-                <InputText @bind-Value="m_Model.AgentId" />
+                <InputText id="schedule-agent-id"
+                           @bind-Value="m_Model.AgentId"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_AgentIdError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("schedule-agent-id-error", m_AgentIdError)" />
+                <FormFieldError Id="schedule-agent-id-error" Message="@m_AgentIdError" />
             </label>
         }
         @if (m_Model.TargetType == "filter")
         {
             <label>
                 Hostname Pattern
-                <InputText @bind-Value="m_Model.HostnamePattern" />
+                <InputText id="schedule-hostname"
+                           @bind-Value="m_Model.HostnamePattern"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_HostnameError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("schedule-hostname-error", m_HostnameError)" />
+                <FormFieldError Id="schedule-hostname-error" Message="@m_HostnameError" />
             </label>
         }
         <label class="checkbox-row">
@@ -73,7 +94,7 @@
 
     @if (!string.IsNullOrWhiteSpace(m_Error))
     {
-        <NotificationBanner Success="false" Message="m_Error" />
+        <NotificationBanner Success="false" Message="@m_Error" />
     }
 
     <div class="cron-examples">

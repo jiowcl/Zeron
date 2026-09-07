@@ -4,37 +4,41 @@
 @using Zeron.ZCore.Type
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject AuditLogServer AuditLogServer
+@implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>Audit</h1>
-        <p>Attributed operation history for catalog, deploy, bindings, and agent package overrides.</p>
-    </div>
-    <div class="actions">
-        <LoadingButton CssClass="btn btn-secondary"
-                        Text="Refresh"
-                        IsLoading="@m_IsBusy"
-                        OnClick="ReloadAsync" />
-    </div>
-</div>
+<PageHeader Title="Audit" Subtitle="Attributed operation history for catalog, deploy, bindings, and agent package overrides.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
+</PageHeader>
 
 <div class="panel">
     <div class="form-grid">
         <label>
             Action
-            <InputText @bind-Value="m_ActionFilter" placeholder="catalog. / package." />
+            <input @bind="m_ActionFilter"
+                   @bind:event="oninput"
+                   @bind:after="ScheduleFilterAsync"
+                   placeholder="catalog. / package." />
         </label>
         <label>
             Actor
-            <InputText @bind-Value="m_ActorFilter" placeholder="username or agent key" />
+            <input @bind="m_ActorFilter"
+                   @bind:event="oninput"
+                   @bind:after="ScheduleFilterAsync"
+                   placeholder="username or agent key" />
         </label>
         <label>
             Target
-            <InputText @bind-Value="m_TargetFilter" placeholder="package or agent" />
+            <input @bind="m_TargetFilter"
+                   @bind:event="oninput"
+                   @bind:after="ScheduleFilterAsync"
+                   placeholder="package or agent" />
         </label>
         <label>
             Source
-            <InputSelect @bind-Value="m_SourceFilter">
+            <InputSelect @bind-Value="m_SourceFilter" @bind-Value:after="ApplyFiltersAsync">
                 <option value="">All</option>
                 <option value="server">server</option>
                 <option value="agent">agent</option>
@@ -60,7 +64,8 @@
 
     @if (m_PageRows.Count == 0)
     {
-        <p class="muted">No audit records found.</p>
+        <EmptyState Title="No audit records found"
+                    Message="Attributed operations will appear here as catalog, deploy, and binding changes occur." />
     }
     else
     {

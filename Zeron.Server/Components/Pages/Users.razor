@@ -7,23 +7,27 @@
 @inject UserManagerServer UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="page-header">
-    <div>
-        <h1>Users</h1>
-        <p>Manage dashboard accounts and roles.</p>
-    </div>
-</div>
+<PageHeader Title="Users" Subtitle="Manage dashboard accounts and roles." />
 
 <div class="panel">
     <h2>Create User</h2>
     <div class="form-grid">
         <label>
             Username
-            <InputText @bind-Value="m_CreateModel.Username" />
+            <InputText id="user-create-username"
+                       @bind-Value="m_CreateModel.Username"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_UsernameError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("user-create-username-error", m_UsernameError)" />
+            <FormFieldError Id="user-create-username-error" Message="@m_UsernameError" />
         </label>
         <label>
             Password
-            <InputText type="password" @bind-Value="m_CreateModel.Password" />
+            <InputText id="user-create-password"
+                       type="password"
+                       @bind-Value="m_CreateModel.Password"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_PasswordError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("user-create-password-error", m_PasswordError)" />
+            <FormFieldError Id="user-create-password-error" Message="@m_PasswordError" />
         </label>
         <label>
             Role
@@ -36,7 +40,11 @@
         </label>
         <label>
             Email (optional)
-            <InputText @bind-Value="m_CreateModel.Email" />
+            <InputText id="user-create-email"
+                       @bind-Value="m_CreateModel.Email"
+                       aria-invalid="@(!string.IsNullOrWhiteSpace(m_EmailError))"
+                       aria-describedby="@FormFieldValidation.DescribedBy("user-create-email-error", m_EmailError)" />
+            <FormFieldError Id="user-create-email-error" Message="@m_EmailError" />
         </label>
         <div class="actions">
             <LoadingButton CssClass="btn"
@@ -47,7 +55,7 @@
     </div>
     @if (!string.IsNullOrWhiteSpace(m_CreateMessage))
     {
-        <NotificationBanner Success="m_CreateSucceeded" Message="m_CreateMessage" />
+        <NotificationBanner Success="@m_CreateSucceeded" Message="@m_CreateMessage" />
     }
 </div>
 
@@ -55,7 +63,8 @@
     <h2>Existing Users</h2>
     @if (m_Rows.Count == 0)
     {
-        <p>No users found.</p>
+        <EmptyState Title="No users found"
+                    Message="Create a dashboard account above to grant access." />
     }
     else
     {
@@ -124,7 +133,7 @@
                                                     Text="Deactivate"
                                                     IsLoading="@m_IsBusy"
                                                     Disabled="@(m_IsBusy || row.Id == m_CurrentUserId)"
-                                                    OnClick="() => SetActiveAsync(row, false)" />
+                                                    OnClick="() => RequestDeactivate(row)" />
                                 }
                                 else
                                 {
@@ -144,6 +153,14 @@
 
     @if (!string.IsNullOrWhiteSpace(m_UpdateMessage))
     {
-        <NotificationBanner Success="m_UpdateSucceeded" Message="m_UpdateMessage" />
+        <NotificationBanner Success="@m_UpdateSucceeded" Message="@m_UpdateMessage" />
     }
 </div>
+
+<ConfirmDialog IsOpen="@(m_PendingDeactivate != null)"
+               Title="Deactivate user?"
+               Message="@($"Deactivate '{m_PendingDeactivate?.Username}'? They will no longer be able to sign in.")"
+               ConfirmText="Deactivate"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDeactivateAsync"
+               OnCancel="CloseDeactivateConfirm" />

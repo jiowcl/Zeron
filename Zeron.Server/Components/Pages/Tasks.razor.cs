@@ -13,13 +13,34 @@ namespace Zeron.Server.Components.Pages
         // Tasks.
         private List<TaskEntity> m_Tasks = [];
 
+        // Busy.
+        private bool m_IsBusy;
+
         /// <summary>
         /// OnInitializedAsync
         /// </summary>
         /// <returns>Returns Task.</returns>
         protected override async Task OnInitializedAsync()
         {
-            m_Tasks = await TaskDispatcher.GetTasksAsync();
+            await ReloadAsync();
+        }
+
+        /// <summary>
+        /// ReloadAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ReloadAsync()
+        {
+            m_IsBusy = true;
+
+            try
+            {
+                m_Tasks = await TaskDispatcher.GetTasksAsync();
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
     }
 }

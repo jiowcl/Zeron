@@ -10,25 +10,19 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>My Devices</h1>
-        <p>Status of Zeron.Demand agents bound to your account.</p>
-    </div>
-    <div class="actions">
+<PageHeader Title="My Devices" Subtitle="Status of Zeron.Demand agents bound to your account.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
+    @if (m_Notifications.Count > 0)
+    {
         <LoadingButton CssClass="btn btn-secondary"
-                        Text="Refresh"
+                        Text="Dismiss All"
                         IsLoading="@m_IsBusy"
-                        OnClick="ReloadAsync" />
-        @if (m_Notifications.Count > 0)
-        {
-            <LoadingButton CssClass="btn btn-secondary"
-                            Text="Dismiss All"
-                            IsLoading="@m_IsBusy"
-                            OnClick="DismissAllAsync" />
-        }
-    </div>
-</div>
+                        OnClick="DismissAllAsync" />
+    }
+</PageHeader>
 
 @if (m_Notifications.Count > 0)
 {
@@ -54,12 +48,13 @@
 
 @if (!string.IsNullOrWhiteSpace(m_Error))
 {
-    <NotificationBanner Success="false" Message="m_Error" />
+    <NotificationBanner Success="false" Message="@m_Error" />
 }
 else if (m_Devices.Count == 0)
 {
     <div class="panel">
-        <p class="muted">No Demand agents are bound to your account. Ask an Admin to bind your user on Device Bindings.</p>
+        <EmptyState Title="No devices bound"
+                    Message="No Demand agents are bound to your account. Ask an Admin to bind your user on Device Bindings." />
     </div>
 }
 else

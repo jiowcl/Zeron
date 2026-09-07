@@ -11,23 +11,22 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @implements IAsyncDisposable
 
-<div class="page-header">
-    <div>
-        <h1>Agents</h1>
-        <p>Registered Windows agents, connection diagnostics, and heartbeat status.</p>
-    </div>
-    <button class="btn btn-secondary" @onclick="ReloadAsync">Refresh</button>
-</div>
+<PageHeader Title="Agents" Subtitle="Registered Windows agents, connection diagnostics, and heartbeat status.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ManualRefreshAsync" />
+</PageHeader>
 
 <div class="panel">
     @if (m_Agents.Count == 0)
     {
-            <NotificationBanner Success="false">
-                <p>
-                    No agents registered yet. Start <code>Zeron.Demand</code> and ensure
-                    <code>server_enabled=true</code>. See Docs/agent-connection.md for troubleshooting.
-                </p>
-            </NotificationBanner>
+        <EmptyState Title="No agents registered">
+            <p>
+                Start <code>Zeron.Demand</code> and ensure
+                <code>server_enabled=true</code>. See Docs/agent-connection.md for troubleshooting.
+            </p>
+        </EmptyState>
     }
     else
     {

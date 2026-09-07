@@ -10,26 +10,30 @@
 @inject AgentDiagnosticServer AgentDiagnosticServer
 @inject EventIngestorServer EventIngestor
 
-<div class="page-header">
-    <div>
-        <h1>@AgentKey</h1>
-        <p>Agent details, heartbeat history, and recent events.</p>
-    </div>
+<PageHeader Title="@AgentKey"
+            Subtitle="Agent details, heartbeat history, and recent events."
+            Breadcrumbs="c_AgentBreadcrumbs">
     <AuthorizeView Roles="@ServerRoles.Admin">
         <Authorized>
-            <div class="actions">
-                @if (m_Agent?.Status != "disabled")
-                {
-                    <button class="btn btn-danger" @onclick="DisableAgentAsync">Disable Agent</button>
-                }
-                else
-                {
-                    <button class="btn btn-secondary" @onclick="EnableAgentAsync">Enable Agent</button>
-                }
-            </div>
+            @if (m_Agent?.Status != "disabled")
+            {
+                <button class="btn btn-danger" @onclick="RequestDisableAgent">Disable Agent</button>
+            }
+            else
+            {
+                <button class="btn btn-secondary" @onclick="EnableAgentAsync">Enable Agent</button>
+            }
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
+
+<ConfirmDialog IsOpen="@m_ShowDisableConfirm"
+               Title="Disable agent?"
+               Message="@($"Disable '{AgentKey}'? The agent will stop receiving new work until re-enabled.")"
+               ConfirmText="Disable"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDisableAgentAsync"
+               OnCancel="CloseDisableConfirm" />
 
 @if (m_Agent == null)
 {
@@ -62,7 +66,9 @@ else
         <h2>Script Engines</h2>
         @if (m_ScriptEngines.Count == 0)
         {
-            <p>No script engine capabilities reported yet.</p>
+            <EmptyState Title="No script engines reported"
+                        Message="Capabilities appear after the agent sends a heartbeat with script host info."
+                        Compact="true" />
         }
         else
         {
@@ -94,7 +100,9 @@ else
         <h2>Heartbeat History</h2>
         @if (m_Heartbeats.Count == 0)
         {
-            <p>No heartbeat records yet.</p>
+            <EmptyState Title="No heartbeat records yet"
+                        Message="Heartbeats appear after the agent connects to the server."
+                        Compact="true" />
         }
         else
         {

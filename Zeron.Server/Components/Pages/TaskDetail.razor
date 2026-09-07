@@ -5,20 +5,30 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject TaskDispatcherServer TaskDispatcher
 
-<div class="page-header">
-    <div>
-        <h1>@(m_Task?.Name ?? "Task")</h1>
-        <p>Assignment progress and results.</p>
-    </div>
+<PageHeader Title="@(m_Task?.Name ?? "Task")"
+            Subtitle="Assignment progress and results."
+            Breadcrumbs="c_TaskBreadcrumbs">
     <AuthorizeView Roles="@ServerRoles.Admin">
         <Authorized>
             @if (m_Task != null && m_Task.Status is not "completed" and not "failed" and not "cancelled")
             {
-                <button class="btn btn-danger" @onclick="CancelTaskAsync">Cancel Task</button>
+                <LoadingButton CssClass="btn btn-danger"
+                                Text="Cancel Task"
+                                IsLoading="@m_IsBusy"
+                                OnClick="RequestCancelTask" />
             }
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
+
+<ConfirmDialog IsOpen="@m_ShowCancelConfirm"
+               Title="Cancel task?"
+               Message="@($"Cancel '{m_Task?.Name ?? "this task"}'? Pending and running assignments will be cancelled.")"
+               ConfirmText="Cancel Task"
+               CancelText="Keep Task"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmCancelTaskAsync"
+               OnCancel="CloseCancelConfirm" />
 
 @if (m_Task == null)
 {

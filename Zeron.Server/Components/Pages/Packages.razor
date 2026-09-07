@@ -5,32 +5,39 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject PackageDeployServer PackageDeployServer
 
-<div class="page-header">
-    <div>
-        <h1>Packages</h1>
-        <p>Central ManagedPackage install and uninstall deployments.</p>
-    </div>
-    <div class="actions">
-        <a class="btn btn-secondary" href="/packages/catalog">Catalog</a>
-        <a class="btn btn-secondary" href="/packages/sync-health">Sync Health</a>
-        <a class="btn btn-secondary" href="/events?topic=install.">Install Events</a>
-        <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
-            <Authorized>
-                <a class="btn" href="/packages/deploy">Deploy Package</a>
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</div>
+<PageHeader Title="Packages" Subtitle="Central ManagedPackage install and uninstall deployments.">
+    <a class="btn btn-secondary" href="/packages/catalog">Catalog</a>
+    <a class="btn btn-secondary" href="/packages/sync-health">Sync Health</a>
+    <a class="btn btn-secondary" href="/events?topic=install.">Install Events</a>
+    <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+        <Authorized>
+            <a class="btn" href="/packages/deploy">Deploy Package</a>
+        </Authorized>
+    </AuthorizeView>
+</PageHeader>
 
 <div class="panel">
     <div class="panel-header">
         <h2>Recent Deploys</h2>
-        <button class="btn btn-secondary" @onclick="ReloadAsync">Refresh</button>
+        <LoadingButton CssClass="btn btn-secondary"
+                        Text="Refresh"
+                        IsLoading="@m_IsBusy"
+                        OnClick="ReloadAsync" />
     </div>
 
     @if (m_Deploys.Count == 0)
     {
-        <p class="muted">No package deploy tasks yet. Create one from Deploy Package.</p>
+        <EmptyState Title="No package deploys yet"
+                    Message="Install or uninstall ManagedPackages on selected agents.">
+            <Actions>
+                <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+                    <Authorized>
+                        <a class="btn" href="/packages/deploy">Deploy Package</a>
+                    </Authorized>
+                </AuthorizeView>
+                <a class="btn btn-secondary" href="/packages/catalog">Open Catalog</a>
+            </Actions>
+        </EmptyState>
     }
     else
     {
@@ -76,7 +83,11 @@
 
     @if (m_InstallEvents.Count == 0)
     {
-        <p class="muted">No install events received yet.</p>
+        <EmptyState Title="No install events yet"
+                    Message="Install results from Demand agents will appear here."
+                    ActionText="View Events"
+                    ActionHref="/events?topic=install."
+                    Compact="true" />
     }
     else
     {

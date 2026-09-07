@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.Components;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.ZCore.Type;
 using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
@@ -13,6 +14,12 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class ScheduleDetail
     {
+        // Schedule breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_ScheduleBreadcrumbs =
+        [
+            new() { Label = "Schedules", Href = "/schedules" },
+        ];
+
         // Schedule ID.
         [Parameter]
         public Guid ScheduleId { get; set; }
@@ -31,6 +38,9 @@ namespace Zeron.Server.Components.Pages
 
         // Is busy.
         private bool m_IsBusy;
+
+        // Delete confirmation.
+        private bool m_ShowDeleteConfirm;
 
         /// <summary>
         /// OnParametersSetAsync
@@ -169,6 +179,34 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// RequestDelete
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void RequestDelete()
+        {
+            m_ShowDeleteConfirm = true;
+        }
+
+        /// <summary>
+        /// CloseDeleteConfirm
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void CloseDeleteConfirm()
+        {
+            m_ShowDeleteConfirm = false;
+        }
+
+        /// <summary>
+        /// ConfirmDeleteAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmDeleteAsync()
+        {
+            await DeleteAsync();
+            m_ShowDeleteConfirm = false;
         }
 
         /// <summary>

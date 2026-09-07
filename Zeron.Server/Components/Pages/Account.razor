@@ -6,15 +6,9 @@
 @inject AuthServer AuthServer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="page-header">
-    <div>
-        <h1>Account</h1>
-        <p>Update your notification email and password.</p>
-    </div>
-    <div class="actions">
-        <a class="btn btn-secondary" href="@m_HomePath">Back</a>
-    </div>
-</div>
+<PageHeader Title="Account" Subtitle="Update your notification email and password.">
+    <a class="btn btn-secondary" href="@m_HomePath">Back</a>
+</PageHeader>
 
 @if (m_Profile == null)
 {
@@ -33,7 +27,12 @@ else
         <div class="form-grid">
             <label>
                 Email
-                <InputText @bind-Value="m_Email" autocomplete="email" />
+                <InputText id="account-email"
+                           @bind-Value="m_Email"
+                           autocomplete="email"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_EmailError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("account-email-error", m_EmailError)" />
+                <FormFieldError Id="account-email-error" Message="@m_EmailError" />
                 <small class="muted">Leave blank to clear.</small>
             </label>
             <div class="actions">
@@ -45,7 +44,7 @@ else
         </div>
         @if (!string.IsNullOrWhiteSpace(m_EmailMessage))
         {
-            <NotificationBanner Success="m_EmailSucceeded" Message="m_EmailMessage" />
+            <NotificationBanner Success="@m_EmailSucceeded" Message="@m_EmailMessage" />
         }
     </div>
 
@@ -54,16 +53,34 @@ else
         <div class="form-grid">
             <label>
                 Current Password
-                <InputText type="password" @bind-Value="m_CurrentPassword" autocomplete="current-password" />
+                <InputText id="account-current-password"
+                           type="password"
+                           @bind-Value="m_CurrentPassword"
+                           autocomplete="current-password"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_CurrentPasswordError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("account-current-password-error", m_CurrentPasswordError)" />
+                <FormFieldError Id="account-current-password-error" Message="@m_CurrentPasswordError" />
             </label>
             <label>
                 New Password
-                <InputText type="password" @bind-Value="m_NewPassword" autocomplete="new-password" />
+                <InputText id="account-new-password"
+                           type="password"
+                           @bind-Value="m_NewPassword"
+                           autocomplete="new-password"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_NewPasswordError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("account-new-password-error", m_NewPasswordError)" />
+                <FormFieldError Id="account-new-password-error" Message="@m_NewPasswordError" />
                 <small class="muted">At least 6 characters.</small>
             </label>
             <label>
                 Confirm New Password
-                <InputText type="password" @bind-Value="m_ConfirmPassword" autocomplete="new-password" />
+                <InputText id="account-confirm-password"
+                           type="password"
+                           @bind-Value="m_ConfirmPassword"
+                           autocomplete="new-password"
+                           aria-invalid="@(!string.IsNullOrWhiteSpace(m_ConfirmPasswordError))"
+                           aria-describedby="@FormFieldValidation.DescribedBy("account-confirm-password-error", m_ConfirmPasswordError)" />
+                <FormFieldError Id="account-confirm-password-error" Message="@m_ConfirmPasswordError" />
             </label>
             <div class="actions">
                 <LoadingButton CssClass="btn"
@@ -74,7 +91,7 @@ else
         </div>
         @if (!string.IsNullOrWhiteSpace(m_PasswordMessage))
         {
-            <NotificationBanner Success="m_PasswordSucceeded" Message="m_PasswordMessage" />
+            <NotificationBanner Success="@m_PasswordSucceeded" Message="@m_PasswordMessage" />
         }
     </div>
 }

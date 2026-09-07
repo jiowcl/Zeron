@@ -5,22 +5,31 @@
 @attribute [Authorize(Policy = ServerPolicies.ViewerOrAbove)]
 @inject TaskScheduleServer TaskScheduleServer
 
-<div class="page-header">
-    <div>
-        <h1>Schedules</h1>
-        <p>Cron-based task schedules that dispatch to agents.</p>
-    </div>
+<PageHeader Title="Schedules" Subtitle="Cron-based task schedules that dispatch to agents.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
         <Authorized>
             <a class="btn" href="/schedules/create">Create Schedule</a>
         </Authorized>
     </AuthorizeView>
-</div>
+</PageHeader>
 
 <div class="panel">
     @if (m_Schedules.Count == 0)
     {
-        <p class="muted">No schedules yet. Create a cron schedule to run tasks automatically.</p>
+        <EmptyState Title="No schedules yet"
+                    Message="Create a cron schedule to run tasks automatically.">
+            <Actions>
+                <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+                    <Authorized>
+                        <a class="btn" href="/schedules/create">Create Schedule</a>
+                    </Authorized>
+                </AuthorizeView>
+            </Actions>
+        </EmptyState>
     }
     else
     {

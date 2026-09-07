@@ -3,6 +3,7 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZServers;
 
@@ -31,9 +32,19 @@ namespace Zeron.Server.Components.Pages
         // Busy.
         private bool m_IsBusy;
 
+        // Filter debounce.
+        private readonly DebouncedAction m_FilterDebounce = new(350);
+
+        // Hub reload throttle.
+        private readonly ThrottledAction m_HubReloadThrottle = new(750);
+
         // Pagination.
         private const int c_PageSize = 50;
+
+        // Page index.
         private int m_PageIndex;
+
+        // Has next page.
         private bool m_HasNextPage;
 
         // Topic query.
@@ -60,17 +71,31 @@ namespace Zeron.Server.Components.Pages
                 m_AgentKey = AgentKeyQuery;
             }
 
-            await ReloadAsync();
+            await ReloadAsync(showBusy: true);
             await ConnectHubAsync();
+        }
+
+        /// <summary>
+        /// ManualRefreshAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ManualRefreshAsync()
+        {
+            return ReloadAsync(showBusy: true);
         }
 
         /// <summary>
         /// ReloadAsync
         /// </summary>
+        /// <param name="showBusy"></param>
         /// <returns>Returns Task.</returns>
-        private async Task ReloadAsync()
+        private async Task ReloadAsync(
+            bool showBusy = true)
         {
-            m_IsBusy = true;
+            if (showBusy)
+            {
+                m_IsBusy = true;
+            }
 
             try
             {
@@ -86,8 +111,24 @@ namespace Zeron.Server.Components.Pages
             }
             finally
             {
-                m_IsBusy = false;
+                if (showBusy)
+                {
+                    m_IsBusy = false;
+                }
             }
+        }
+
+        /// <summary>
+        /// ScheduleHubReloadAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ScheduleHubReloadAsync()
+        {
+            return m_HubReloadThrottle.InvokeAsync(async () =>
+            {
+                await ReloadAsync(showBusy: false);
+                await InvokeAsync(StateHasChanged);
+            });
         }
 
         /// <summary>
@@ -110,8 +151,7 @@ namespace Zeron.Server.Components.Pages
                     return;
                 }
 
-                await ReloadAsync();
-                await InvokeAsync(StateHasChanged);
+                await ScheduleHubReloadAsync();
             });
 
             await DashboardHubClient.TryStartAsync(m_HubConnection);
@@ -123,10 +163,28 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns ValueTask.</returns>
         public async ValueTask DisposeAsync()
         {
+            await m_FilterDebounce.DisposeAsync();
+            await m_HubReloadThrottle.DisposeAsync();
+
             if (m_HubConnection != null)
             {
                 await m_HubConnection.DisposeAsync();
             }
+        }
+
+        /// <summary>
+        /// ScheduleFilterAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private Task ScheduleFilterAsync()
+        {
+            return m_FilterDebounce.InvokeAsync(async () =>
+            {
+                m_PageIndex = 0;
+                
+                await ReloadAsync(showBusy: true);
+                await InvokeAsync(StateHasChanged);
+            });
         }
 
         /// <summary>
@@ -136,7 +194,8 @@ namespace Zeron.Server.Components.Pages
         private async Task ApplyFiltersAsync()
         {
             m_PageIndex = 0;
-            await ReloadAsync();
+
+            await ReloadAsync(showBusy: true);
         }
 
         /// <summary>
@@ -151,7 +210,8 @@ namespace Zeron.Server.Components.Pages
             }
 
             m_PageIndex--;
-            await ReloadAsync();
+
+            await ReloadAsync(showBusy: true);
         }
 
         /// <summary>
@@ -166,15 +226,14 @@ namespace Zeron.Server.Components.Pages
             }
 
             m_PageIndex++;
-            await ReloadAsync();
+
+            await ReloadAsync(showBusy: true);
         }
 
         /// <summary>
         /// PageSummary
         /// </summary>
         private string PageSummary =>
-            m_PageRows.Count == 0
-                ? "No records"
-                : $"Page {m_PageIndex + 1} · showing {m_PageRows.Count} event(s)";
+            UiFormatServer.FormatPageRange(m_PageIndex, c_PageSize, m_PageRows.Count, "event");
     }
 }

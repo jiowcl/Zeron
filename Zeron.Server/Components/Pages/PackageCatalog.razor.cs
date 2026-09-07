@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.Components.Authorization;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.ZCore.Type;
 using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
@@ -13,6 +14,12 @@ namespace Zeron.Server.Components.Pages
     /// </summary>
     public partial class PackageCatalog
     {
+        // Package breadcrumbs.
+        private static readonly IReadOnlyList<BreadcrumbItem> c_PackageBreadcrumbs =
+        [
+            new() { Label = "Packages", Href = "/packages" },
+        ];
+
         // Packages.
         private List<ManagedPackageInfoType> m_Packages = [];
 
@@ -42,6 +49,9 @@ namespace Zeron.Server.Components.Pages
 
         // Busy.
         private bool m_IsBusy;
+
+        // Pending package delete.
+        private ManagedPackageInfoType? m_PendingDeletePackage;
 
         // Diff left key: "current" or version number string.
         private string m_DiffLeftKey = "current";
@@ -408,6 +418,42 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// RequestDelete
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns>Returns void.</returns>
+        private void RequestDelete(
+            ManagedPackageInfoType package)
+        {
+            m_PendingDeletePackage = package;
+        }
+
+        /// <summary>
+        /// CloseDeleteConfirm
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void CloseDeleteConfirm()
+        {
+            m_PendingDeletePackage = null;
+        }
+
+        /// <summary>
+        /// ConfirmDeleteAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmDeleteAsync()
+        {
+            if (m_PendingDeletePackage == null)
+            {
+                return;
+            }
+
+            ManagedPackageInfoType package = m_PendingDeletePackage;
+            await DeleteAsync(package);
+            m_PendingDeletePackage = null;
         }
 
         /// <summary>

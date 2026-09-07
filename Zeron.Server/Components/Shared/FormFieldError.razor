@@ -1,0 +1,6 @@
+@namespace Zeron.Server.Components.Shared
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <p class="field-error" id="@Id" role="alert">@Message</p>
+}

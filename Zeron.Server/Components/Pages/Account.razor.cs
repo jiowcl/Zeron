@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.Components.Authorization;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.ZCore;
 using Zeron.ZCore.Type;
 
@@ -33,6 +34,12 @@ namespace Zeron.Server.Components.Pages
         // Password message.
         private string? m_PasswordMessage;
 
+        // Field errors.
+        private string? m_EmailError;
+        private string? m_CurrentPasswordError;
+        private string? m_NewPasswordError;
+        private string? m_ConfirmPasswordError;
+
         // Email succeeded.
         private bool m_EmailSucceeded;
 
@@ -61,7 +68,7 @@ namespace Zeron.Server.Components.Pages
         private async Task ReloadAsync()
         {
             AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            
+
             m_Profile = await AuthServer.GetUserFromPrincipalAsync(authState.User);
             m_Email = m_Profile?.Email ?? "";
             m_HomePath = string.Equals(m_Profile?.Role, ServerRoles.DeviceOwner, StringComparison.OrdinalIgnoreCase)
@@ -80,8 +87,15 @@ namespace Zeron.Server.Components.Pages
                 return;
             }
 
-            m_IsBusy = true;
             m_EmailMessage = null;
+            m_EmailError = FormFieldValidation.OptionalEmail(m_Email);
+
+            if (m_EmailError != null)
+            {
+                return;
+            }
+
+            m_IsBusy = true;
 
             try
             {
@@ -90,7 +104,17 @@ namespace Zeron.Server.Components.Pages
                 if (error != null)
                 {
                     m_EmailSucceeded = false;
-                    m_EmailMessage = error;
+
+                    if (error.Contains("email", StringComparison.OrdinalIgnoreCase)
+                        || error.Contains("Email", StringComparison.OrdinalIgnoreCase))
+                    {
+                        m_EmailError = error;
+                    }
+                    else
+                    {
+                        m_EmailMessage = error;
+                    }
+
                     return;
                 }
 
@@ -118,18 +142,28 @@ namespace Zeron.Server.Components.Pages
                 return;
             }
 
-            m_IsBusy = true;
             m_PasswordMessage = null;
+            ClearPasswordFieldErrors();
+
+            m_CurrentPasswordError = FormFieldValidation.Required(m_CurrentPassword, "Current password");
+            m_NewPasswordError = FormFieldValidation.MinLength(m_NewPassword, 6, "New password");
+
+            if (!string.Equals(m_NewPassword, m_ConfirmPassword, StringComparison.Ordinal))
+            {
+                m_ConfirmPasswordError = "New password and confirmation do not match.";
+            }
+
+            if (m_CurrentPasswordError != null
+                || m_NewPasswordError != null
+                || m_ConfirmPasswordError != null)
+            {
+                return;
+            }
+
+            m_IsBusy = true;
 
             try
             {
-                if (!string.Equals(m_NewPassword, m_ConfirmPassword, StringComparison.Ordinal))
-                {
-                    m_PasswordSucceeded = false;
-                    m_PasswordMessage = "New password and confirmation do not match.";
-                    return;
-                }
-
                 (UserInfoType? user, string? error) = await AuthServer.ChangePasswordAsync(
                     userId,
                     m_CurrentPassword,
@@ -138,7 +172,7 @@ namespace Zeron.Server.Components.Pages
                 if (error != null)
                 {
                     m_PasswordSucceeded = false;
-                    m_PasswordMessage = error;
+                    MapPasswordServerError(error);
                     return;
                 }
 
@@ -153,6 +187,43 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// MapPasswordServerError
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns>Returns void.</returns>
+        private void MapPasswordServerError(
+            string error)
+        {
+            if (error.Contains("Current password", StringComparison.OrdinalIgnoreCase)
+                || error.Contains("incorrect", StringComparison.OrdinalIgnoreCase))
+            {
+                m_CurrentPasswordError = error;
+                return;
+            }
+
+            if (error.Contains("different", StringComparison.OrdinalIgnoreCase)
+                || error.Contains("at least", StringComparison.OrdinalIgnoreCase)
+                || error.Contains("New password", StringComparison.OrdinalIgnoreCase))
+            {
+                m_NewPasswordError = error;
+                return;
+            }
+
+            m_PasswordMessage = error;
+        }
+
+        /// <summary>
+        /// ClearPasswordFieldErrors
+        /// </summary>
+        /// <returns>Returns void.</returns> 
+        private void ClearPasswordFieldErrors()
+        {
+            m_CurrentPasswordError = null;
+            m_NewPasswordError = null;
+            m_ConfirmPasswordError = null;
         }
     }
 }
