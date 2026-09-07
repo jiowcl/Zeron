@@ -56,7 +56,8 @@
 
     @if (FilteredAgents.Count == 0)
     {
-        <p class="muted">No agents in this filter.</p>
+        <EmptyState Title="No agents in this filter"
+                    Message="Try another sync state filter, or wait for agents to report catalog health." />
     }
     else
     {

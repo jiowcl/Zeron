@@ -16,7 +16,16 @@
 <div class="panel">
     @if (m_Schedules.Count == 0)
     {
-        <p class="muted">No schedules yet. Create a cron schedule to run tasks automatically.</p>
+        <EmptyState Title="No schedules yet"
+                    Message="Create a cron schedule to run tasks automatically.">
+            <Actions>
+                <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+                    <Authorized>
+                        <a class="btn" href="/schedules/create">Create Schedule</a>
+                    </Authorized>
+                </AuthorizeView>
+            </Actions>
+        </EmptyState>
     }
     else
     {

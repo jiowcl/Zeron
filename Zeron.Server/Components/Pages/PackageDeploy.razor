@@ -88,9 +88,10 @@
 
     @if (m_Packages.Count == 0)
     {
-        <NotificationBanner Success="false"
-                             Message="No enabled packages in the catalog. Add one under Package Catalog first."
-                             />
+        <EmptyState Title="No enabled packages"
+                    Message="Add an enabled package under Package Catalog before deploying."
+                    ActionText="Open Catalog"
+                    ActionHref="/packages/catalog" />
     }
 </div>
 

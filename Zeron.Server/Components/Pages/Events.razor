@@ -43,7 +43,8 @@
 
     @if (m_PageRows.Count == 0)
     {
-        <p class="muted">No events found.</p>
+        <EmptyState Title="No events found"
+                    Message="Try clearing filters, or wait for agents to publish events." />
     }
     else
     {

@@ -54,7 +54,8 @@
 
     @if (m_Bindings.Count == 0)
     {
-        <p class="muted">No bindings yet.</p>
+        <EmptyState Title="No bindings yet"
+                    Message="Bind a DeviceOwner account to a Demand agent so they can view status and install packages." />
     }
     else
     {

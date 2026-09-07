@@ -29,7 +29,8 @@
 
     @if (m_PageRows.Count == 0)
     {
-        <p>No alerts found.</p>
+        <EmptyState Title="No alerts found"
+                    Message="Open and resolved operational alerts matching this filter will appear here." />
     }
     else
     {

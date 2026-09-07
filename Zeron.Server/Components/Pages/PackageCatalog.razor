@@ -120,7 +120,8 @@
 
     @if (m_Packages.Count == 0)
     {
-        <p class="muted">No packages in the Server catalog yet.</p>
+        <EmptyState Title="No packages in the catalog"
+                    Message="Create a ManagedPackage definition above. Demand agents sync this list while keeping local overrides." />
     }
     else
     {
@@ -195,7 +196,9 @@
 
         @if (m_Versions.Count == 0)
         {
-            <p class="muted">No versions recorded for this package.</p>
+            <EmptyState Title="No versions recorded"
+                        Message="Version history appears after catalog edits are saved."
+                        Compact="true" />
         }
         else
         {

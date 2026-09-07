@@ -104,7 +104,9 @@ else
         <h2>Recent Install Events</h2>
         @if (m_Events.Count == 0)
         {
-            <p class="muted">No recent install events.</p>
+            <EmptyState Title="No recent install events"
+                        Message="Install activity for this device will show up here."
+                        Compact="true" />
         }
         else
         {

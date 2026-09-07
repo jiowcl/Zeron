@@ -66,7 +66,9 @@ else
         <h2>Script Engines</h2>
         @if (m_ScriptEngines.Count == 0)
         {
-            <p>No script engine capabilities reported yet.</p>
+            <EmptyState Title="No script engines reported"
+                        Message="Capabilities appear after the agent sends a heartbeat with script host info."
+                        Compact="true" />
         }
         else
         {
@@ -98,7 +100,9 @@ else
         <h2>Heartbeat History</h2>
         @if (m_Heartbeats.Count == 0)
         {
-            <p>No heartbeat records yet.</p>
+            <EmptyState Title="No heartbeat records yet"
+                        Message="Heartbeats appear after the agent connects to the server."
+                        Compact="true" />
         }
         else
         {

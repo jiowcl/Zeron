@@ -27,7 +27,17 @@
 
     @if (m_Deploys.Count == 0)
     {
-        <p class="muted">No package deploy tasks yet. Create one from Deploy Package.</p>
+        <EmptyState Title="No package deploys yet"
+                    Message="Install or uninstall ManagedPackages on selected agents.">
+            <Actions>
+                <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
+                    <Authorized>
+                        <a class="btn" href="/packages/deploy">Deploy Package</a>
+                    </Authorized>
+                </AuthorizeView>
+                <a class="btn btn-secondary" href="/packages/catalog">Open Catalog</a>
+            </Actions>
+        </EmptyState>
     }
     else
     {
@@ -73,7 +83,11 @@
 
     @if (m_InstallEvents.Count == 0)
     {
-        <p class="muted">No install events received yet.</p>
+        <EmptyState Title="No install events yet"
+                    Message="Install results from Demand agents will appear here."
+                    ActionText="View Events"
+                    ActionHref="/events?topic=install."
+                    Compact="true" />
     }
     else
     {

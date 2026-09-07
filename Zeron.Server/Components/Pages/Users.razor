@@ -50,7 +50,8 @@
     <h2>Existing Users</h2>
     @if (m_Rows.Count == 0)
     {
-        <p>No users found.</p>
+        <EmptyState Title="No users found"
+                    Message="Create a dashboard account above to grant access." />
     }
     else
     {

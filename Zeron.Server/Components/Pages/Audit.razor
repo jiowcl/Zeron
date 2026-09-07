@@ -64,7 +64,8 @@
 
     @if (m_PageRows.Count == 0)
     {
-        <p class="muted">No audit records found.</p>
+        <EmptyState Title="No audit records found"
+                    Message="Attributed operations will appear here as catalog, deploy, and binding changes occur." />
     }
     else
     {

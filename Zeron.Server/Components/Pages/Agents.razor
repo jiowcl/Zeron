@@ -21,12 +21,12 @@
 <div class="panel">
     @if (m_Agents.Count == 0)
     {
-            <NotificationBanner Success="false">
-                <p>
-                    No agents registered yet. Start <code>Zeron.Demand</code> and ensure
-                    <code>server_enabled=true</code>. See Docs/agent-connection.md for troubleshooting.
-                </p>
-            </NotificationBanner>
+        <EmptyState Title="No agents registered">
+            <p>
+                Start <code>Zeron.Demand</code> and ensure
+                <code>server_enabled=true</code>. See Docs/agent-connection.md for troubleshooting.
+            </p>
+        </EmptyState>
     }
     else
     {

@@ -53,7 +53,8 @@
 else if (m_Devices.Count == 0)
 {
     <div class="panel">
-        <p class="muted">No Demand agents are bound to your account. Ask an Admin to bind your user on Device Bindings.</p>
+        <EmptyState Title="No devices bound"
+                    Message="No Demand agents are bound to your account. Ask an Admin to bind your user on Device Bindings." />
     </div>
 }
 else
