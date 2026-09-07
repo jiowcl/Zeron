@@ -6,6 +6,10 @@
 @inject TaskScheduleServer TaskScheduleServer
 
 <PageHeader Title="Schedules" Subtitle="Cron-based task schedules that dispatch to agents.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
         <Authorized>
             <a class="btn" href="/schedules/create">Create Schedule</a>

@@ -6,6 +6,10 @@
 @inject TaskDispatcherServer TaskDispatcher
 
 <PageHeader Title="Tasks" Subtitle="Remote commands dispatched to agents.">
+    <LoadingButton CssClass="btn btn-secondary"
+                    Text="Refresh"
+                    IsLoading="@m_IsBusy"
+                    OnClick="ReloadAsync" />
     <AuthorizeView Roles="@($"{ServerRoles.Admin},{ServerRoles.Operator}")">
         <Authorized>
             <a class="btn" href="/tasks/create">Create Task</a>
