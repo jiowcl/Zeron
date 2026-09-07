@@ -1,0 +1,47 @@
+@namespace Zeron.Server.Components.Shared
+
+@if (IsOpen)
+{
+    <div class="modal-backdrop"
+         @onclick="HandleCancelAsync"
+         @onkeydown="OnKeyDown">
+        <div class="modal-panel confirm-dialog"
+             role="alertdialog"
+             aria-modal="true"
+             aria-labelledby="confirm-dialog-title"
+             aria-describedby="confirm-dialog-message"
+             tabindex="-1"
+             @onclick:stopPropagation="true"
+             @ref="m_Panel">
+            <div class="modal-header">
+                <h2 id="confirm-dialog-title">@Title</h2>
+                <button class="btn-link"
+                        type="button"
+                        aria-label="Close"
+                        disabled="@IsBusy"
+                        @onclick="HandleCancelAsync">Close</button>
+            </div>
+            <div class="modal-body">
+                @if (ChildContent != null)
+                {
+                    <div id="confirm-dialog-message">@ChildContent</div>
+                }
+                else if (!string.IsNullOrWhiteSpace(Message))
+                {
+                    <p id="confirm-dialog-message">@Message</p>
+                }
+            </div>
+            <div class="modal-actions actions">
+                <LoadingButton CssClass="btn btn-secondary"
+                                Text="@CancelText"
+                                Disabled="@IsBusy"
+                                OnClick="HandleCancelAsync" />
+                <LoadingButton CssClass="@(IsDanger ? "btn btn-danger" : "btn")"
+                                Text="@ConfirmText"
+                                IsLoading="@IsBusy"
+                                Disabled="@IsBusy"
+                                OnClick="HandleConfirmAsync" />
+            </div>
+        </div>
+    </div>
+}

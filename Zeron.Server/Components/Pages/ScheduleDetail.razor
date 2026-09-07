@@ -39,10 +39,18 @@
             <LoadingButton CssClass="btn btn-danger"
                             Text="Delete"
                             IsLoading="@m_IsBusy"
-                            OnClick="DeleteAsync" />
+                            OnClick="RequestDelete" />
         </Authorized>
     </AuthorizeView>
 </PageHeader>
+
+<ConfirmDialog IsOpen="@m_ShowDeleteConfirm"
+               Title="Delete schedule?"
+               Message="@($"This permanently deletes '{m_Schedule?.Name ?? "this schedule"}'. Scheduled runs will stop.")"
+               ConfirmText="Delete"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDeleteAsync"
+               OnCancel="CloseDeleteConfirm" />
 
 @if (m_Schedule == null)
 {

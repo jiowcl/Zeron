@@ -37,6 +37,9 @@ namespace Zeron.Server.Components.Pages
         // Is busy.
         private bool m_IsBusy;
 
+        // Pending deactivate.
+        private UserEditRowType? m_PendingDeactivate;
+
         /// <summary>
         /// OnInitializedAsync
         /// </summary>
@@ -159,6 +162,42 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// RequestDeactivate
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns>Returns void.</returns>
+        private void RequestDeactivate(
+            UserEditRowType row)
+        {
+            m_PendingDeactivate = row;
+        }
+
+        /// <summary>
+        /// CloseDeactivateConfirm
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void CloseDeactivateConfirm()
+        {
+            m_PendingDeactivate = null;
+        }
+
+        /// <summary>
+        /// ConfirmDeactivateAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmDeactivateAsync()
+        {
+            if (m_PendingDeactivate == null)
+            {
+                return;
+            }
+
+            UserEditRowType row = m_PendingDeactivate;
+            await SetActiveAsync(row, false);
+            m_PendingDeactivate = null;
         }
 
         /// <summary>

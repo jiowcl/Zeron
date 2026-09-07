@@ -17,7 +17,7 @@
         <Authorized>
             @if (m_Agent?.Status != "disabled")
             {
-                <button class="btn btn-danger" @onclick="DisableAgentAsync">Disable Agent</button>
+                <button class="btn btn-danger" @onclick="RequestDisableAgent">Disable Agent</button>
             }
             else
             {
@@ -26,6 +26,14 @@
         </Authorized>
     </AuthorizeView>
 </PageHeader>
+
+<ConfirmDialog IsOpen="@m_ShowDisableConfirm"
+               Title="Disable agent?"
+               Message="@($"Disable '{AgentKey}'? The agent will stop receiving new work until re-enabled.")"
+               ConfirmText="Disable"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDisableAgentAsync"
+               OnCancel="CloseDisableConfirm" />
 
 @if (m_Agent == null)
 {

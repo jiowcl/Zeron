@@ -119,7 +119,7 @@
                                                     Text="Deactivate"
                                                     IsLoading="@m_IsBusy"
                                                     Disabled="@(m_IsBusy || row.Id == m_CurrentUserId)"
-                                                    OnClick="() => SetActiveAsync(row, false)" />
+                                                    OnClick="() => RequestDeactivate(row)" />
                                 }
                                 else
                                 {
@@ -142,3 +142,11 @@
         <NotificationBanner Success="@m_UpdateSucceeded" Message="@m_UpdateMessage" />
     }
 </div>
+
+<ConfirmDialog IsOpen="@(m_PendingDeactivate != null)"
+               Title="Deactivate user?"
+               Message="@($"Deactivate '{m_PendingDeactivate?.Username}'? They will no longer be able to sign in.")"
+               ConfirmText="Deactivate"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDeactivateAsync"
+               OnCancel="CloseDeactivateConfirm" />

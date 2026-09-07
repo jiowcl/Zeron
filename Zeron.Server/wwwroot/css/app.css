@@ -662,6 +662,20 @@ table select:focus-visible {
     margin: 0.35rem 0;
 }
 
+.modal-actions {
+    margin-top: 1.25rem;
+    justify-content: flex-end;
+}
+
+.confirm-dialog .modal-body {
+    color: var(--text);
+}
+
+.confirm-dialog .modal-body p {
+    color: var(--muted);
+    line-height: 1.45;
+}
+
 .about-org,
 .about-author {
     color: var(--text);

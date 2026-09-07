@@ -35,6 +35,9 @@ namespace Zeron.Server.Components.Pages
         // Busy.
         private bool m_IsBusy;
 
+        // Pending unbind.
+        private UserAgentBindingInfoType? m_PendingUnbind;
+
         /// <summary>
         /// OnInitializedAsync
         /// </summary>
@@ -92,6 +95,42 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// RequestUnbind
+        /// </summary>
+        /// <param name="binding"></param>
+        /// <returns>Returns void.</returns>
+        private void RequestUnbind(
+            UserAgentBindingInfoType binding)
+        {
+            m_PendingUnbind = binding;
+        }
+
+        /// <summary>
+        /// CloseUnbindConfirm
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void CloseUnbindConfirm()
+        {
+            m_PendingUnbind = null;
+        }
+
+        /// <summary>
+        /// ConfirmUnbindAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmUnbindAsync()
+        {
+            if (m_PendingUnbind == null)
+            {
+                return;
+            }
+
+            UserAgentBindingInfoType binding = m_PendingUnbind;
+            await UnbindAsync(binding);
+            m_PendingUnbind = null;
         }
 
         /// <summary>

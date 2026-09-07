@@ -165,7 +165,7 @@
                                         <LoadingButton CssClass="btn btn-danger"
                                                         Text="Delete"
                                                         IsLoading="@m_IsBusy"
-                                                        OnClick="() => DeleteAsync(package)" />
+                                                        OnClick="() => RequestDelete(package)" />
                                     </Authorized>
                                 </AuthorizeView>
                             </div>
@@ -333,3 +333,11 @@
         }
     </div>
 }
+
+<ConfirmDialog IsOpen="@(m_PendingDeletePackage != null)"
+               Title="Delete package?"
+               Message="@($"This permanently deletes '{m_PendingDeletePackage?.Name}' from the catalog. Agents keep local overrides.")"
+               ConfirmText="Delete"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDeleteAsync"
+               OnCancel="CloseDeleteConfirm" />

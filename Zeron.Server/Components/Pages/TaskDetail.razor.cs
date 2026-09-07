@@ -25,6 +25,12 @@ namespace Zeron.Server.Components.Pages
         // Task.
         private TaskEntity? m_Task;
 
+        // Cancel confirmation.
+        private bool m_ShowCancelConfirm;
+
+        // Busy.
+        private bool m_IsBusy;
+
         /// <summary>
         /// OnParametersSetAsync
         /// </summary>
@@ -35,14 +41,50 @@ namespace Zeron.Server.Components.Pages
         }
 
         /// <summary>
+        /// RequestCancelTask
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void RequestCancelTask()
+        {
+            m_ShowCancelConfirm = true;
+        }
+
+        /// <summary>
+        /// CloseCancelConfirm
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void CloseCancelConfirm()
+        {
+            m_ShowCancelConfirm = false;
+        }
+
+        /// <summary>
+        /// ConfirmCancelTaskAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmCancelTaskAsync()
+        {
+            await CancelTaskAsync();
+            m_ShowCancelConfirm = false;
+        }
+
+        /// <summary>
         /// CancelTaskAsync
         /// </summary>
         /// <returns>Returns Task.</returns>
         private async Task CancelTaskAsync()
         {
-            await TaskDispatcher.CancelTaskAsync(TaskId);
+            m_IsBusy = true;
 
-            m_Task = await TaskDispatcher.GetTaskAsync(TaskId);
+            try
+            {
+                await TaskDispatcher.CancelTaskAsync(TaskId);
+                m_Task = await TaskDispatcher.GetTaskAsync(TaskId);
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
     }
 }

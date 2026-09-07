@@ -40,6 +40,12 @@ namespace Zeron.Server.Components.Pages
         // Script engines from last heartbeat.
         private List<ScriptEngineInfoType> m_ScriptEngines = [];
 
+        // Disable confirmation.
+        private bool m_ShowDisableConfirm;
+
+        // Busy.
+        private bool m_IsBusy;
+
         /// <summary>
         /// OnParametersSetAsync
         /// </summary>
@@ -77,12 +83,49 @@ namespace Zeron.Server.Components.Pages
         }
 
         /// <summary>
+        /// RequestDisableAgent
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void RequestDisableAgent()
+        {
+            m_ShowDisableConfirm = true;
+        }
+
+        /// <summary>
+        /// CloseDisableConfirm
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void CloseDisableConfirm()
+        {
+            m_ShowDisableConfirm = false;
+        }
+
+        /// <summary>
+        /// ConfirmDisableAgentAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmDisableAgentAsync()
+        {
+            await DisableAgentAsync();
+            m_ShowDisableConfirm = false;
+        }
+
+        /// <summary>
         /// DisableAgentAsync
         /// </summary>
         /// <returns>Returns Task.</returns>
         private async Task DisableAgentAsync()
         {
-            m_Agent = await AgentManager.UpdateAgentAsync(AgentKey, new AgentUpdateRequestType { Status = "disabled" });
+            m_IsBusy = true;
+
+            try
+            {
+                m_Agent = await AgentManager.UpdateAgentAsync(AgentKey, new AgentUpdateRequestType { Status = "disabled" });
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
 
         /// <summary>

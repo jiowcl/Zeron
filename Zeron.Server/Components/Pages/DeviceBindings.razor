@@ -80,7 +80,7 @@
                             <LoadingButton CssClass="btn btn-danger"
                                             Text="Unbind"
                                             IsLoading="@m_IsBusy"
-                                            OnClick="() => UnbindAsync(binding)" />
+                                            OnClick="() => RequestUnbind(binding)" />
                         </td>
                     </tr>
                 }
@@ -88,3 +88,11 @@
         </table>
     }
 </div>
+
+<ConfirmDialog IsOpen="@(m_PendingUnbind != null)"
+               Title="Remove binding?"
+               Message="@($"Unbind '{m_PendingUnbind?.Username}' from agent '{m_PendingUnbind?.AgentKey}'? The user will lose self-service access to that device.")"
+               ConfirmText="Unbind"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmUnbindAsync"
+               OnCancel="CloseUnbindConfirm" />
