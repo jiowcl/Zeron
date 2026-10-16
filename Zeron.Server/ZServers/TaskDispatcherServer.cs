@@ -62,10 +62,15 @@ namespace Zeron.Server.ZServers
             TaskCreateRequestType request, 
             CancellationToken cancellationToken = default)
         {
-            List<AgentEntity> targetAgents = await ResolveTargetAgentsAsync(request, cancellationToken);
-            targetAgents = await ApplyAgentScopeAsync(targetAgents, cancellationToken);
+            List<AgentEntity> resolvedAgents = await ResolveTargetAgentsAsync(request, cancellationToken);
+            IReadOnlySet<string>? allowedAgents = await ResolveAllowedAgentKeysAsync(cancellationToken);
+            List<AgentEntity> targetAgents = allowedAgents == null
+                ? resolvedAgents
+                : resolvedAgents.Where(agent => allowedAgents.Contains(agent.AgentKey)).ToList();
 
-            if (targetAgents.Count == 0)
+            // Only fail when an active scope filter removed every candidate.
+            // Unscoped callers may still create tasks with zero assignments (no online agents).
+            if (allowedAgents != null && targetAgents.Count == 0)
             {
                 throw new UnauthorizedAccessException(
                     "No target agents are allowed for the current user scope.");
