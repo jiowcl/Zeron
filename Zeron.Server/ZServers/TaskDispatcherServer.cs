@@ -1,11 +1,14 @@
 // Zeron - Scheduled Task Application for Windows OS
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Security.Claims;
 using System.Text.Json;
 using Zeron.Server.Data;
 using Zeron.Server.Data.Entities;
+using Zeron.Server.ZInterfaces;
 using Zeron.ZCore;
 using Zeron.ZCore.Type;
 using Zeron.ZCore.Utils;
@@ -23,18 +26,30 @@ namespace Zeron.Server.ZServers
         // CommandPublisher 
         private readonly CommandPublisherServer m_CommandPublisher;
 
+        // Optional enterprise agent scope filter
+        private readonly IAgentAccessScopeFilter? m_ScopeFilter;
+
+        // HTTP context accessor for caller principal
+        private readonly IHttpContextAccessor? m_HttpContextAccessor;
+
         /// <summary>
         /// TaskDispatcherServer
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="commandPublisher"></param>
+        /// <param name="scopeFilter"></param>
+        /// <param name="httpContextAccessor"></param>
         /// <returns>Returns void.</returns>
         public TaskDispatcherServer(
             ZeronServerDbContext dbContext, 
-            CommandPublisherServer commandPublisher)
+            CommandPublisherServer commandPublisher,
+            IAgentAccessScopeFilter? scopeFilter = null,
+            IHttpContextAccessor? httpContextAccessor = null)
         {
             m_DbContext = dbContext;
             m_CommandPublisher = commandPublisher;
+            m_ScopeFilter = scopeFilter;
+            m_HttpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -48,6 +63,13 @@ namespace Zeron.Server.ZServers
             CancellationToken cancellationToken = default)
         {
             List<AgentEntity> targetAgents = await ResolveTargetAgentsAsync(request, cancellationToken);
+            targetAgents = await ApplyAgentScopeAsync(targetAgents, cancellationToken);
+
+            if (targetAgents.Count == 0)
+            {
+                throw new UnauthorizedAccessException(
+                    "No target agents are allowed for the current user scope.");
+            }
 
             TaskEntity task = new()
             {
@@ -308,10 +330,20 @@ namespace Zeron.Server.ZServers
         public async Task<List<TaskEntity>> GetTasksAsync(
             CancellationToken cancellationToken = default)
         {
-            return await m_DbContext.Tasks
+            List<TaskEntity> tasks = await m_DbContext.Tasks
                 .Include(task => task.Assignments)
+                .ThenInclude(assignment => assignment.Agent)
                 .OrderByDescending(task => task.CreatedAt)
                 .ToListAsync(cancellationToken);
+
+            IReadOnlySet<string>? allowed = await ResolveAllowedAgentKeysAsync(cancellationToken);
+
+            if (allowed == null)
+            {
+                return tasks;
+            }
+
+            return tasks.Where(task => TaskTouchesAllowedAgents(task, allowed)).ToList();
         }
 
         /// <summary>
@@ -324,10 +356,26 @@ namespace Zeron.Server.ZServers
             Guid taskId, 
             CancellationToken cancellationToken = default)
         {
-            return await m_DbContext.Tasks
+            TaskEntity? task = await m_DbContext.Tasks
                 .Include(task => task.Assignments)
                 .ThenInclude(assignment => assignment.Result)
+                .Include(task => task.Assignments)
+                .ThenInclude(assignment => assignment.Agent)
                 .FirstOrDefaultAsync(task => task.Id == taskId, cancellationToken);
+
+            if (task == null)
+            {
+                return null;
+            }
+
+            IReadOnlySet<string>? allowed = await ResolveAllowedAgentKeysAsync(cancellationToken);
+
+            if (allowed != null && !TaskTouchesAllowedAgents(task, allowed))
+            {
+                return null;
+            }
+
+            return task;
         }
 
         /// <summary>
@@ -401,6 +449,72 @@ namespace Zeron.Server.ZServers
             }
 
             return await query.ToListAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Applies the caller's agent allow-list to target agents.
+        /// </summary>
+        /// <param name="agents"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Filtered agents.</returns>
+        private async Task<List<AgentEntity>> ApplyAgentScopeAsync(
+            List<AgentEntity> agents,
+            CancellationToken cancellationToken)
+        {
+            IReadOnlySet<string>? allowed = await ResolveAllowedAgentKeysAsync(cancellationToken);
+
+            if (allowed == null)
+            {
+                return agents;
+            }
+
+            return agents.Where(agent => allowed.Contains(agent.AgentKey)).ToList();
+        }
+
+        /// <summary>
+        /// Resolves the caller's agent allow-list when a scope filter is registered.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Allow-list or null when unrestricted.</returns>
+        private async Task<IReadOnlySet<string>?> ResolveAllowedAgentKeysAsync(
+            CancellationToken cancellationToken)
+        {
+            if (m_ScopeFilter == null)
+            {
+                return null;
+            }
+
+            ClaimsPrincipal? user = m_HttpContextAccessor?.HttpContext?.User;
+
+            return await m_ScopeFilter.GetAllowedAgentKeysAsync(user, cancellationToken);
+        }
+
+        /// <summary>
+        /// Returns whether the task has at least one assignment on an allowed agent.
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="allowed"></param>
+        /// <returns>True when visible.</returns>
+        private static bool TaskTouchesAllowedAgents(
+            TaskEntity task,
+            IReadOnlySet<string> allowed)
+        {
+            if (task.Assignments == null || task.Assignments.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (TaskAssignmentEntity assignment in task.Assignments)
+            {
+                string? key = assignment.Agent?.AgentKey;
+
+                if (!string.IsNullOrWhiteSpace(key) && allowed.Contains(key))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
