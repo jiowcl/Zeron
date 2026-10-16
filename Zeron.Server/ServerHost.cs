@@ -31,9 +31,13 @@ namespace Zeron.Server
         /// BuildApplication
         /// </summary>
         /// <param name="args"></param>
+        /// <param name="configureBuilder">Optional hook for editions (e.g. ZeronOpsPro) to register services before Build.</param>
+        /// <param name="configureApp">Optional hook to map additional endpoints/middleware after core API maps.</param>
         /// <returns>Returns WebApplication.</returns>
         public static WebApplication BuildApplication(
-            string[] args)
+            string[] args,
+            Action<WebApplicationBuilder>? configureBuilder = null,
+            Action<WebApplication>? configureApp = null)
         {
             WebApplicationOptions options = new()
             {
@@ -161,6 +165,8 @@ namespace Zeron.Server
 
             builder.Services.AddSignalR();
 
+            configureBuilder?.Invoke(builder);
+
             WebApplication app = builder.Build();
 
             using (IServiceScope scope = app.Services.CreateScope())
@@ -226,6 +232,8 @@ namespace Zeron.Server
             app.MapDevicePortalEndpoints();
             app.MapAuditEndpoints();
             app.MapHub<DashboardHub>("/hubs/dashboard");
+
+            configureApp?.Invoke(app);
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
