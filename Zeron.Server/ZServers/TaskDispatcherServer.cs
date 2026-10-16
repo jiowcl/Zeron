@@ -395,9 +395,17 @@ namespace Zeron.Server.ZServers
         {
             TaskEntity? task = await m_DbContext.Tasks
                 .Include(item => item.Assignments)
+                .ThenInclude(assignment => assignment.Agent)
                 .FirstOrDefaultAsync(item => item.Id == taskId, cancellationToken);
 
             if (task == null)
+            {
+                return false;
+            }
+
+            IReadOnlySet<string>? allowed = await ResolveAllowedAgentKeysAsync(cancellationToken);
+
+            if (allowed != null && !TaskTouchesAllowedAgents(task, allowed))
             {
                 return false;
             }
