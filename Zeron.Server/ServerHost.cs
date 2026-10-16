@@ -32,12 +32,14 @@ namespace Zeron.Server
         /// </summary>
         /// <param name="args"></param>
         /// <param name="configureBuilder">Optional hook for editions (e.g. ZeronOpsPro) to register services before Build.</param>
-        /// <param name="configureApp">Optional hook to map additional endpoints/middleware after core API maps.</param>
+        /// <param name="configureMiddleware">Optional hook after authentication/authorization (before endpoint maps).</param>
+        /// <param name="configureApp">Optional hook to map additional endpoints after core API maps.</param>
         /// <returns>Returns WebApplication.</returns>
         public static WebApplication BuildApplication(
             string[] args,
             Action<WebApplicationBuilder>? configureBuilder = null,
-            Action<WebApplication>? configureApp = null)
+            Action<WebApplication>? configureApp = null,
+            Action<WebApplication>? configureMiddleware = null)
         {
             WebApplicationOptions options = new()
             {
@@ -209,6 +211,7 @@ namespace Zeron.Server
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
+            configureMiddleware?.Invoke(app);
             app.UseMiddleware<MustChangePasswordMiddleware>();
             app.UseAntiforgery();
 
