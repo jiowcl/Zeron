@@ -34,12 +34,16 @@ namespace Zeron.Server
         /// <param name="configureBuilder">Optional hook for editions (e.g. ZeronOpsPro) to register services before Build.</param>
         /// <param name="configureMiddleware">Optional hook after authentication/authorization (before endpoint maps).</param>
         /// <param name="configureApp">Optional hook to map additional endpoints after core API maps.</param>
+        /// <param name="configureDbContext">Optional hook to replace default SQLite DbContext registration (enterprise providers).</param>
+        /// <param name="initializeDatabase">Optional hook to replace default EF MigrateAsync (e.g. EnsureCreated for Firebird).</param>
         /// <returns>Returns WebApplication.</returns>
         public static WebApplication BuildApplication(
             string[] args,
             Action<WebApplicationBuilder>? configureBuilder = null,
             Action<WebApplication>? configureApp = null,
-            Action<WebApplication>? configureMiddleware = null)
+            Action<WebApplication>? configureMiddleware = null,
+            Action<WebApplicationBuilder, DbContextOptionsBuilder>? configureDbContext = null,
+            Action<IServiceProvider, ZeronServerDbContext>? initializeDatabase = null)
         {
             WebApplicationOptions options = new()
             {
@@ -79,7 +83,17 @@ namespace Zeron.Server
             {
                 options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
-            builder.Services.AddDbContext<ZeronServerDbContext>(options => options.UseSqlite("Data Source=" + dbPath));
+            builder.Services.AddDbContext<ZeronServerDbContext>(options =>
+            {
+                if (configureDbContext != null)
+                {
+                    configureDbContext(builder, options);
+                }
+                else
+                {
+                    options.UseSqlite("Data Source=" + dbPath);
+                }
+            });
             builder.Services.AddSingleton<JwtTokenServer>();
             builder.Services.AddScoped<AuthServer>();
             builder.Services.AddScoped<UserManagerServer>();
@@ -174,7 +188,15 @@ namespace Zeron.Server
             using (IServiceScope scope = app.Services.CreateScope())
             {
                 ZeronServerDbContext dbContext = scope.ServiceProvider.GetRequiredService<ZeronServerDbContext>();
-                DatabaseMigrationServer.MigrateAsync(dbContext).GetAwaiter().GetResult();
+
+                if (initializeDatabase != null)
+                {
+                    initializeDatabase(scope.ServiceProvider, dbContext);
+                }
+                else
+                {
+                    DatabaseMigrationServer.MigrateAsync(dbContext).GetAwaiter().GetResult();
+                }
 
                 AuthServer authServer = scope.ServiceProvider.GetRequiredService<AuthServer>();
                 authServer.SeedDefaultUserAsync().GetAwaiter().GetResult();
