@@ -34,6 +34,11 @@ namespace Zeron.ZCore
         public const string TaskCompleted = "task.completed";
 
         /// <summary>
+        /// AssignmentCompleted - a single task assignment reached completed or failed.
+        /// </summary>
+        public const string AssignmentCompleted = "assignment.completed";
+
+        /// <summary>
         /// EventIngested
         /// </summary>
         public const string EventIngested = "event.ingested";

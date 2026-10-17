@@ -211,7 +211,10 @@ namespace Zeron.Server.ZServers
             if (assignment.Task != null && assignment.Task.Status != "cancelled")
             {
                 assignment.Task.Status = "failed";
+                PublishTaskCompleted(assignment.Task);
             }
+
+            PublishAssignmentCompleted(assignment);
 
             ZNLogger.Common.Warn(string.Format(CultureInfo.InvariantCulture,
                 "TaskDispatcherServer failed assignment {0}: {1}", assignment.Id, errorMessage));
@@ -234,6 +237,7 @@ namespace Zeron.Server.ZServers
 
             TaskAssignmentEntity? assignment = await m_DbContext.TaskAssignments
                 .Include(item => item.Task)
+                .Include(item => item.Agent)
                 .Include(item => item.Result)
                 .FirstOrDefaultAsync(item => item.Id == assignmentId, cancellationToken);
 
@@ -284,6 +288,8 @@ namespace Zeron.Server.ZServers
                 assignment.Result.ErrorMessage = report.ErrorMessage;
                 assignment.Result.CompletedAt = DateTime.UtcNow;
             }
+
+            PublishAssignmentCompleted(assignment);
 
             if (assignment.Task != null && assignment.Task.Status != "cancelled")
             {
@@ -549,9 +555,7 @@ namespace Zeron.Server.ZServers
             }
 
             DateTime completedAt = DateTime.UtcNow;
-            DateTime createdAt = task.CreatedAt.Kind == DateTimeKind.Unspecified
-                ? DateTime.SpecifyKind(task.CreatedAt, DateTimeKind.Utc)
-                : task.CreatedAt.ToUniversalTime();
+            DateTime createdAt = ToUtc(task.CreatedAt);
             double durationMs = Math.Max(0, (completedAt - createdAt).TotalMilliseconds);
 
             ZeronEventBus.PublishObject(
@@ -567,6 +571,58 @@ namespace Zeron.Server.ZServers
                 },
                 source: "server",
                 correlationId: task.Id.ToString("N"));
+        }
+
+        /// <summary>
+        /// Publishes assignment.completed for per-agent duration metrics.
+        /// </summary>
+        /// <param name="assignment">Terminal assignment.</param>
+        /// <returns>Returns void.</returns>
+        private static void PublishAssignmentCompleted(
+            TaskAssignmentEntity assignment)
+        {
+            if (assignment.Status is not ("completed" or "failed"))
+            {
+                return;
+            }
+
+            DateTime completedAt = assignment.CompletedAt == null || assignment.CompletedAt == default
+                ? DateTime.UtcNow
+                : ToUtc(assignment.CompletedAt.Value);
+            DateTime assignedAt = ToUtc(assignment.AssignedAt);
+            double durationMs = Math.Max(0, (completedAt - assignedAt).TotalMilliseconds);
+
+            ZeronEventBus.PublishObject(
+                ZeronEventTopics.AssignmentCompleted,
+                new AssignmentCompletedInfoType
+                {
+                    AssignmentId = assignment.Id,
+                    TaskId = assignment.TaskId,
+                    AgentKey = assignment.Agent?.AgentKey,
+                    TargetApi = assignment.Task?.TargetApi,
+                    Status = assignment.Status,
+                    AssignedAt = assignedAt,
+                    CompletedAt = completedAt,
+                    DurationMs = durationMs
+                },
+                source: "server",
+                correlationId: assignment.Id.ToString("N"));
+        }
+
+        /// <summary>
+        /// Normalizes a DateTime to UTC.
+        /// </summary>
+        /// <param name="value">Input time.</param>
+        /// <returns>UTC DateTime.</returns>
+        private static DateTime ToUtc(
+            DateTime value)
+        {
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
         }
     }
 }
