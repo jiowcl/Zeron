@@ -11,6 +11,7 @@ using Zeron.Server.Data.Entities;
 using Zeron.Server.ZInterfaces;
 using Zeron.ZCore;
 using Zeron.ZCore.Type;
+using Zeron.ZCore.Utils;
 
 namespace Zeron.Server.ZServers
 {
@@ -127,7 +128,14 @@ namespace Zeron.Server.ZServers
                 targetType ?? "-",
                 targetKey ?? "-"));
 
-            return ToInfo(entity);
+            AuditLogInfoType info = ToInfo(entity);
+            ZeronEventBus.PublishObject(
+                ZeronEventTopics.AuditWritten,
+                info,
+                source: "server",
+                correlationId: entity.Id.ToString("N"));
+
+            return info;
         }
 
         /// <summary>

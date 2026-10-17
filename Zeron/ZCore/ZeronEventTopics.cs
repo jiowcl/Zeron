@@ -92,5 +92,10 @@ namespace Zeron.ZCore
         /// GateCancelled
         /// </summary>
         public const string GateCancelled = "gate.cancelled";
+
+        /// <summary>
+        /// AuditWritten - after a central audit row is persisted (editions / SIEM).
+        /// </summary>
+        public const string AuditWritten = "audit.written";
     }
 }
