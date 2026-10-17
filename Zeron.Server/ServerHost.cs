@@ -180,6 +180,7 @@ namespace Zeron.Server
             }
 
             builder.Services.AddSignalR();
+            builder.Services.AddSingleton<IRazorComponentAssemblyProvider, EmptyRazorComponentAssemblyProvider>();
 
             configureBuilder?.Invoke(builder);
 
@@ -260,8 +261,19 @@ namespace Zeron.Server
 
             configureApp?.Invoke(app);
 
-            app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
+            System.Reflection.Assembly[] extraAssemblies = app.Services
+                .GetRequiredService<IRazorComponentAssemblyProvider>()
+                .GetAdditionalAssemblies()
+                .ToArray();
+
+            Microsoft.AspNetCore.Builder.RazorComponentsEndpointConventionBuilder razorEndpoints =
+                app.MapRazorComponents<App>()
+                    .AddInteractiveServerRenderMode();
+
+            if (extraAssemblies.Length > 0)
+            {
+                razorEndpoints.AddAdditionalAssemblies(extraAssemblies);
+            }
 
             return app;
         }
