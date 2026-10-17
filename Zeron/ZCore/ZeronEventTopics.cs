@@ -29,6 +29,11 @@ namespace Zeron.ZCore
         public const string TaskDispatched = "task.dispatched";
 
         /// <summary>
+        /// TaskCompleted - central task reached completed or failed (all assignments terminal).
+        /// </summary>
+        public const string TaskCompleted = "task.completed";
+
+        /// <summary>
         /// EventIngested
         /// </summary>
         public const string EventIngested = "event.ingested";

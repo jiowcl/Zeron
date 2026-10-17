@@ -296,6 +296,11 @@ namespace Zeron.Server.ZServers
                         && item.Status != "cancelled", cancellationToken);
 
                 assignment.Task.Status = anyPending ? "running" : (report.Success ? "completed" : "failed");
+
+                if (!anyPending)
+                {
+                    PublishTaskCompleted(assignment.Task);
+                }
             }
 
             await m_DbContext.SaveChangesAsync(cancellationToken);
@@ -528,6 +533,40 @@ namespace Zeron.Server.ZServers
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Publishes task.completed for observability consumers (editions / OTel).
+        /// </summary>
+        /// <param name="task">Terminal central task.</param>
+        /// <returns>Returns void.</returns>
+        private static void PublishTaskCompleted(
+            TaskEntity task)
+        {
+            if (task.Status is not ("completed" or "failed"))
+            {
+                return;
+            }
+
+            DateTime completedAt = DateTime.UtcNow;
+            DateTime createdAt = task.CreatedAt.Kind == DateTimeKind.Unspecified
+                ? DateTime.SpecifyKind(task.CreatedAt, DateTimeKind.Utc)
+                : task.CreatedAt.ToUniversalTime();
+            double durationMs = Math.Max(0, (completedAt - createdAt).TotalMilliseconds);
+
+            ZeronEventBus.PublishObject(
+                ZeronEventTopics.TaskCompleted,
+                new TaskCompletedInfoType
+                {
+                    TaskId = task.Id,
+                    TargetApi = task.TargetApi,
+                    Status = task.Status,
+                    CreatedAt = createdAt,
+                    CompletedAt = completedAt,
+                    DurationMs = durationMs
+                },
+                source: "server",
+                correlationId: task.Id.ToString("N"));
         }
     }
 }
