@@ -16,6 +16,16 @@ namespace Zeron.Demand
     public static class DemandBoot
     {
         /// <summary>
+        /// Optional hook invoked immediately before <see cref="ZeronGateBootstrapServer"/> is forked
+        /// (e.g. register plugin load policy before agent plugins initialize).
+        /// </summary>
+        public static Action? BeforeGateBootstrap
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Registers standard Zeron.Demand servers via <see cref="ServerIntegrate"/>.
         /// </summary>
         /// <returns>True when registration succeeded.</returns>
@@ -32,6 +42,7 @@ namespace Zeron.Demand
                 ServerIntegrate.Fork<ApplicationServer>();
                 ServerIntegrate.Fork<DeployServer>();
                 ServerIntegrate.Fork<ScriptHostBootstrapServer>();
+                BeforeGateBootstrap?.Invoke();
                 ServerIntegrate.Fork<ZeronGateBootstrapServer>();
                 ServerIntegrate.Fork<ScriptEventBridgeServer>();
                 ServerIntegrate.Fork<InstallServer>();
