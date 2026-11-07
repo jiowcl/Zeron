@@ -5,6 +5,7 @@ using System.Globalization;
 using System.ServiceProcess;
 using System.Text.Json;
 using Zeron.Demand.ZCore;
+using Zeron.Demand.ZCore.Enum;
 using Zeron.ZAttribute;
 using Zeron.ZCore;
 using Zeron.ZInterfaces;
@@ -220,15 +221,5 @@ namespace Zeron.Demand.ZServices
         public string OnNotifySubscriber(
             dynamic aJson, 
             string processedMsg) => "";
-
-        /// <summary>
-        /// ServiceAction
-        /// </summary>
-        /// <returns>Returns void.</returns>
-        private enum ServiceAction
-        {
-            Start,
-            Stop
-        }
     }
 }

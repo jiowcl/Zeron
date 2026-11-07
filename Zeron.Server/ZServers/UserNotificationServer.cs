@@ -186,6 +186,8 @@ namespace Zeron.Server.ZServers
         /// <summary>
         /// ToInfo
         /// </summary>
+        /// <param name="entity"></param>
+        /// <returns>Returns UserNotificationInfoType.</returns>
         private static UserNotificationInfoType ToInfo(
             UserNotificationEntity entity)
         {

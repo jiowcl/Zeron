@@ -115,6 +115,8 @@ namespace Zeron.ZCore.Utils.Engines
         /// <summary>
         /// ParsePlatforms
         /// </summary>
+        /// <param name="raw"></param>
+        /// <returns>Returns IReadOnlyList<string>.</returns>
         private static IReadOnlyList<string> ParsePlatforms(
             string? raw)
         {
@@ -135,6 +137,8 @@ namespace Zeron.ZCore.Utils.Engines
         /// <summary>
         /// ParseInlineMode
         /// </summary>
+        /// <param name="raw"></param>
+        /// <returns>Returns ExternalScriptInlineModeType.</returns>
         private static ExternalScriptInlineModeType ParseInlineMode(
             string? raw)
         {

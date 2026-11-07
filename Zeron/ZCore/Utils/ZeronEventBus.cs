@@ -4,6 +4,7 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text.Json;
+using Zeron.ZCore.Common;
 using Zeron.ZCore.Type;
 using Zeron.ZInterfaces;
 
@@ -18,7 +19,7 @@ namespace Zeron.ZCore.Utils
         private static readonly ZeronEventBus s_Instance = new();
 
         // Subscriptions.
-        private readonly ConcurrentDictionary<Guid, Subscription> m_Subscriptions = new();
+        private readonly ConcurrentDictionary<Guid, EventBusSubscription> m_Subscriptions = new();
 
         /// <summary>
         /// Current
@@ -38,7 +39,7 @@ namespace Zeron.ZCore.Utils
             ArgumentNullException.ThrowIfNull(handler);
 
             Guid id = Guid.NewGuid();
-            Subscription subscription = new(id, NormalizeFilter(topicFilter), handler, this);
+            EventBusSubscription subscription = new(id, NormalizeFilter(topicFilter), handler, this);
             m_Subscriptions[id] = subscription;
 
             return subscription;
@@ -66,7 +67,7 @@ namespace Zeron.ZCore.Utils
                 zeronEvent.TimestampUtc = DateTime.UtcNow;
             }
 
-            foreach (Subscription subscription in m_Subscriptions.Values)
+            foreach (EventBusSubscription subscription in m_Subscriptions.Values)
             {
                 if (!Matches(subscription.TopicFilter, zeronEvent.Topic))
                 {
@@ -144,7 +145,7 @@ namespace Zeron.ZCore.Utils
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Returns void.</returns>
-        private void Unsubscribe(
+        public void Unsubscribe(
             Guid id)
         {
             m_Subscriptions.TryRemove(id, out _);
@@ -184,72 +185,6 @@ namespace Zeron.ZCore.Utils
             }
 
             return string.Equals(filter, topic, StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Subscription
-        /// </summary>
-        private sealed class Subscription : IDisposable
-        {
-            // Bus instance.
-            private readonly ZeronEventBus m_Bus;
-
-            // Subscription ID.
-            private readonly Guid m_Id;
-
-            // Disposed flag.
-            private bool m_Disposed;
-
-            /// <summary>
-            /// Subscription
-            /// </summary>
-            /// <param name="id"></param>
-            /// <param name="topicFilter"></param>
-            /// <param name="handler"></param>
-            /// <param name="bus"></param>
-            /// <returns>Returns void.</returns>
-            public Subscription(
-                Guid id,
-                string topicFilter,
-                Action<ZeronEventType> handler,
-                ZeronEventBus bus)
-            {
-                m_Id = id;
-                TopicFilter = topicFilter;
-                Handler = handler;
-                m_Bus = bus;
-            }
-
-            /// <summary>
-            /// TopicFilter
-            /// </summary>
-            public string TopicFilter
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Handler
-            /// </summary>
-            public Action<ZeronEventType> Handler
-            {
-                get;
-            }
-
-            /// <summary>
-            /// Dispose
-            /// </summary>
-            /// <returns>Returns void.</returns>
-            public void Dispose()
-            {
-                if (m_Disposed)
-                {
-                    return;
-                }
-
-                m_Disposed = true;
-                m_Bus.Unsubscribe(m_Id);
-            }
         }
     }
 }

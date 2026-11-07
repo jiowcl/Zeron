@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using System.Text.Json;
+using Zeron.ZCore.Common;
 using Zeron.ZCore.Type;
 
 namespace Zeron.ZCore
@@ -73,23 +74,6 @@ namespace Zeron.ZCore
             return tasks.FirstOrDefault(task =>
                 task.Name != null
                 && task.Name.Equals(taskName, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
-        /// TaskPipelineDocument
-        /// </summary>
-        /// <returns>Returns list of SchedulerTaskDefinition.</returns>
-        private sealed class TaskPipelineDocument
-        {
-            /// <summary>
-            /// Tasks
-            /// </summary>
-            /// <returns>Returns list of SchedulerTaskDefinition.</returns>
-            public List<SchedulerTaskDefinitionType>? Tasks
-            {
-                get;
-                set;
-            }
         }
     }
 }

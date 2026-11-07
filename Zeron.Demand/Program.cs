@@ -16,7 +16,8 @@ namespace Zeron.Demand
         /// </summary>
         /// <param name="args"></param>
         /// <returns>Returns void.</returns>
-        public static void Main(string[] args)
+        public static void Main(
+            string[] args)
         {
             LogManager.Setup().LoadConfigurationFromFile("NLog.config");
 

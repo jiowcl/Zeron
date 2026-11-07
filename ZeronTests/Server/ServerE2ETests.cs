@@ -246,7 +246,7 @@ namespace Zeron.Server.Tests
                 Assert.IsNotNull(deploy);
                 Assert.IsTrue(deploy!.Success);
 
-                deployTaskId = deploy.TaskId.ToString();
+                deployTaskId = deploy.TaskId.ToString() ?? string.Empty;
             }
             catch
             {

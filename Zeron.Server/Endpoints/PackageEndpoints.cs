@@ -18,7 +18,8 @@ namespace Zeron.Server.Endpoints
         /// </summary>
         /// <param name="app"></param>
         /// <returns>Returns WebApplication.</returns>
-        public static WebApplication MapPackageEndpoints(this WebApplication app)
+        public static WebApplication MapPackageEndpoints(
+            this WebApplication app)
         {
             app.MapGet("/api/packages/catalog", async (
                 bool? enabledOnly,
