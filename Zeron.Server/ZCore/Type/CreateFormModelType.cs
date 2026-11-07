@@ -9,16 +9,24 @@ namespace Zeron.Server.ZCore.Type
     /// <returns>Returns void.</returns>
     public sealed class CreateFormModelType
     {
-        // Username.
+        /// <summary>
+        /// Username
+        /// </summary>
         public string Username { get; set; } = "";
 
-        // Password.
+        /// <summary>
+        /// Password
+        /// </summary>
         public string Password { get; set; } = "";
 
-        // Email.
+        /// <summary>
+        /// Email
+        /// </summary>
         public string Email { get; set; } = "";
 
-        // Role.
+        /// <summary>
+        /// Role
+        /// </summary>
         public string Role { get; set; } = ServerRoles.Viewer;
     }
 }
