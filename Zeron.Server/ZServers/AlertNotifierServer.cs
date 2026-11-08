@@ -71,9 +71,9 @@ namespace Zeron.Server.ZServers
                 UserName = m_Settings.SmtpUser,
                 Password = m_Settings.SmtpPassword,
                 FromAddress = string.IsNullOrWhiteSpace(m_Settings.SmtpFrom)
-                    ? "zeron@localhost"
+                    ? AppEnums.SmtpFromAddress
                     : m_Settings.SmtpFrom,
-                FromDisplayName = "Zeron"
+                FromDisplayName = AppEnums.SmtpFromDisplayName
             };
 
             if (!SmtpMailServer.HasConnection(options)

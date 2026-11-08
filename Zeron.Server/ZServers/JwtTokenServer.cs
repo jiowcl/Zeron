@@ -62,7 +62,7 @@ namespace Zeron.Server.ZServers
         public static ClaimsPrincipal CreateClaimsPrincipal(
             UserEntity user)
         {
-            ClaimsIdentity identity = new(CreateClaims(user), "ZeronCookie");
+            ClaimsIdentity identity = new(CreateClaims(user), AppEnums.HttpCookieName);
 
             return new ClaimsPrincipal(identity);
         }

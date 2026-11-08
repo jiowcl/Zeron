@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Zeron.Server.ZCore;
 
 namespace Zeron.Server.Data
 {
@@ -20,7 +21,7 @@ namespace Zeron.Server.Data
             string[] args)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()
-                .UseSqlite("Data Source=Data/zeron-server.db")
+                .UseSqlite("Data Source=Data/" + AppEnums.DbFileName)
                 .Options;
 
             return new ZeronServerDbContext(options);

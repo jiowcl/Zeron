@@ -3,6 +3,7 @@
 
 using System.Collections.Specialized;
 using System.Globalization;
+using Zeron.Demand.ZCore;
 using Zeron.Demand.ZServers.Impls;
 using Zeron.ZCore;
 using Zeron.ZCore.Container;
@@ -73,7 +74,7 @@ namespace Zeron.Demand.ZServers
             try
             {
                 Enabled = bool.Parse(aConfig["audit_enabled"] ?? "true");
-                DbSourceFile = aConfig["audit_db_source_file"] ?? "Resource/audit.db";
+                DbSourceFile = aConfig["audit_db_source_file"] ?? "Resource/" + AppEnums.DbAuditFileName;
             }
             catch (Exception e)
             {
