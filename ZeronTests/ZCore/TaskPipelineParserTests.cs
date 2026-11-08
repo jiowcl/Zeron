@@ -5,9 +5,15 @@ using Zeron.ZCore.Type;
 
 namespace Zeron.ZCore.Tests
 {
+    /// <summary>
+    /// TaskPipelineParserTests
+    /// </summary>
     [TestClass()]
     public class TaskPipelineParserTests
     {
+        /// <summary>
+        /// ParseJsonReturnsTasks test.
+        /// </summary>
         [TestMethod()]
         public void ParseJsonReturnsTasksTest()
         {
@@ -34,6 +40,9 @@ namespace Zeron.ZCore.Tests
             Assert.AreEqual(2, tasks[0].Steps?.Count);
         }
 
+        /// <summary>
+        /// ParseJsonScriptStepWithEngine test.
+        /// </summary>
         [TestMethod()]
         public void ParseJsonScriptStepWithEngineTest()
         {
@@ -63,6 +72,9 @@ namespace Zeron.ZCore.Tests
             Assert.AreEqual("Write-Output ok", step.Script);
         }
 
+        /// <summary>
+        /// FindTaskByName test.
+        /// </summary>
         [TestMethod()]
         public void FindTaskByNameTest()
         {

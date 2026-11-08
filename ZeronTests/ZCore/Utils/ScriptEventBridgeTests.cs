@@ -1,20 +1,26 @@
 // Zeron - Scheduled Task Application for Windows OS
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
-using Zeron.ZCore;
-using Zeron.ZCore.Type;
-
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// ScriptEventBridgeTests
+    /// </summary>
     [TestClass()]
     public class ScriptEventBridgeTests
     {
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
             ZeronEventBus.Current.Clear();
         }
 
+        /// <summary>
+        /// ProcessControlLineRejectsGateAndSyncCommandsTest test.
+        /// </summary>
         [TestMethod()]
         public void ProcessControlLineRejectsGateAndSyncCommandsTest()
         {
@@ -32,6 +38,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(pauseSync!.Contains("not_allowed", StringComparison.Ordinal));
         }
 
+        /// <summary>
+        /// PauseSelfQueuesEventsUntilResumeTest test.
+        /// </summary>
         [TestMethod()]
         public void PauseSelfQueuesEventsUntilResumeTest()
         {
@@ -53,6 +62,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(bridge.QueuedCount >= 2);
         }
 
+        /// <summary>
+        /// AckDoesNotPauseTest test.
+        /// </summary>
         [TestMethod()]
         public void AckDoesNotPauseTest()
         {

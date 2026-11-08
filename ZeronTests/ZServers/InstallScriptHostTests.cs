@@ -6,15 +6,20 @@ using Zeron.ZCore;
 using Zeron.ZCore.Type;
 using Zeron.ZCore.Utils;
 using Zeron.ZInterfaces;
-using Zeron.ZServers;
 
 namespace Zeron.ZServers.Tests
 {
+    /// <summary>
+    /// InstallScriptHostTests
+    /// </summary>
     [TestClass()]
     public class InstallScriptHostTests
     {
         private InstallServer? m_Install;
 
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
@@ -103,8 +108,15 @@ namespace Zeron.ZServers.Tests
             Assert.AreEqual(0, RecordingEngine.Scripts.Count);
         }
 
+        /// <summary>
+        /// CancelInstallGate test.
+        /// </summary>
         private sealed class CancelInstallGate : IGateHandler
         {
+            /// <summary>
+            /// Handle test.
+            /// </summary>
+            /// <param name="context"></param>
             public void Handle(
                 GateContextType context)
             {
@@ -116,10 +128,17 @@ namespace Zeron.ZServers.Tests
             }
         }
 
+        /// <summary>
+        /// RecordingEngine test.
+        /// </summary>
         private sealed class RecordingEngine : IScriptEngine
         {
             public static List<string> Scripts { get; } = [];
 
+            /// <summary>
+            /// RecordingEngine constructor.
+            /// </summary>
+            /// <param name="id"></param>
             public RecordingEngine(
                 string id)
             {
@@ -135,6 +154,11 @@ namespace Zeron.ZServers.Tests
 
             public bool IsAvailable() => true;
 
+            /// <summary>
+            /// Execute test.
+            /// </summary>
+            /// <param name="request"></param>
+            /// <returns></returns>
             public ScriptResultType Execute(
                 ScriptRequestType request)
             {

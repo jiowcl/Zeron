@@ -11,6 +11,9 @@ using Zeron.ZCore.Utils;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// AgentManagerServerTests
+    /// </summary>
     [TestClass()]
     public class AgentManagerServerTests
     {
@@ -185,6 +188,11 @@ namespace Zeron.Server.ZServers.Tests
             Assert.IsTrue(agent.SupportedEnginesJson!.Contains("powershell", StringComparison.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext(string dbName)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()

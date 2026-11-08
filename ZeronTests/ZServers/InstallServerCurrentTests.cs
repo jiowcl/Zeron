@@ -3,15 +3,20 @@
 
 using System.Collections.Specialized;
 using Zeron.ZCore.Type;
-using Zeron.ZServers;
 
 namespace Zeron.ZServers.Tests
 {
+    /// <summary>
+    /// InstallServerCurrentTests
+    /// </summary>
     [TestClass()]
     public class InstallServerCurrentTests
     {
         private InstallServer? m_Install;
 
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
@@ -23,6 +28,9 @@ namespace Zeron.ZServers.Tests
             m_Install = null;
         }
 
+        /// <summary>
+        /// FacadesAreSafeWhenCurrentIsNullTest test.
+        /// </summary>
         [TestMethod()]
         public void FacadesAreSafeWhenCurrentIsNullTest()
         {
@@ -36,6 +44,9 @@ namespace Zeron.ZServers.Tests
             Assert.IsFalse(InstallServer.ExecuteQueues("install", new InstallQueuesType()));
         }
 
+        /// <summary>
+        /// InitializeSetsCurrentAndStopClearsTest test.
+        /// </summary>
         [TestMethod()]
         public void InitializeSetsCurrentAndStopClearsTest()
         {

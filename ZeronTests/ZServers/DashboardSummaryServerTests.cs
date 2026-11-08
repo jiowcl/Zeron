@@ -2,16 +2,17 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Zeron.Server.Data;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZCore;
 using Zeron.Server.ZCore.Type;
-using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// DashboardSummaryServerTests
+    /// </summary>
     [TestClass()]
     public class DashboardSummaryServerTests
     {
@@ -188,6 +189,11 @@ namespace Zeron.Server.ZServers.Tests
             Assert.IsTrue(status.Recommendations.Any(item => item.Contains("AgentHmacRequired", StringComparison.Ordinal)));
         }
 
+        /// <summary>
+        /// CreateSummaryServer test.
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <returns></returns>
         private static DashboardSummaryServer CreateSummaryServer(ZeronServerDbContext dbContext)
         {
             ServerSettings settings = new() { HeartbeatTimeoutSeconds = 90 };
@@ -212,6 +218,11 @@ namespace Zeron.Server.ZServers.Tests
                 userNotifications);
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext(string dbName)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()

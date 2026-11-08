@@ -7,15 +7,24 @@ using Zeron.ZInterfaces;
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// ScriptHostServerTests
+    /// </summary>
     [TestClass()]
     public class ScriptHostServerTests
     {
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
             ScriptHostServer.Clear();
         }
 
+        /// <summary>
+        /// ExecuteEmptyScriptSucceedsTest test.
+        /// </summary>
         [TestMethod()]
         public void ExecuteEmptyScriptSucceedsTest()
         {
@@ -28,6 +37,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("powershell", result.EngineId);
         }
 
+        /// <summary>
+        /// ExecuteUnknownEngineFailsTest test.
+        /// </summary>
         [TestMethod()]
         public void ExecuteUnknownEngineFailsTest()
         {
@@ -41,6 +53,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(result.ErrorMessage?.Contains("not registered", StringComparison.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// ListEnginesReportsAvailabilityTest test.
+        /// </summary>
         [TestMethod()]
         public void ListEnginesReportsAvailabilityTest()
         {
@@ -56,6 +71,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("fake", available[0].Id);
         }
 
+        /// <summary>
+        /// ScriptExecutorFacadeUsesHostTest test.
+        /// </summary>
         [TestMethod()]
         public void ScriptExecutorFacadeUsesHostTest()
         {
@@ -65,11 +83,20 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(ScriptExecutor.Execute("Write-Output ok"));
         }
 
+        /// <summary>
+        /// FakeScriptEngine test.
+        /// </summary>
         private sealed class FakeScriptEngine : IScriptEngine
         {
             private readonly bool m_Available;
             private readonly bool m_Succeed;
 
+            /// <summary>
+            /// FakeScriptEngine constructor.
+            /// </summary>
+            /// <param name="id"></param>
+            /// <param name="available"></param>
+            /// <param name="succeed"></param>
             public FakeScriptEngine(
                 string id,
                 bool available,
@@ -88,6 +115,11 @@ namespace Zeron.ZCore.Utils.Tests
 
             public bool IsAvailable() => m_Available;
 
+            /// <summary>
+            /// Execute test.
+            /// </summary>
+            /// <param name="request"></param>
+            /// <returns></returns>
             public ScriptResultType Execute(
                 ScriptRequestType request)
             {

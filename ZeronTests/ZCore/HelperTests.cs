@@ -5,9 +5,15 @@ using Zeron.ZCore.Type;
 
 namespace Zeron.ZCore.Tests
 {
+    /// <summary>
+    /// HelperTests
+    /// </summary>
     [TestClass()]
     public class HelperTests
     {
+        /// <summary>
+        /// Build commands test.
+        /// </summary>
         [TestMethod()]
         public void BuildCommandsTest()
         {
@@ -48,6 +54,9 @@ namespace Zeron.ZCore.Tests
             Assert.AreEqual("ccleaner", clearOverride.PackageName);
         }
 
+        /// <summary>
+        /// Split command test.
+        /// </summary>
         [TestMethod()]
         public void SplitCommandTest()
         {

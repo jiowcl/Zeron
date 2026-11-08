@@ -1,21 +1,29 @@
 // Zeron - Scheduled Task Application for Windows OS
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
-using Zeron.ZCore;
 using Zeron.ZCore.Type;
 using Zeron.ZInterfaces;
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// ZeronGateServerTests
+    /// </summary>
     [TestClass()]
     public class ZeronGateServerTests
     {
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
             ZeronGateServer.Current.Clear();
         }
 
+        /// <summary>
+        /// Evaluate without handlers proceeds test.
+        /// </summary>
         [TestMethod()]
         public void EvaluateWithoutHandlersProceedsTest()
         {
@@ -24,6 +32,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual(GateDecisionType.Proceed, decision);
         }
 
+        /// <summary>
+        /// Evaluate cancel stops immediately test.
+        /// </summary>
         [TestMethod()]
         public void EvaluateCancelStopsImmediatelyTest()
         {
@@ -38,6 +49,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual(GateDecisionType.Cancel, decision);
         }
 
+        /// <summary>
+        /// Pause then resume proceeds test.
+        /// </summary>
         [TestMethod()]
         public void PauseThenResumeProceedsTest()
         {
@@ -53,6 +67,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual(GateDecisionType.Proceed, evaluate.Result);
         }
 
+        /// <summary>
+        /// Pause then cancel aborts test.
+        /// </summary>
         [TestMethod()]
         public void PauseThenCancelAbortsTest()
         {
@@ -68,6 +85,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual(GateDecisionType.Cancel, evaluate.Result);
         }
 
+        /// <summary>
+        /// Pause then cancel aborts test.
+        /// </summary>
         [TestMethod()]
         public void PauseTimeoutCancelsTest()
         {
@@ -85,6 +105,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual(GateDecisionType.Cancel, decision);
         }
 
+        /// <summary>
+        /// Pause without correlation id cancels test.
+        /// </summary>
         [TestMethod()]
         public void PauseWithoutCorrelationIdCancelsTest()
         {
@@ -102,6 +125,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual(GateDecisionType.Cancel, decision);
         }
 
+        /// <summary>
+        /// DelegateGateHandler test.
+        /// </summary>
         private sealed class DelegateGateHandler : IGateHandler
         {
             private readonly Action<GateContextType> m_Handle;

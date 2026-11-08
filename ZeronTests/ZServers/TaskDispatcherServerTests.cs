@@ -12,9 +12,15 @@ using Zeron.ZInterfaces;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// TaskDispatcherServerTests
+    /// </summary>
     [TestClass()]
     public class TaskDispatcherServerTests
     {
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
@@ -258,8 +264,15 @@ namespace Zeron.Server.ZServers.Tests
             }
         }
 
+        /// <summary>
+        /// CancelDispatchGate test.
+        /// </summary>
         private sealed class CancelDispatchGate : IGateHandler
         {
+            /// <summary>
+            /// Handle test.
+            /// </summary>
+            /// <param name="context"></param>
             public void Handle(
                 GateContextType context)
             {
@@ -270,6 +283,11 @@ namespace Zeron.Server.ZServers.Tests
             }
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext(string dbName)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()

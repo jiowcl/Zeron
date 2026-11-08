@@ -6,9 +6,15 @@ using Zeron.ZCore.Type;
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// SmtpMailServerTests
+    /// </summary>
     [TestClass()]
     public class SmtpMailServerTests
     {
+        /// <summary>
+        /// HasConnectionRequiresHostAndFromTest test.
+        /// </summary>
         [TestMethod()]
         public void HasConnectionRequiresHostAndFromTest()
         {
@@ -24,6 +30,9 @@ namespace Zeron.ZCore.Utils.Tests
             }));
         }
 
+        /// <summary>
+        /// ParseRecipientsSplitsAndSkipsInvalidTest test.
+        /// </summary>
         [TestMethod()]
         public void ParseRecipientsSplitsAndSkipsInvalidTest()
         {
@@ -40,6 +49,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("not-an-email", invalid[0]);
         }
 
+        /// <summary>
+        /// CreateClientAppliesOptionsTest test.
+        /// </summary>
         [TestMethod()]
         public void CreateClientAppliesOptionsTest()
         {
@@ -59,6 +71,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsNotNull(client.Credentials);
         }
 
+        /// <summary>
+        /// CreateFromAddressUsesDisplayNameTest test.
+        /// </summary>
         [TestMethod()]
         public void CreateFromAddressUsesDisplayNameTest()
         {
@@ -72,6 +87,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("Zeron Ops", from.DisplayName);
         }
 
+        /// <summary>
+        /// TrySendAsyncRejectsMissingRecipientsTest test.
+        /// </summary>
         [TestMethod()]
         public async Task TrySendAsyncRejectsMissingRecipientsTest()
         {

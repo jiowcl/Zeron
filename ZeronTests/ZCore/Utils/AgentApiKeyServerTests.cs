@@ -3,6 +3,9 @@
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// AgentApiKeyServerTests
+    /// </summary>
     [TestClass()]
     public class AgentApiKeyServerTests
     {

@@ -3,16 +3,17 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Security.Claims;
 using Zeron.Server.Data;
 using Zeron.Server.ZCore;
 using Zeron.Server.ZInterfaces;
-using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// AuditLogServerTests
+    /// </summary>
     [TestClass()]
     public class AuditLogServerTests
     {
@@ -232,12 +233,22 @@ namespace Zeron.Server.ZServers.Tests
         {
             private readonly IReadOnlySet<string>? m_Allowed;
 
+            /// <summary>
+            /// FixedAgentScopeFilter constructor.
+            /// </summary>
+            /// <param name="allowed"></param>
             public FixedAgentScopeFilter(
                 IReadOnlySet<string>? allowed)
             {
                 m_Allowed = allowed;
             }
 
+            /// <summary>
+            /// GetAllowedAgentKeysAsync test.
+            /// </summary>
+            /// <param name="user"></param>
+            /// <param name="cancellationToken"></param>
+            /// <returns></returns>
             public Task<IReadOnlySet<string>?> GetAllowedAgentKeysAsync(
                 ClaimsPrincipal? user,
                 CancellationToken cancellationToken = default)

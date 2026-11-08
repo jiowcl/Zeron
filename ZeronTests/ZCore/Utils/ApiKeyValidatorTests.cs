@@ -3,9 +3,15 @@
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// ApiKeyValidatorTests
+    /// </summary>
     [TestClass()]
     public class ApiKeyValidatorTests
     {
+        /// <summary>
+        /// ValidateMatchingKeyTest test.
+        /// </summary>
         [TestMethod()]
         public void ValidateMatchingKeyTest()
         {
@@ -16,6 +22,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(isValid);
         }
 
+        /// <summary>
+        /// ValidateMultipleKeysTest test.
+        /// </summary>
         [TestMethod()]
         public void ValidateMultipleKeysTest()
         {
@@ -26,6 +35,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(isValid);
         }
 
+        /// <summary>
+        /// ValidateWrongKeyTest test.
+        /// </summary>
         [TestMethod()]
         public void ValidateWrongKeyTest()
         {
@@ -36,6 +48,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsFalse(isValid);
         }
 
+        /// <summary>
+        /// ValidateEmptyKeyTest test.
+        /// </summary>
         [TestMethod()]
         public void ValidateEmptyKeyTest()
         {

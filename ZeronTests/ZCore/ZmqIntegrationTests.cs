@@ -7,9 +7,15 @@ using System.Text;
 
 namespace Zeron.ZCore.Tests
 {
+    /// <summary>
+    /// ZmqIntegrationTests
+    /// </summary>
     [TestClass()]
     public class ZmqIntegrationTests
     {
+        /// <summary>
+        /// ReqRepLoopback test.
+        /// </summary>
         [TestMethod()]
         public void ReqRepLoopbackTest()
         {

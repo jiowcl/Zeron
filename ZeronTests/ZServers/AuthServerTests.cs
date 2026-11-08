@@ -2,14 +2,15 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Zeron.Server.Data;
 using Zeron.Server.ZCore;
-using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// AuthServerTests
+    /// </summary>
     [TestClass()]
     public class AuthServerTests
     {
@@ -223,6 +224,12 @@ namespace Zeron.Server.ZServers.Tests
             Assert.IsFalse(authServer.ValidateAgentApiKey("other"));
         }
 
+        /// <summary>
+        /// CreateAuthServer test.
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         private static AuthServer CreateAuthServer(ZeronServerDbContext dbContext, ServerSettings settings)
         {
             JwtTokenServer jwtTokenServer = new(settings);
@@ -230,6 +237,11 @@ namespace Zeron.Server.ZServers.Tests
             return new AuthServer(dbContext, settings, jwtTokenServer);
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext(string dbName)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()

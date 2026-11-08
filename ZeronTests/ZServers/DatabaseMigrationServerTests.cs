@@ -3,12 +3,13 @@
 
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Zeron.Server.Data;
-using Zeron.Server.ZServers;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// DatabaseMigrationServerTests
+    /// </summary>
     [TestClass()]
     public class DatabaseMigrationServerTests
     {
@@ -57,6 +58,11 @@ namespace Zeron.Server.ZServers.Tests
             }
         }
 
+        /// <summary>
+        /// CreateLegacyDatabaseAsync test.
+        /// </summary>
+        /// <param name="dbPath"></param>
+        /// <returns></returns>
         private static async Task CreateLegacyDatabaseAsync(string dbPath)
         {
             await using SqliteConnection connection = new("Data Source=" + dbPath);

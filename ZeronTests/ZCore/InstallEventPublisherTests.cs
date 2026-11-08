@@ -5,9 +5,15 @@ using Zeron.ZServers;
 
 namespace Zeron.ZCore.Tests
 {
+    /// <summary>
+    /// InstallEventPublisherTests
+    /// </summary>
     [TestClass()]
     public class InstallEventPublisherTests
     {
+        /// <summary>
+        /// EnrichMessageAddsAgentId test.
+        /// </summary>
         [TestMethod()]
         public void EnrichMessageAddsAgentIdTest()
         {

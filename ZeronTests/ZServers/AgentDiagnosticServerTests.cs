@@ -7,6 +7,9 @@ using Zeron.Server.ZCore;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// AgentDiagnosticServerTests
+    /// </summary>
     [TestClass()]
     public class AgentDiagnosticServerTests
     {
@@ -69,6 +72,11 @@ namespace Zeron.Server.ZServers.Tests
             Assert.AreEqual("disabled", diagnostic!.ConnectionState);
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext(string dbName)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()
@@ -78,6 +86,10 @@ namespace Zeron.Server.ZServers.Tests
             return new ZeronServerDbContext(options);
         }
 
+        /// <summary>
+        /// CreateSettings test.
+        /// </summary>
+        /// <returns></returns>
         private static ServerSettings CreateSettings()
         {
             return new ServerSettings

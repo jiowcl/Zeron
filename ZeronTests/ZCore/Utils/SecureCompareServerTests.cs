@@ -3,9 +3,15 @@
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// SecureCompareServerTests
+    /// </summary>
     [TestClass()]
     public class SecureCompareServerTests
     {
+        /// <summary>
+        /// FixedTimeEqualsMatchesEqualStringsTest test.
+        /// </summary>
         [TestMethod()]
         public void FixedTimeEqualsMatchesEqualStringsTest()
         {
@@ -16,6 +22,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsFalse(SecureCompareServer.FixedTimeEquals("x", null));
         }
 
+        /// <summary>
+        /// FixedTimeEqualsHexIsCaseInsensitiveTest test.
+        /// </summary>
         [TestMethod()]
         public void FixedTimeEqualsHexIsCaseInsensitiveTest()
         {

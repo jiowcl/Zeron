@@ -6,6 +6,9 @@ using Zeron.Server.Data;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// TaskDispatcherCancelTests
+    /// </summary>
     [TestClass()]
     public class TaskDispatcherCancelTests
     {
@@ -53,6 +56,11 @@ namespace Zeron.Server.ZServers.Tests
             Assert.AreEqual("cancelled", task.Assignments.First().Status);
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext(string dbName)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()

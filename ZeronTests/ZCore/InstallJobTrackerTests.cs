@@ -5,9 +5,15 @@ using Zeron.ZCore.Type;
 
 namespace Zeron.ZCore.Tests
 {
+    /// <summary>
+    /// InstallJobTrackerTests
+    /// </summary>
     [TestClass()]
     public class InstallJobTrackerTests
     {
+        /// <summary>
+        /// GetStatusReflectsRunningAndCompletedJobs test.
+        /// </summary>
         [TestMethod()]
         public void GetStatusReflectsRunningAndCompletedJobsTest()
         {

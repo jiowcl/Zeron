@@ -2,15 +2,20 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using System.Collections.Specialized;
-using Zeron.ZServers;
 
 namespace Zeron.ZServers.Tests
 {
+    /// <summary>
+    /// MailerServerTests
+    /// </summary>
     [TestClass()]
     public class MailerServerTests
     {
         private MailerServer? m_Mailer;
 
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
@@ -18,6 +23,9 @@ namespace Zeron.ZServers.Tests
             m_Mailer = null;
         }
 
+        /// <summary>
+        /// LoadConfigParsesSmtpSettingsTest test.
+        /// </summary>
         [TestMethod()]
         public void LoadConfigParsesSmtpSettingsTest()
         {
@@ -48,6 +56,9 @@ namespace Zeron.ZServers.Tests
             Assert.IsFalse(MailerServer.EnableSsl);
         }
 
+        /// <summary>
+        /// InitializeDisabledLeavesMailerUnconfiguredTest test.
+        /// </summary>
         [TestMethod()]
         public void InitializeDisabledLeavesMailerUnconfiguredTest()
         {
@@ -65,6 +76,9 @@ namespace Zeron.ZServers.Tests
             Assert.IsFalse(MailerServer.QueueMail("subject", "<p>body</p>"));
         }
 
+        /// <summary>
+        /// InitializeWithoutRecipientsIsNotConfiguredTest test.
+        /// </summary>
         [TestMethod()]
         public void InitializeWithoutRecipientsIsNotConfiguredTest()
         {
@@ -82,6 +96,9 @@ namespace Zeron.ZServers.Tests
             Assert.IsFalse(MailerServer.SendMailNow("subject", "<p>body</p>"));
         }
 
+        /// <summary>
+        /// InitializeWithValidSmtpMarksConfiguredTest test.
+        /// </summary>
         [TestMethod()]
         public void InitializeWithValidSmtpMarksConfiguredTest()
         {
@@ -104,6 +121,9 @@ namespace Zeron.ZServers.Tests
             Assert.IsFalse(MailerServer.QueueMail("subject", ""));
         }
 
+        /// <summary>
+        /// StopClearsCurrentTest test.
+        /// </summary>
         [TestMethod()]
         public void StopClearsCurrentTest()
         {

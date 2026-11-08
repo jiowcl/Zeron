@@ -6,6 +6,9 @@ using NetMQ.Sockets;
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// CurveKeyServerTests
+    /// </summary>
     [TestClass()]
     public class CurveKeyServerTests
     {

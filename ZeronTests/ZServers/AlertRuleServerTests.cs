@@ -9,6 +9,9 @@ using Zeron.Server.ZCore.Type;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// AlertRuleServerTests
+    /// </summary>
     [TestClass()]
     public class AlertRuleServerTests
     {
@@ -100,6 +103,11 @@ namespace Zeron.Server.ZServers.Tests
             Assert.AreEqual(0, openCount);
         }
 
+        /// <summary>
+        /// CreateAlertRuleServer test.
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <returns></returns>
         private static AlertRuleServer CreateAlertRuleServer(ZeronServerDbContext dbContext)
         {
             ServerSettings settings = new()
@@ -112,6 +120,11 @@ namespace Zeron.Server.ZServers.Tests
             return new AlertRuleServer(dbContext, notifier);
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext(string dbName)
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()

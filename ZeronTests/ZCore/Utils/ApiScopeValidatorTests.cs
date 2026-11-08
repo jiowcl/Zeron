@@ -3,15 +3,24 @@
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// ApiScopeValidatorTests
+    /// </summary>
     [TestClass()]
     public class ApiScopeValidatorTests
     {
+        /// <summary>
+        /// AllowAllWhenScopeIsStar test.
+        /// </summary>
         [TestMethod()]
         public void AllowAllWhenScopeIsStarTest()
         {
             Assert.IsTrue(ApiScopeValidator.IsAllowed("*", "PowerShell", "write"));
         }
 
+        /// <summary>
+        /// AllowMatchingApiAndActionTest test.
+        /// </summary>
         [TestMethod()]
         public void AllowMatchingApiAndActionTest()
         {
@@ -21,6 +30,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(ApiScopeValidator.IsAllowed(scopes, "ManagedPackage", "install"));
         }
 
+        /// <summary>
+        /// DenyMissingScopeTest test.
+        /// </summary>
         [TestMethod()]
         public void DenyMissingScopeTest()
         {
@@ -29,6 +41,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsFalse(ApiScopeValidator.IsAllowed(scopes, "PowerShell", "write"));
         }
 
+        /// <summary>
+        /// AllowApiWildcardScopeTest test.
+        /// </summary>
         [TestMethod()]
         public void AllowApiWildcardScopeTest()
         {

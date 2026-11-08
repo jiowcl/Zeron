@@ -1,20 +1,28 @@
 // Zeron - Scheduled Task Application for Windows OS
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
-using Zeron.ZCore;
 using Zeron.ZCore.Type;
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// ZeronEventBusTests
+    /// </summary>
     [TestClass()]
     public class ZeronEventBusTests
     {
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
             ZeronEventBus.Current.Clear();
         }
 
+        /// <summary>
+        /// PublishDeliversToExactAndWildcardSubscribersTest test.
+        /// </summary>
         [TestMethod()]
         public void PublishDeliversToExactAndWildcardSubscribersTest()
         {
@@ -38,6 +46,9 @@ namespace Zeron.ZCore.Utils.Tests
             CollectionAssert.DoesNotContain(topics, "install:task.started");
         }
 
+        /// <summary>
+        /// MatchesPrefixFilterTest test.
+        /// </summary>
         [TestMethod()]
         public void MatchesPrefixFilterTest()
         {
@@ -46,6 +57,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsFalse(ZeronEventBus.Matches("install.*", "task.started"));
         }
 
+        /// <summary>
+        /// InstallEventPublisherDualWritesToBusTest test.
+        /// </summary>
         [TestMethod()]
         public void InstallEventPublisherDualWritesToBusTest()
         {

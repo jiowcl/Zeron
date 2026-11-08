@@ -2,15 +2,16 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Zeron.Server.Data;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZCore;
-using Zeron.Server.ZServers;
 using Zeron.ZCore.Type;
 
 namespace Zeron.Server.ZServers.Tests
 {
+    /// <summary>
+    /// EventIngestorPackageDeployTests
+    /// </summary>
     [TestClass()]
     public class EventIngestorPackageDeployTests
     {
@@ -145,6 +146,10 @@ namespace Zeron.Server.ZServers.Tests
             Assert.AreEqual("failed", assignment.Task!.Status);
         }
 
+        /// <summary>
+        /// CreateContext test.
+        /// </summary>
+        /// <returns></returns>
         private static ZeronServerDbContext CreateContext()
         {
             DbContextOptions<ZeronServerDbContext> options = new DbContextOptionsBuilder<ZeronServerDbContext>()

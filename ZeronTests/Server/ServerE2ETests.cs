@@ -22,12 +22,19 @@ namespace Zeron.Server.Tests
         private const string AgentApiKey = "zeron.testkey";
         private const string TestAgentId = "e2e-agent-001";
 
+        /// <summary>
+        /// Class initialization.
+        /// </summary>
+        /// <param name="context"></param>
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
             s_Factory = new ZeronServerWebApplicationFactory();
         }
 
+        /// <summary>
+        /// Class cleanup.
+        /// </summary>
         [ClassCleanup]
         public static void ClassCleanup()
         {
@@ -547,6 +554,9 @@ namespace Zeron.Server.Tests
             }
         }
 
+        /// <summary>
+        /// Handles pause decisions for gate install events.
+        /// </summary>
         private sealed class PauseGateInstallHandler : IGateHandler
         {
             public void Handle(
@@ -560,6 +570,9 @@ namespace Zeron.Server.Tests
             }
         }
 
+        /// <summary>
+        /// Handles cancel decisions for gate install events.
+        /// </summary>
         private sealed class CancelGateInstallHandler : IGateHandler
         {
             public void Handle(
@@ -688,6 +701,11 @@ namespace Zeron.Server.Tests
             Assert.AreEqual("healthy", diagnostic!.ConnectionState);
         }
 
+        /// <summary>
+        /// Posts a heartbeat request.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns>Returns a heartbeat response.</returns>
         private static async Task<AgentHeartbeatResponseType> PostHeartbeatAsync(HttpClient client)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync("/api/agents/heartbeat", CreateHeartbeatRequest());
@@ -701,6 +719,10 @@ namespace Zeron.Server.Tests
             return heartbeat!;
         }
 
+        /// <summary>
+        /// Creates a heartbeat request.
+        /// </summary>
+        /// <returns>Returns a heartbeat request.</returns>
         private static AgentHeartbeatRequestType CreateHeartbeatRequest()
         {
             return new AgentHeartbeatRequestType
@@ -717,6 +739,11 @@ namespace Zeron.Server.Tests
 
         private static string s_AdminPassword = "admin123";
 
+        /// <summary>
+        /// Logs in as admin with known test passwords, changing password if required.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
         private static async Task LoginAsync(HttpClient client)
         {
             string[] candidates = [s_AdminPassword, "admin123", "admin", "admin-e2e-changed"];

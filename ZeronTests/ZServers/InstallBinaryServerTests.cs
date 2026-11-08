@@ -3,12 +3,12 @@
 
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Zeron.ZCore.Type;
-using Zeron.ZServers;
 
 namespace Zeron.ZServers.Tests
 {
+    /// <summary>
+    /// InstallBinaryServerTests
+    /// </summary>
     [TestClass()]
     public class InstallBinaryServerTests
     {

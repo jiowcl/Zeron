@@ -3,9 +3,15 @@
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// Md5ProviderTests
+    /// </summary>
     [TestClass()]
     public class Md5ProviderTests
     {
+        /// <summary>
+        /// GenerateBase64Test test.
+        /// </summary>
         [TestMethod()]
         public void GenerateBase64Test()
         {

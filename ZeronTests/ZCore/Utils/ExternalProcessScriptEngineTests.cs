@@ -7,15 +7,24 @@ using Zeron.ZCore.Utils.Engines;
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// ExternalProcessScriptEngineTests
+    /// </summary>
     [TestClass()]
     public class ExternalProcessScriptEngineTests
     {
+        /// <summary>
+        /// Cleanup test.
+        /// </summary>
         [TestCleanup]
         public void Cleanup()
         {
             ScriptHostServer.Clear();
         }
 
+        /// <summary>
+        /// ExpandArgumentsReplacesTokensTest test.
+        /// </summary>
         [TestMethod()]
         public void ExpandArgumentsReplacesTokensTest()
         {
@@ -28,6 +37,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("-File \"C:\\tmp\\a.ps1\" --dry-run", expanded);
         }
 
+        /// <summary>
+        /// TryParseTrailingJsonReadsLastLineTest test.
+        /// </summary>
         [TestMethod()]
         public void TryParseTrailingJsonReadsLastLineTest()
         {
@@ -42,6 +54,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("nope", parsed.Message);
         }
 
+        /// <summary>
+        /// ParseOptionsReadsEnabledEnginesTest test.
+        /// </summary>
         [TestMethod()]
         public void ParseOptionsReadsEnabledEnginesTest()
         {
@@ -74,6 +89,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("mytool", engines[0].Id);
         }
 
+        /// <summary>
+        /// ExecuteTempFileInlineRunsProcessTest test.
+        /// </summary>
         [TestMethod()]
         public void ExecuteTempFileInlineRunsProcessTest()
         {
@@ -104,6 +122,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.IsTrue(result.StdOut?.Contains("hello-from-external", StringComparison.Ordinal) == true);
         }
 
+        /// <summary>
+        /// ExecuteHonorsTrailingJsonResultTest test.
+        /// </summary>
         [TestMethod()]
         public void ExecuteHonorsTrailingJsonResultTest()
         {
@@ -133,6 +154,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("blocked", result.ErrorMessage);
         }
 
+        /// <summary>
+        /// ScriptHostRegistersExternalEngineTest test.
+        /// </summary>
         [TestMethod()]
         public void ScriptHostRegistersExternalEngineTest()
         {

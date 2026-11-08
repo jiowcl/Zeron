@@ -3,9 +3,15 @@
 
 namespace Zeron.ZCore.Utils.Tests
 {
+    /// <summary>
+    /// AgentIdProviderTests
+    /// </summary>
     [TestClass()]
     public class AgentIdProviderTests
     {
+        /// <summary>
+        /// LoadOrCreateUsesConfiguredValue test.
+        /// </summary>
         [TestMethod()]
         public void LoadOrCreateUsesConfiguredValueTest()
         {
@@ -14,6 +20,9 @@ namespace Zeron.ZCore.Utils.Tests
             Assert.AreEqual("configured-id", agentId);
         }
 
+        /// <summary>
+        /// LoadOrCreatePersistsGeneratedId test.
+        /// </summary>
         [TestMethod()]
         public void LoadOrCreatePersistsGeneratedIdTest()
         {
