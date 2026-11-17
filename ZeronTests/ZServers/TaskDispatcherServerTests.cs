@@ -25,6 +25,7 @@ namespace Zeron.Server.ZServers.Tests
         public void Cleanup()
         {
             ZeronGateServer.Current.Clear();
+            ZeronEventBus.Current.Clear();
         }
 
         /// <summary>
@@ -209,6 +210,137 @@ namespace Zeron.Server.ZServers.Tests
             Assert.IsNotNull(finalAssignment.Result);
             Assert.IsTrue(finalAssignment.Result!.Success);
             Assert.IsNotNull(finalAssignment.CompletedAt);
+        }
+
+        /// <summary>
+        /// ReportResultAsync publishes assignment.completed and task.completed on the in-process bus.
+        /// </summary>
+        [TestMethod()]
+        public async Task ReportResultAsyncPublishesAssignmentAndTaskCompletedOnBusTest()
+        {
+            List<ZeronEventType> busEvents = [];
+
+            using IDisposable subAssignment = ZeronEventBus.Current.Subscribe(
+                ZeronEventTopics.AssignmentCompleted,
+                evt => busEvents.Add(evt));
+            using IDisposable subTask = ZeronEventBus.Current.Subscribe(
+                ZeronEventTopics.TaskCompleted,
+                evt => busEvents.Add(evt));
+
+            string dbName = Guid.NewGuid().ToString();
+            await using ZeronServerDbContext dbContext = CreateContext(dbName);
+            Guid assignmentId = Guid.NewGuid();
+            Guid taskId = Guid.NewGuid();
+            Guid agentId = Guid.NewGuid();
+
+            dbContext.Agents.Add(new AgentEntity
+            {
+                Id = agentId,
+                AgentKey = "bus-agent",
+                Status = "online",
+                RegisteredAt = DateTime.UtcNow
+            });
+
+            dbContext.Tasks.Add(new TaskEntity
+            {
+                Id = taskId,
+                Name = "bus-result",
+                TargetApi = "HealthCheck",
+                Command = "",
+                Status = "running",
+                CreatedAt = DateTime.UtcNow
+            });
+
+            dbContext.TaskAssignments.Add(new TaskAssignmentEntity
+            {
+                Id = assignmentId,
+                TaskId = taskId,
+                AgentId = agentId,
+                Status = "dispatched",
+                AssignedAt = DateTime.UtcNow
+            });
+
+            await dbContext.SaveChangesAsync();
+
+            TaskDispatcherServer taskDispatcher = new(dbContext, new CommandPublisherServer(new ServerSettings()));
+            bool reported = await taskDispatcher.ReportResultAsync(new TaskResultReportType
+            {
+                AssignmentId = assignmentId.ToString(),
+                AgentId = "bus-agent",
+                Success = true,
+                ResponseJson = "{\"success\":true}"
+            });
+
+            Assert.IsTrue(reported);
+
+            ZeronEventType? assignmentEvt = busEvents.FirstOrDefault(e =>
+                e.Topic == ZeronEventTopics.AssignmentCompleted);
+            ZeronEventType? taskEvt = busEvents.FirstOrDefault(e =>
+                e.Topic == ZeronEventTopics.TaskCompleted);
+
+            Assert.IsNotNull(assignmentEvt);
+            Assert.IsNotNull(taskEvt);
+            Assert.AreEqual("server", assignmentEvt!.Source);
+            Assert.AreEqual(assignmentId.ToString("N"), assignmentEvt.CorrelationId);
+            Assert.IsTrue(assignmentEvt.PayloadJson?.Contains("completed", StringComparison.Ordinal));
+            Assert.IsTrue(assignmentEvt.PayloadJson?.Contains("bus-agent", StringComparison.Ordinal));
+            Assert.AreEqual(taskId.ToString("N"), taskEvt!.CorrelationId);
+            Assert.IsTrue(taskEvt.PayloadJson?.Contains(taskId.ToString(), StringComparison.Ordinal));
+        }
+
+        /// <summary>
+        /// Gate dispatch Cancel publishes assignment.completed (failed) on the bus.
+        /// </summary>
+        [TestMethod()]
+        public async Task DispatchPendingAssignmentsAsyncGateCancelPublishesFailedAssignmentOnBusTest()
+        {
+            ZeronEventBus.Current.Clear();
+            List<ZeronEventType> busEvents = [];
+
+            using IDisposable sub = ZeronEventBus.Current.Subscribe(
+                ZeronEventTopics.AssignmentCompleted,
+                evt => busEvents.Add(evt));
+
+            ZeronGateServer.Current.Clear();
+            ZeronGateServer.Current.Register(new CancelDispatchGate());
+
+            try
+            {
+                string dbName = Guid.NewGuid().ToString();
+                await using ZeronServerDbContext dbContext = CreateContext(dbName);
+
+                dbContext.Agents.Add(new AgentEntity
+                {
+                    Id = Guid.NewGuid(),
+                    AgentKey = "gate-bus-agent",
+                    Status = "online",
+                    MachineName = "HOST",
+                    RegisteredAt = DateTime.UtcNow,
+                    LastHeartbeatAt = DateTime.UtcNow
+                });
+                await dbContext.SaveChangesAsync();
+
+                TaskDispatcherServer taskDispatcher = new(dbContext, new CommandPublisherServer(new ServerSettings()));
+                await taskDispatcher.CreateTaskAsync(new TaskCreateRequestType
+                {
+                    Name = "gate-bus",
+                    TargetApi = "HealthCheck",
+                    Command = "",
+                    TargetType = "all"
+                });
+
+                int dispatched = await taskDispatcher.DispatchPendingAssignmentsAsync();
+                Assert.AreEqual(0, dispatched);
+
+                Assert.AreEqual(1, busEvents.Count);
+                Assert.AreEqual(ZeronEventTopics.AssignmentCompleted, busEvents[0].Topic);
+                Assert.IsTrue(busEvents[0].PayloadJson?.Contains("failed", StringComparison.Ordinal));
+                Assert.IsTrue(busEvents[0].PayloadJson?.Contains("gate-bus-agent", StringComparison.Ordinal));
+            }
+            finally
+            {
+                ZeronGateServer.Current.Clear();
+            }
         }
 
         /// <summary>

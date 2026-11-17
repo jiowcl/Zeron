@@ -31,12 +31,24 @@ E2E tests use `ZeronServerWebApplicationFactory` (`WebApplicationFactory<Program
 1. **HeartbeatWithoutApiKeyReturnsUnauthorized** — rejects missing agent key
 2. **AgentHeartbeatTaskDispatchFlow** — heartbeat → online → create task → pending task → report result
 3. **AgentDiagnosticsReturnsHealthyState** — diagnostic API after successful heartbeat
+4. **PackageDeployCreatesTask** — catalog + deploy API creates ManagedPackage task
+5. **DotNetGateCancelInstallFailsAssignmentE2ETest** — deploy → pending assignment → in-process `gate.install` Cancel → `/api/tasks/results` → assignment leaves heartbeat pending list (no real installer; fake `FilePath`)
+6. **DotNetGatePauseThenResumeCompletesAssignmentE2ETest** — same flow with Pause/Resume; benign `cmd.exe /c exit 0` as installer substitute
 
 ### Example
 
 ```powershell
 dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~ServerE2ETests"
+dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~DotNetGate"
 ```
+
+## Server bus publish (unit)
+
+| Test | Verifies |
+|------|----------|
+| `TaskDispatcherServerTests.ReportResultAsyncPublishesAssignmentAndTaskCompletedOnBusTest` | `assignment.completed` + `task.completed` after result report |
+| `TaskDispatcherServerTests.DispatchPendingAssignmentsAsyncGateCancelPublishesFailedAssignmentOnBusTest` | Gate dispatch Cancel → `assignment.completed` (`failed`) |
+| `AuditLogServerTests.WriteAsyncPublishesAuditWrittenOnBusTest` | `audit.written` after `WriteAsync` |
 
 ## EF Core Migrations
 

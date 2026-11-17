@@ -12,6 +12,9 @@ Zeron exposes an in-process **event bus** (`IZeronEventBus` / `ZeronEventBus.Cur
 | `agent.heartbeat` | Each heartbeat (**off** unless `Zeron:PublishAgentHeartbeatEvents=true`) |
 | `agent.offline` | Heartbeat monitor marks agent offline |
 | `task.dispatched` | RemoteCommand PUB sent |
+| `assignment.completed` | Assignment reaches `completed` or `failed` (`TaskDispatcherServer`) |
+| `task.completed` | All assignments terminal; central task `completed` or `failed` |
+| `audit.written` | Audit row persisted (`AuditLogServer.WriteAsync`) |
 | `event.ingested` | Agent HTTP event stored |
 | `catalog.rolled_back` | Catalog Restore succeeded |
 | `catalog.sync_requested` | Server pushed ManagedPackage `sync` to agents |
@@ -39,6 +42,14 @@ using IDisposable sub = ZeronEventBus.Current.Subscribe("package.catalog.sync", 
 ```
 
 Server DI also registers `IZeronEventBus` → `ZeronEventBus.Current`.
+
+### Task and audit payloads (Server)
+
+`assignment.completed` and `task.completed` use typed JSON (`AssignmentCompletedInfoType`, `TaskCompletedInfoType`): ids, `targetApi`, terminal `status`, `durationMs`, and timestamps. `correlationId` on the bus event is the assignment or task id (no dashes).
+
+`audit.written` carries `AuditLogInfoType` (action, actor, target, success, summary). `correlationId` is the audit row id.
+
+ManagedPackage deploy: the first agent report with `"queued":true` moves the assignment to `running` and does **not** publish `assignment.completed`. The final success/failure report publishes assignment (and usually `task.completed` when no assignments remain open).
 
 ## Script event listener (observe only)
 

@@ -7,7 +7,9 @@ using System.Security.Claims;
 using Zeron.Server.Data;
 using Zeron.Server.ZCore;
 using Zeron.Server.ZInterfaces;
+using Zeron.ZCore;
 using Zeron.ZCore.Type;
+using Zeron.ZCore.Utils;
 
 namespace Zeron.Server.ZServers.Tests
 {
@@ -17,6 +19,47 @@ namespace Zeron.Server.ZServers.Tests
     [TestClass()]
     public class AuditLogServerTests
     {
+        [TestCleanup]
+        public void Cleanup()
+        {
+            ZeronEventBus.Current.Clear();
+        }
+
+        /// <summary>
+        /// WriteAsync publishes audit.written on the in-process bus.
+        /// </summary>
+        [TestMethod()]
+        public async Task WriteAsyncPublishesAuditWrittenOnBusTest()
+        {
+            ZeronEventType? captured = null;
+
+            using IDisposable sub = ZeronEventBus.Current.Subscribe(
+                ZeronEventTopics.AuditWritten,
+                evt => captured = evt);
+
+            await using ZeronServerDbContext dbContext = CreateContext();
+            AuditLogServer audit = new(dbContext);
+
+            AuditLogInfoType info = await audit.WriteAsync(
+                AuditActions.CatalogCreate,
+                success: true,
+                summary: "bus audit test",
+                actor: new AuditActorType
+                {
+                    Username = "bus-ops",
+                    Role = ServerRoles.Operator
+                },
+                targetType: "package",
+                targetKey: "bus-pkg");
+
+            Assert.IsNotNull(captured);
+            Assert.AreEqual(ZeronEventTopics.AuditWritten, captured!.Topic);
+            Assert.AreEqual("server", captured.Source);
+            Assert.AreEqual(new Guid(info.Id!).ToString("N"), captured.CorrelationId);
+            Assert.IsTrue(captured.PayloadJson?.Contains("bus audit test", StringComparison.Ordinal));
+            Assert.IsTrue(captured.PayloadJson?.Contains("bus-ops", StringComparison.Ordinal));
+        }
+
         /// <summary>
         /// Catalog create writes an audit row when actor is provided.
         /// </summary>
