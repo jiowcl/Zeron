@@ -42,6 +42,24 @@ namespace Zeron.Server.Components.Pages
         // Delete confirmation.
         private bool m_ShowDeleteConfirm;
 
+        // Field Name errors.
+        private string? m_NameError;
+
+        // Field Cron errors.
+        private string? m_CronError;
+
+        // Field Target API errors. 
+        private string? m_TargetApiError;
+        
+        // Field Command errors.
+        private string? m_CommandError;
+
+        // Field Agent ID errors.
+        private string? m_AgentIdError;
+
+        // Field Hostname errors.
+        private string? m_HostnameError;
+
         /// <summary>
         /// OnParametersSetAsync
         /// </summary>
@@ -81,6 +99,12 @@ namespace Zeron.Server.Components.Pages
         private async Task SaveAsync()
         {
             m_Message = null;
+
+            if (!ValidateEditForm())
+            {
+                return;
+            }
+
             m_IsBusy = true;
 
             try
@@ -102,14 +126,14 @@ namespace Zeron.Server.Components.Pages
                 if (error != null)
                 {
                     m_Succeeded = false;
-                    m_Message = error;
-
+                    MapServerError(error);
                     return;
                 }
 
                 m_Schedule = updated;
                 m_Succeeded = true;
                 m_Message = "Schedule updated.";
+                ClearFieldErrors();
 
                 await ReloadAsync();
             }
@@ -117,6 +141,87 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// ValidateEditForm
+        /// </summary>
+        /// <returns>Returns true when valid.</returns>
+        private bool ValidateEditForm()
+        {
+            ClearFieldErrors();
+
+            m_NameError = FormFieldValidation.Required(m_Edit.Name, "Name");
+            m_TargetApiError = FormFieldValidation.Required(m_Edit.TargetApi, "Target API");
+            m_CommandError = FormFieldValidation.Required(m_Edit.Command, "Command");
+
+            if (!TaskScheduleServer.TryParseCron(m_Edit.Cron, out _, out string? cronError))
+            {
+                m_CronError = cronError;
+            }
+
+            FormFieldValidation.ValidateTargetSelection(
+                m_Edit.TargetType,
+                m_Edit.AgentId,
+                m_Edit.HostnamePattern,
+                out m_AgentIdError,
+                out m_HostnameError);
+
+            return m_NameError == null
+                && m_CronError == null
+                && m_TargetApiError == null
+                && m_CommandError == null
+                && m_AgentIdError == null
+                && m_HostnameError == null;
+        }
+
+        /// <summary>
+        /// MapServerError
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns>Returns void.</returns>
+        private void MapServerError(
+            string error)
+        {
+            if (error.Contains("cron", StringComparison.OrdinalIgnoreCase))
+            {
+                m_CronError = error;
+                return;
+            }
+
+            if (error.Contains("Name", StringComparison.OrdinalIgnoreCase))
+            {
+                m_NameError = error;
+                return;
+            }
+
+            if (error.Contains("Target API", StringComparison.OrdinalIgnoreCase))
+            {
+                m_TargetApiError = error;
+                return;
+            }
+
+            if (error.Contains("Command", StringComparison.OrdinalIgnoreCase))
+            {
+                m_CommandError = error;
+                return;
+            }
+
+            m_Message = error;
+        }
+
+        /// <summary>
+        /// ClearFieldErrors
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void ClearFieldErrors()
+        {
+            m_NameError = null;
+            m_CronError = null;
+            m_TargetApiError = null;
+            m_CommandError = null;
+            m_AgentIdError = null;
+            m_HostnameError = null;
         }
 
         /// <summary>
