@@ -15,4 +15,4 @@ Central documentation for building, deploying, configuring, and operating Zeron.
 
 - [Root README](../README.md) — project overview and build instructions
 - [Zeron.Server](../Zeron.Server/) — central management server
-- [Zeron.Demand](../Zeron.Demand/) — Windows Service agent
+- [Zeron.Demand](../Zeron.Demand/) — Agent (Windows Service or Linux/systemd)

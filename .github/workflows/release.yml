@@ -49,6 +49,7 @@ jobs:
           Runtime: linux-x64 (framework-dependent, requires .NET 10)
           Built: $(date -u +"%Y-%m-%d %H:%M:%S") UTC
           EOF
+          cp ./Zeron.Demand/App.Sample.linux.config ./publish/agent-linux/App.Sample.linux.config
           (cd ./publish/agent-linux && zip -r ../../artifacts/zeron-agent-linux-x64.zip .)
 
       - name: Upload Linux agent artifact
@@ -148,6 +149,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Zeron ${{ github.ref_name }}
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-pilot') || contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') }}
           files: |
             artifacts/zeron-server-win-x64.zip
             artifacts/zeron-agent-win-x64.zip
