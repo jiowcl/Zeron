@@ -30,4 +30,6 @@ DemandHost.Run(args);
 
 Edition hook runs **before** gate bootstrap; config allow-list is **merged** in `ZeronGateBootstrapServer` (both must allow).
 
-See [Docs/editions.md](../../Docs/editions.md).
+Thin hosts: [Zeron.Edition.Sample.Server](../Zeron.Edition.Sample.Server/), [Zeron.Edition.Sample.Demand](../Zeron.Edition.Sample.Demand/).
+
+See [Docs/editions.md](../../Docs/editions.md) and [Docs/plugins-runbook.md](../../Docs/plugins-runbook.md).

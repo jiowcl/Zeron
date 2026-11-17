@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Zeron.Edition.Sample.Demand</AssemblyName>
+    <RootNamespace>Zeron.Edition.Sample.Demand</RootNamespace>
+    <StartupObject>Zeron.Edition.Sample.Demand.Program</StartupObject>
+    <Description>Thin edition host for Zeron.Demand (sample agent plugin allow-list).</Description>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Zeron.Demand\Zeron.Demand.csproj" AdditionalProperties="TargetFramework=net10.0-windows" />
+    <ProjectReference Include="..\Zeron.Edition.Sample\Zeron.Edition.Sample.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Zeron.Demand\NLog.config" Link="NLog.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\Zeron.Demand\App.Sample.config" Link="App.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\Zeron.Demand\App.ico" Link="App.ico" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Zeron.Edition.Sample.Server</AssemblyName>
+    <RootNamespace>Zeron.Edition.Sample.Server</RootNamespace>
+    <StartupObject>Zeron.Edition.Sample.Server.Program</StartupObject>
+    <Description>Thin edition host for Zeron.Server (sample nav, alert actions, plugin policy).</Description>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Zeron.Server\Zeron.Server.csproj" />
+    <ProjectReference Include="..\Zeron.Edition.Sample\Zeron.Edition.Sample.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

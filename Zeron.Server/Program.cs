@@ -1,6 +1,8 @@
 // Zeron - Scheduled Task Application for Windows OS
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
+using Microsoft.AspNetCore.Builder;
+
 namespace Zeron.Server
 {
     /// <summary>
@@ -29,7 +31,20 @@ namespace Zeron.Server
         public static WebApplication CreateApp(
             string[] args)
         {
-            return ServerHost.BuildApplication(args);
+            return CreateApp(args, configureBuilder: null);
+        }
+
+        /// <summary>
+        /// CreateApp - optional edition hook for <see cref="ServerHost.BuildApplication"/>.
+        /// </summary>
+        /// <param name="args">Command-line arguments.</param>
+        /// <param name="configureBuilder">Edition DI / options registration.</param>
+        /// <returns>Returns WebApplication.</returns>
+        public static WebApplication CreateApp(
+            string[] args,
+            Action<WebApplicationBuilder>? configureBuilder)
+        {
+            return ServerHost.BuildApplication(args, configureBuilder);
         }
     }
 }

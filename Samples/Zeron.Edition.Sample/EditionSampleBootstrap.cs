@@ -20,6 +20,11 @@ namespace Zeron.Edition.Sample
         public const string DefaultAgentPluginAllowList = "SampleAgentGatePlugin.dll";
 
         /// <summary>
+        /// Default Server plugin allow-list file name.
+        /// </summary>
+        public const string DefaultServerPluginAllowList = "SampleServerObservePlugin.dll";
+
+        /// <summary>
         /// Registers Demand <see cref="DemandBoot.BeforeGateBootstrap"/> plugin policy.
         /// Call from Demand <c>Program.Main</c> before <see cref="DemandHost.Run"/>.
         /// </summary>
@@ -40,6 +45,27 @@ namespace Zeron.Edition.Sample
 
                     return existing == null || existing(path);
                 };
+            };
+        }
+
+        /// <summary>
+        /// Optional Server plugin file policy before <see cref="Zeron.Server.ZCore.ZeronServerPluginHost"/> loads DLLs.
+        /// Call from edition Server <c>Program.Main</c> before <c>CreateApp</c>.
+        /// </summary>
+        public static void ApplyServerPluginPolicy()
+        {
+            Func<string, bool> editionAllow = PluginAssemblyPolicy.CreateFileNameAllowPredicate(
+                DefaultServerPluginAllowList);
+            Func<string, bool>? existing = ZeronPluginLoader.CanLoadPluginAssemblyFile;
+
+            ZeronPluginLoader.CanLoadPluginAssemblyFile = path =>
+            {
+                if (!editionAllow(path))
+                {
+                    return false;
+                }
+
+                return existing == null || existing(path);
             };
         }
 

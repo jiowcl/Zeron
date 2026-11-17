@@ -11,6 +11,7 @@ Central documentation for building, deploying, configuring, and operating Zeron.
 | [Script Host](./script-host.md) | Pluggable script engines (PowerShell + external process) |
 | [Event Bus](./event-bus.md) | In-process events, script observe bridge, .NET Gate ([sample plugin](../Samples/SampleAgentGatePlugin/README.md)) |
 | [Editions](./editions.md) | Commercial edition hooks, plugin allow-list, [Edition sample](../Samples/Zeron.Edition.Sample/), [Server plugin sample](../Samples/SampleServerObservePlugin/) |
+| [Plugin runbook](./plugins-runbook.md) | Enable Server/Agent plugins, log glossary, edition smoke checklist |
 
 ## Quick Links
 

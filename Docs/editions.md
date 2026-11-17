@@ -17,6 +17,15 @@ Core **Zeron.Server** and **Zeron.Demand** ship a stable OSS baseline. **Edition
 
 Sample implementation: [`Samples/Zeron.Edition.Sample`](../Samples/Zeron.Edition.Sample/). Server plugin sample: [`Samples/SampleServerObservePlugin`](../Samples/SampleServerObservePlugin/).
 
+**Thin edition hosts** (separate executables, 3-minute smoke in each README):
+
+| Host | Path |
+|------|------|
+| Server | [`Zeron.Edition.Sample.Server`](../Samples/Zeron.Edition.Sample.Server/) |
+| Agent | [`Zeron.Edition.Sample.Demand`](../Samples/Zeron.Edition.Sample.Demand/) |
+
+Operations: [Plugin runbook](./plugins-runbook.md).
+
 ## Plugin trust model
 
 Agent `.NET` gate plugins are **in-process code**. Before exposing `plugins/` to customers:
