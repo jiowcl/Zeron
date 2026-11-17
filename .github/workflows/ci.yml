@@ -52,9 +52,7 @@ jobs:
       - name: Restore App.config
         run: cp ./Zeron.Demand/App.Sample.config ./Zeron.Demand/App.config
 
-      - name: Restore (linux-x64)
-        run: dotnet restore Zeron.Demand/Zeron.Demand.csproj -f net10.0 -r linux-x64
-
+      # Note: dotnet restore has no --framework; -f means --force (do not pass net10.0 here).
       - name: Publish Zeron.Demand (linux-x64)
         run: >
           dotnet publish Zeron.Demand/Zeron.Demand.csproj
@@ -63,7 +61,6 @@ jobs:
           -r linux-x64
           --self-contained false
           -o ./publish/agent-linux
-          --no-restore
 
       - name: Linux agent boot smoke
         run: |

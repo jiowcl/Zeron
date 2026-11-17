@@ -57,7 +57,9 @@ dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~DotNetGate
 | `SecureKeyStorageTests.ResolveConfiguredSecretFilePrefixTest` | `file:` absolute path |
 | `ApiKeyValidatorTests.ValidateConfiguredEnvReferenceTest` | NetMQ key validate via `env:` |
 
-CI job `publish-agent-linux` publishes `zeron-agent-linux-x64.zip` (`-f net10.0 -r linux-x64` on Ubuntu) and runs `scripts/linux-smoke.sh` (boot-only) before zipping.
+CI job `publish-agent-linux` publishes `zeron-agent-linux-x64.zip` (`dotnet publish … -f net10.0 -r linux-x64` on Ubuntu) and runs `scripts/linux-smoke.sh` (boot-only) before zipping.
+
+**CLI pitfall:** `dotnet restore -f` is `--force`, not framework. Use `dotnet publish -f net10.0` (or `msbuild /p:TargetFramework=net10.0`) when restoring a specific TFM.
 
 Manual boot smoke: [deployment.md — Linux agent smoke test](./deployment.md#linux-agent-smoke-test).
 
