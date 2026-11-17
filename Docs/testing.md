@@ -42,6 +42,15 @@ dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~ServerE2ET
 dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~DotNetGate"
 ```
 
+## Demand host (unit)
+
+| Test | Verifies |
+|------|----------|
+| `DemandCliTests.WantsForegroundHostRecognizesConsoleFlagTest` | `--console` / `-c` foreground flags |
+| `DemandCliTests.IsTopshelfServiceCommandTest` | Topshelf `install` verb detection (Windows service path) |
+
+CI job `build-demand-linux` builds `Zeron.Demand` with `-f net10.0 -r linux-x64` on Ubuntu.
+
 ## Server bus publish (unit)
 
 | Test | Verifies |

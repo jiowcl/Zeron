@@ -2,21 +2,45 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using System.Globalization;
-using Topshelf;
 using Zeron.Demand.ZCore;
 using Zeron.ZServers;
+
+#if ZERON_WINDOWS
+using Topshelf;
+#endif
 
 namespace Zeron.Demand
 {
     /// <summary>
-    /// Topshelf host runner for Demand Windows Service editions.
+    /// Demand process host: Windows Service (Topshelf) or cross-platform foreground / systemd.
     /// </summary>
     public static class DemandHost
     {
         /// <summary>
+        /// Runs the agent host chosen from CLI flags and OS.
+        /// </summary>
+        /// <param name="args">Process arguments.</param>
+        public static void Run(
+            string[] args)
+        {
+            if (DemandCli.ShouldUseForegroundHost(args))
+            {
+                DemandForegroundHost.Run();
+                return;
+            }
+
+#if ZERON_WINDOWS
+            RunWindowsService();
+#else
+            DemandForegroundHost.Run();
+#endif
+        }
+
+#if ZERON_WINDOWS
+        /// <summary>
         /// Runs the Demand agent as a Windows Service (Topshelf).
         /// </summary>
-        public static void RunService()
+        public static void RunWindowsService()
         {
             SCHostLoader hostLoader = new();
 
@@ -50,5 +74,6 @@ namespace Zeron.Demand
             int exitCode = (int)Convert.ChangeType(rc, rc.GetTypeCode(), CultureInfo.InvariantCulture);
             Environment.ExitCode = exitCode;
         }
+#endif
     }
 }

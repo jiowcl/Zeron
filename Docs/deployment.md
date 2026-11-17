@@ -160,6 +160,33 @@ sc create ZeronDemand binPath= "C:\path\to\publish\agent\Zeron.Demand.exe"
 sc start ZeronDemand
 ```
 
+Foreground mode (Windows or Linux, useful for containers / systemd):
+
+```powershell
+# Windows — same binary, no Topshelf service wrapper
+.\Zeron.Demand.exe --console
+# or
+$env:ZERON_DEMAND_FOREGROUND = "1"; .\Zeron.Demand.exe
+```
+
+```bash
+# Linux — build/publish net10.0 (non-windows TFM)
+dotnet publish Zeron.Demand/Zeron.Demand.csproj -c Release -f net10.0 -r linux-x64 --self-contained false -o ./publish/agent-linux
+cp Zeron.Demand/App.Sample.config ./publish/agent-linux/App.config
+export ZERON_DEMAND_FOREGROUND=1
+dotnet ./publish/agent-linux/Zeron.Demand.dll
+```
+
+Register **systemd** (sample unit ships in `Zeron.Demand/scripts/zeron-demand.service` — adjust `WorkingDirectory` and `ExecStart`):
+
+```bash
+sudo cp ./publish/agent-linux/scripts/zeron-demand.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now zeron-demand
+```
+
+On Linux, built-in `powershell` (Windows PowerShell) is not registered; use catalog **ScriptEngine** / `script_engine_*` App.config keys for **pwsh**, **bash**, or other `ExternalProcess` engines.
+
 ## 5. Verify Deployment
 
 1. Check health probes: `GET /health` and `GET /ready` should return `"status":"healthy"`.

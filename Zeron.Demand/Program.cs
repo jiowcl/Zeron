@@ -28,7 +28,7 @@ namespace Zeron.Demand
                 return;
             }
 
-            DemandHost.RunService();
+            DemandHost.Run(args);
         }
 
         /// <summary>

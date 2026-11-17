@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFrameworks>net10.0-windows;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>Zeron.Demand.Program</StartupObject>
@@ -11,11 +11,15 @@
 	  <PublishSingleFile>true</PublishSingleFile>
 	  <AssemblyTitle>Zeron.Demand</AssemblyTitle>
     <AssemblyVersion>1.0.0.0</AssemblyVersion> 
-    <Description>Windows Service for Scheduled Tasks</Description>
+    <Description>Cross-platform Zeron agent (Windows Service or foreground / systemd)</Description>
     <Version>1.0.0</Version>
     <Company>Inwazy Technology</Company>
     <Product>Zeron.Demand</Product>
     <Copyright>Copyright (c) 2017-2026 Ji-Feng Tsai</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.EndsWith('-windows'))">
+    <DefineConstants>$(DefineConstants);ZERON_WINDOWS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,17 +28,25 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
     <PackageReference Include="NetMQ" Version="4.0.4.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="SQLite" Version="3.54.1" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.14" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
     <PackageReference Include="SQLitePCLRaw.core" Version="3.0.5" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
     <PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.EndsWith('-windows'))">
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.14" />
     <PackageReference Include="Topshelf" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="10.0.14" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +57,12 @@
     <Folder Include="Resource\" />
     <Folder Include="ZAttribute\" />
     <Folder Include="ZInterfaces\" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <Compile Remove="ZServices\RegistryService.cs" />
+    <Compile Remove="ZServices\ServiceControl.cs" />
+    <Compile Remove="ZCore\SCHostLoader.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +80,9 @@
     </None>
     <None Update="Resource\Repo\Temp\.gitignore">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\zeron-demand.service">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

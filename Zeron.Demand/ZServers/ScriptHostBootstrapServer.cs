@@ -88,7 +88,9 @@ namespace Zeron.Demand.ZServers
         {
             ScriptHostServer.Clear();
             ScriptHostServer.ConfigureDefaultTimeoutMs(DefaultTimeoutMs);
-            ScriptHostServer.Register(new PowerShellScriptEngine(PowerShellExe, PowerShellEnabled));
+
+            bool powershellEnabled = PowerShellEnabled && OperatingSystem.IsWindows();
+            ScriptHostServer.Register(new PowerShellScriptEngine(PowerShellExe, powershellEnabled));
 
             foreach (ExternalProcessScriptEngine engine in ExternalScriptEngineConfig.CreateEngines(s_Config))
             {

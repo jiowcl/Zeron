@@ -1,0 +1,16 @@
+[Unit]
+Description=Zeron Demand Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+WorkingDirectory=/opt/zeron/agent
+ExecStart=/usr/bin/dotnet /opt/zeron/agent/Zeron.Demand.dll
+Restart=on-failure
+RestartSec=5
+Environment=DOTNET_ENVIRONMENT=Production
+Environment=ZERON_DEMAND_FOREGROUND=1
+
+[Install]
+WantedBy=multi-user.target

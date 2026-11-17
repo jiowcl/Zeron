@@ -36,6 +36,24 @@ jobs:
       - name: Test
         run: dotnet test Zeron.sln -c ${{ env.CONFIGURATION }} --no-build --verbosity normal
 
+  build-demand-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore App.config for CI
+        run: cp ./Zeron.Demand/App.Sample.config ./Zeron.Demand/App.config
+
+      - name: Build Zeron.Demand (linux-x64, net10.0)
+        run: dotnet build Zeron.Demand/Zeron.Demand.csproj -c ${{ env.CONFIGURATION }} -f net10.0 -r linux-x64
+
   publish:
     needs: build-and-test
     runs-on: windows-latest

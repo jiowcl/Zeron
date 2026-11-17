@@ -59,6 +59,10 @@ Set `ASPNETCORE_ENVIRONMENT=Production` to load production settings. Align agent
 
 ## Zeron.Demand (`App.config`)
 
+**Host:** On Windows, the default entry runs via Topshelf (Windows Service). Use `--console`, `-c`, or `ZERON_DEMAND_FOREGROUND=1` for foreground mode. On Linux/macOS ( `net10.0` build ), the agent always runs as a foreground / **systemd** host (`Microsoft.Extensions.Hosting`).
+
+**Scripts on Linux:** Register `pwsh` or `bash` with `script_engine_{id}_*` keys (see [Script Host](./script-host.md)); Windows PowerShell (`script_powershell_*`) is skipped when not on Windows.
+
 Start from `App.Sample.config` (production-shaped) or the published sample next to the agent binary.
 
 | Key | Description |
