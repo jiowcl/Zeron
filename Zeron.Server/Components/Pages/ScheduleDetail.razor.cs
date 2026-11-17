@@ -39,6 +39,9 @@ namespace Zeron.Server.Components.Pages
         // Is busy.
         private bool m_IsBusy;
 
+        // Run now confirmation.
+        private bool m_ShowRunNowConfirm;
+
         // Delete confirmation.
         private bool m_ShowDeleteConfirm;
 
@@ -255,6 +258,34 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// RequestRunNow
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void RequestRunNow()
+        {
+            m_ShowRunNowConfirm = true;
+        }
+
+        /// <summary>
+        /// CloseRunNowConfirm
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void CloseRunNowConfirm()
+        {
+            m_ShowRunNowConfirm = false;
+        }
+
+        /// <summary>
+        /// ConfirmRunNowAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmRunNowAsync()
+        {
+            await RunNowAsync();
+            m_ShowRunNowConfirm = false;
         }
 
         /// <summary>

@@ -16,7 +16,7 @@
                 <LoadingButton CssClass="btn"
                                 Text="Run Now"
                                 IsLoading="@m_IsBusy"
-                                OnClick="RunNowAsync" />
+                                OnClick="RequestRunNow" />
                 @if (m_Schedule.Enabled)
                 {
                     <LoadingButton CssClass="btn btn-secondary"
@@ -43,6 +43,14 @@
         </Authorized>
     </AuthorizeView>
 </PageHeader>
+
+<ConfirmDialog IsOpen="@m_ShowRunNowConfirm"
+               Title="Run schedule now?"
+               Message="@($"Run '{m_Schedule?.Name ?? "this schedule"}' immediately? This dispatches a task outside the cron schedule.")"
+               ConfirmText="Run Now"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmRunNowAsync"
+               OnCancel="CloseRunNowConfirm" />
 
 <ConfirmDialog IsOpen="@m_ShowDeleteConfirm"
                Title="Delete schedule?"
