@@ -63,7 +63,8 @@ namespace Zeron.Demand.ZServers
             {
                 s_ConfigEnabled = bool.Parse(aConfig["server_enabled"] ?? "false");
                 ReporterImpl.ServerUrl = aConfig["server_url"];
-                ReporterImpl.ServerApiKey = aConfig["server_api_key"] ?? "zeron.testkey";
+                string apiKey = aConfig["server_api_key"] ?? "zeron.testkey";
+                ReporterImpl.ServerApiKey = SecureKeyStorage.ResolveConfiguredSecret(apiKey);
                 ReporterImpl.HmacEnabled = bool.Parse(aConfig["server_hmac_enabled"] ?? "false");
                 HeartbeatIntervalMs = int.Parse(aConfig["server_heartbeat_interval_ms"] ?? "30000", CultureInfo.InvariantCulture);
             }

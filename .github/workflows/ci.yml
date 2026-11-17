@@ -65,10 +65,16 @@ jobs:
           -o ./publish/agent-linux
           --no-restore
 
+      - name: Linux agent boot smoke
+        run: |
+          chmod +x ./Zeron.Demand/scripts/linux-smoke.sh
+          ./Zeron.Demand/scripts/linux-smoke.sh ./publish/agent-linux
+
       - name: Prepare Linux agent package
         run: |
           mkdir -p artifacts
           cp ./Zeron.Demand/App.Sample.config ./publish/agent-linux/App.Sample.config
+          cp ./Zeron.Demand/App.Sample.linux.config ./publish/agent-linux/App.Sample.linux.config
           cp ./Zeron.Demand/App.Sample.config ./publish/agent-linux/App.config
           cat > ./publish/agent-linux/BUILD.txt <<EOF
           Zeron agent deploy package

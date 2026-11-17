@@ -57,7 +57,9 @@ dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~DotNetGate
 | `SecureKeyStorageTests.ResolveConfiguredSecretFilePrefixTest` | `file:` absolute path |
 | `ApiKeyValidatorTests.ValidateConfiguredEnvReferenceTest` | NetMQ key validate via `env:` |
 
-CI job `publish-agent-linux` publishes `zeron-agent-linux-x64.zip` (`-f net10.0 -r linux-x64` on Ubuntu).
+CI job `publish-agent-linux` publishes `zeron-agent-linux-x64.zip` (`-f net10.0 -r linux-x64` on Ubuntu) and runs `scripts/linux-smoke.sh` (boot-only) before zipping.
+
+Manual boot smoke: [deployment.md — Linux agent smoke test](./deployment.md#linux-agent-smoke-test).
 
 ## Server bus publish (unit)
 

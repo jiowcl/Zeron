@@ -188,6 +188,51 @@ sudo systemctl enable --now zeron-demand
 
 On Linux, built-in `powershell` (Windows PowerShell) is not registered; use catalog **ScriptEngine** / `script_engine_*` App.config keys for **pwsh**, **bash**, or other `ExternalProcess` engines.
 
+Copy **`App.Sample.linux.config`** → `App.config` for a Linux-oriented template (`env:ZERON_AGENT_API_KEY`, `script_engine_pwsh` / `bash`).
+
+### systemd secrets (recommended)
+
+```bash
+sudo mkdir -p /etc/zeron
+sudo install -m 600 /dev/stdin /etc/zeron/agent.env <<'EOF'
+ZERON_AGENT_API_KEY=your-shared-agent-key
+ZERON_CRYPT_SALT=match-server-salt
+ZERON_CRYPT_IV=match-server-iv
+ZERON_DEMAND_FOREGROUND=1
+EOF
+```
+
+In `zeron-demand.service`, add `EnvironmentFile=/etc/zeron/agent.env` under `[Service]`, and keep `App.config` references like `env:ZERON_AGENT_API_KEY`.
+
+## Linux agent smoke test
+
+Use this after unpacking **`zeron-agent-linux-x64.zip`** (or a local `dotnet publish`).
+
+#### A. Boot-only (no Server)
+
+Verifies the binary, `DemandBoot`, and Script Host start. Automated:
+
+```bash
+chmod +x scripts/linux-smoke.sh
+./scripts/linux-smoke.sh /opt/zeron/agent
+```
+
+CI runs the same script on `publish/agent-linux` before zipping. Uses `Resource/App.Smoke.config` (disables Server heartbeat and ZMQ SUB).
+
+#### B. End-to-end (with Server)
+
+| Step | Check |
+|------|--------|
+| 1 | Server `GET /health` and `GET /ready` are healthy |
+| 2 | Copy `curve-server.public` to agent `Resource/`; CURVE/HMAC keys match [section 6](#6-transport-security-curve--hmac) |
+| 3 | `export ZERON_AGENT_API_KEY=...` (same as `Zeron:AgentApiKey`); `App.config` uses `env:ZERON_AGENT_API_KEY` for `server_api_key` and `zmq_sub_api_key` |
+| 4 | `dotnet Zeron.Demand.dll --console` or `systemctl start zeron-demand` — log contains `foreground host started` |
+| 5 | Dashboard **Agents** — agent **healthy**, heartbeat recent |
+| 6 | Task **HealthCheck** targeting the agent → assignment **completed** |
+| 7 | Optional: `HealthCheck` via local REP if `zmq_rep_enabled=true` — response lists `scriptEngines` with `pwsh` / `bash` when configured |
+
+If step 5 fails, see [Agent Connection Guide](./agent-connection.md).
+
 ## 5. Verify Deployment
 
 1. Check health probes: `GET /health` and `GET /ready` should return `"status":"healthy"`.

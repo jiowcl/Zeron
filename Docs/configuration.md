@@ -63,7 +63,7 @@ Set `ASPNETCORE_ENVIRONMENT=Production` to load production settings. Align agent
 
 **Scripts on Linux:** Register `pwsh` or `bash` with `script_engine_{id}_*` keys (see [Script Host](./script-host.md)); Windows PowerShell (`script_powershell_*`) is skipped when not on Windows.
 
-Start from `App.Sample.config` (production-shaped) or the published sample next to the agent binary.
+Start from `App.Sample.config` (Windows-oriented) or **`App.Sample.linux.config`** ( `env:` API keys, pwsh/bash engines). Boot-only validation: `scripts/linux-smoke.sh` and `Resource/App.Smoke.config`.
 
 | Key | Description |
 |-----|-------------|
