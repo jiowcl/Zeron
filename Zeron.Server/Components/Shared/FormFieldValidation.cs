@@ -110,6 +110,39 @@ namespace Zeron.Server.Components.Shared
         }
 
         /// <summary>
+        /// OptionalSha256Hex
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="label"></param>
+        /// <returns>Returns error or null.</returns>
+        public static string? OptionalSha256Hex(
+            string? value,
+            string label = "SHA-256")
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            string hex = value.Trim();
+
+            if (hex.Length != 64)
+            {
+                return $"{label} must be 64 hexadecimal characters.";
+            }
+
+            foreach (char character in hex)
+            {
+                if (!Uri.IsHexDigit(character))
+                {
+                    return $"{label} must be 64 hexadecimal characters.";
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// DescribedBy
         /// </summary>
         /// <param name="id"></param>

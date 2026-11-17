@@ -65,6 +65,18 @@ namespace Zeron.Server.Components.Pages
         // Show only changed fields.
         private bool m_DiffChangedOnly = true;
 
+        // Field errors (create/edit form).
+        private string? m_NameError;
+
+        // Field SHA-256 x86 errors.
+        private string? m_Sha256x86Error;
+
+        // Field SHA-256 x64 errors.
+        private string? m_Sha256x64Error;
+
+        // Field Script Engine errors.
+        private string? m_ScriptEngineError;
+
         /// <summary>
         /// VisibleDiffFields
         /// </summary>
@@ -136,6 +148,7 @@ namespace Zeron.Server.Components.Pages
             m_Form.ScriptEngine = string.IsNullOrWhiteSpace(package.ScriptEngine) ? "powershell" : package.ScriptEngine;
             m_Form.IsEnabled = package.IsEnabled;
             m_Message = null;
+            ClearFieldErrors();
         }
 
         /// <summary>
@@ -147,6 +160,7 @@ namespace Zeron.Server.Components.Pages
             m_EditId = null;
             ResetForm();
             m_Message = null;
+            ClearFieldErrors();
         }
 
         /// <summary>
@@ -346,8 +360,14 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns Task.</returns>
         private async Task SaveAsync()
         {
-            m_IsBusy = true;
             m_Message = null;
+
+            if (!ValidateForm())
+            {
+                return;
+            }
+
+            m_IsBusy = true;
 
             try
             {
@@ -381,14 +401,14 @@ namespace Zeron.Server.Components.Pages
                     if (error != null)
                     {
                         m_Succeeded = false;
-                        m_Message = error;
-
+                        MapServerError(error);
                         return;
                     }
 
                     m_Succeeded = true;
                     m_Message = $"Created package '{package!.Name}'.";
                     ResetForm();
+                    ClearFieldErrors();
                 }
                 else
                 {
@@ -400,8 +420,7 @@ namespace Zeron.Server.Components.Pages
                     if (error != null)
                     {
                         m_Succeeded = false;
-                        m_Message = error;
-
+                        MapServerError(error);
                         return;
                     }
 
@@ -410,6 +429,7 @@ namespace Zeron.Server.Components.Pages
                     m_EditId = null;
 
                     ResetForm();
+                    ClearFieldErrors();
                 }
 
                 await ReloadAsync();
@@ -516,6 +536,90 @@ namespace Zeron.Server.Components.Pages
             AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             
             return AuditLogServer.FromPrincipal(authState.User);
+        }
+
+        /// <summary>
+        /// ValidateForm
+        /// </summary>
+        /// <returns>Returns true when valid.</returns>
+        private bool ValidateForm()
+        {
+            ClearFieldErrors();
+
+            if (m_EditId == null)
+            {
+                m_NameError = FormFieldValidation.Required(m_Form.Name, "Package name");
+
+                if (m_NameError == null && m_Form.Name.Contains(' '))
+                {
+                    m_NameError = "Package name cannot contain spaces.";
+                }
+            }
+
+            m_Sha256x86Error = FormFieldValidation.OptionalSha256Hex(m_Form.Sha256x86, "SHA-256 x86");
+            m_Sha256x64Error = FormFieldValidation.OptionalSha256Hex(m_Form.Sha256x64, "SHA-256 x64");
+            m_ScriptEngineError = FormFieldValidation.Required(m_Form.ScriptEngine, "Script Engine");
+
+            return m_NameError == null
+                && m_Sha256x86Error == null
+                && m_Sha256x64Error == null
+                && m_ScriptEngineError == null;
+        }
+
+        /// <summary>
+        /// MapServerError
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns>Returns void.</returns>
+        private void MapServerError(
+            string error)
+        {
+            if (error.Contains("Package name", StringComparison.OrdinalIgnoreCase)
+                || error.Contains("name already exists", StringComparison.OrdinalIgnoreCase))
+            {
+                m_NameError = error;
+                return;
+            }
+
+            if (error.Contains("SHA-256", StringComparison.OrdinalIgnoreCase)
+                || error.Contains("Sha256", StringComparison.OrdinalIgnoreCase))
+            {
+                if (error.Contains("x86", StringComparison.OrdinalIgnoreCase))
+                {
+                    m_Sha256x86Error = error;
+                }
+                else if (error.Contains("x64", StringComparison.OrdinalIgnoreCase))
+                {
+                    m_Sha256x64Error = error;
+                }
+                else
+                {
+                    m_Sha256x64Error = error;
+                }
+
+                return;
+            }
+
+            if (error.Contains("Script", StringComparison.OrdinalIgnoreCase)
+                || error.Contains("engine", StringComparison.OrdinalIgnoreCase))
+            {
+                m_ScriptEngineError = error;
+                return;
+            }
+
+            m_Message = error;
+        }
+
+        /// <summary>
+        /// ClearFieldErrors
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void ClearFieldErrors()
+        {
+            m_NameError = null;
+            m_Sha256x86Error = null;
+            m_Sha256x64Error = null;
+            m_ScriptEngineError = null;
         }
 
         /// <summary>

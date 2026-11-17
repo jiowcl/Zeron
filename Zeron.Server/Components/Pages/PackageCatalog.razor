@@ -25,7 +25,16 @@
             <div class="form-grid form-grid-wide">
                 <label>
                     Name
-                    <InputText @bind-Value="m_Form.Name" disabled="@(m_EditId != null)" />
+                    <InputText id="catalog-name"
+                               @bind-Value="m_Form.Name"
+                               disabled="@(m_EditId != null)"
+                               aria-invalid="@(!string.IsNullOrWhiteSpace(m_NameError))"
+                               aria-describedby="@FormFieldValidation.DescribedBy("catalog-name-error", m_NameError)" />
+                    <FormFieldError Id="catalog-name-error" Message="@m_NameError" />
+                    @if (m_EditId == null)
+                    {
+                        <small class="muted">Normalized to lowercase; no spaces.</small>
+                    }
                 </label>
                 <label>
                     Enabled
@@ -57,16 +66,28 @@
                 </label>
                 <label>
                     SHA-256 x86
-                    <InputText @bind-Value="m_Form.Sha256x86" />
+                    <InputText id="catalog-sha256-x86"
+                               @bind-Value="m_Form.Sha256x86"
+                               aria-invalid="@(!string.IsNullOrWhiteSpace(m_Sha256x86Error))"
+                               aria-describedby="@FormFieldValidation.DescribedBy("catalog-sha256-x86-error", m_Sha256x86Error)" />
+                    <FormFieldError Id="catalog-sha256-x86-error" Message="@m_Sha256x86Error" />
                     <small class="muted">Optional. Lowercase hex digest verified after download.</small>
                 </label>
                 <label>
                     SHA-256 x64
-                    <InputText @bind-Value="m_Form.Sha256x64" />
+                    <InputText id="catalog-sha256-x64"
+                               @bind-Value="m_Form.Sha256x64"
+                               aria-invalid="@(!string.IsNullOrWhiteSpace(m_Sha256x64Error))"
+                               aria-describedby="@FormFieldValidation.DescribedBy("catalog-sha256-x64-error", m_Sha256x64Error)" />
+                    <FormFieldError Id="catalog-sha256-x64-error" Message="@m_Sha256x64Error" />
                 </label>
                 <label>
                     Script Engine
-                    <InputText @bind-Value="m_Form.ScriptEngine" />
+                    <InputText id="catalog-script-engine"
+                               @bind-Value="m_Form.ScriptEngine"
+                               aria-invalid="@(!string.IsNullOrWhiteSpace(m_ScriptEngineError))"
+                               aria-describedby="@FormFieldValidation.DescribedBy("catalog-script-engine-error", m_ScriptEngineError)" />
+                    <FormFieldError Id="catalog-script-engine-error" Message="@m_ScriptEngineError" />
                     <small class="muted">Script Host engine id for before/after hooks (default powershell).</small>
                 </label>
                 <label class="form-span">
