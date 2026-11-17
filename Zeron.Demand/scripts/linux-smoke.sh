@@ -5,10 +5,16 @@ set -euo pipefail
 AGENT_DIR="${1:-.}"
 TIMEOUT_SEC="${SMOKE_TIMEOUT_SEC:-20}"
 DLL="${AGENT_DIR}/Zeron.Demand.dll"
+HOST="${AGENT_DIR}/Zeron.Demand"
 SMOKE_CONFIG="${AGENT_DIR}/Resource/App.Smoke.config"
 
-if [[ ! -f "$DLL" ]]; then
-  echo "error: Zeron.Demand.dll not found under ${AGENT_DIR}" >&2
+if [[ -f "$DLL" ]]; then
+  RUN_MODE="dotnet-dll"
+elif [[ -f "$HOST" ]]; then
+  RUN_MODE="apphost"
+  chmod +x "$HOST"
+else
+  echo "error: neither Zeron.Demand.dll nor Zeron.Demand apphost found under ${AGENT_DIR}" >&2
   exit 1
 fi
 
@@ -35,7 +41,11 @@ export DOTNET_ENVIRONMENT="${DOTNET_ENVIRONMENT:-Production}"
 cd "$AGENT_DIR"
 LOG="$(mktemp)"
 set +e
-timeout "${TIMEOUT_SEC}s" dotnet "$DLL" --console >"$LOG" 2>&1
+if [[ "$RUN_MODE" == "dotnet-dll" ]]; then
+  timeout "${TIMEOUT_SEC}s" dotnet "./Zeron.Demand.dll" --console >"$LOG" 2>&1
+else
+  timeout "${TIMEOUT_SEC}s" "./Zeron.Demand" --console >"$LOG" 2>&1
+fi
 TIMEOUT_CODE=$?
 set -e
 

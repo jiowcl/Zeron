@@ -22,6 +22,11 @@
     <DefineConstants>$(DefineConstants);ZERON_WINDOWS</DefineConstants>
   </PropertyGroup>
 
+  <!-- Framework-dependent Linux publish: needs Zeron.Demand.dll for dotnet + systemd ExecStart -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="App.ico" />
   </ItemGroup>
