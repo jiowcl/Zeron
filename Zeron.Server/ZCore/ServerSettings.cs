@@ -354,5 +354,32 @@ namespace Zeron.Server.ZCore
             get;
             set;
         } = "Zeron.Server";
+
+        /// <summary>
+        /// PluginsEnabled - load IZeronServerPlugin from PluginsDirectory.
+        /// </summary>
+        public bool PluginsEnabled
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// PluginsDirectory - relative to ContentRoot or absolute.
+        /// </summary>
+        public string PluginsDirectory
+        {
+            get;
+            set;
+        } = "plugins";
+
+        /// <summary>
+        /// PluginsAllowList - file names or * (see PluginAssemblyPolicy).
+        /// </summary>
+        public string PluginsAllowList
+        {
+            get;
+            set;
+        } = "*";
     }
 }

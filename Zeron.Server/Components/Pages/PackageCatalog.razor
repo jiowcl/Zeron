@@ -345,7 +345,7 @@
                                             <LoadingButton CssClass="btn btn-secondary"
                                                             Text="Restore"
                                                             IsLoading="@m_IsBusy"
-                                                            OnClick="() => RollbackAsync(version.VersionNumber)" />
+                                                            OnClick="() => RequestRollback(version.VersionNumber)" />
                                         </Authorized>
                                     </AuthorizeView>
                                 </div>
@@ -365,3 +365,11 @@
                IsBusy="@m_IsBusy"
                OnConfirm="ConfirmDeleteAsync"
                OnCancel="CloseDeleteConfirm" />
+
+<ConfirmDialog IsOpen="@(m_PendingRollbackVersion != null)"
+               Title="Rollback catalog version?"
+               Message="@($"Restore '{m_HistoryPackage?.Name}' to version {m_PendingRollbackVersion}? Agents will receive a catalog sync push.")"
+               ConfirmText="Rollback"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmRollbackAsync"
+               OnCancel="CloseRollbackConfirm" />

@@ -26,6 +26,9 @@ namespace Zeron.Server.Components.Pages
         // Busy.
         private bool m_IsBusy;
 
+        // Pending acknowledge.
+        private AlertEntity? m_PendingAcknowledge;
+
         // Current status filter.
         private string? m_StatusFilter = AlertStatusesType.Open;
 
@@ -130,15 +133,46 @@ namespace Zeron.Server.Components.Pages
         }
 
         /// <summary>
-        /// AcknowledgeAsync
+        /// RequestAcknowledge
         /// </summary>
-        /// <param name="alertId"></param>
-        /// <returns>Returns Task.</returns>
-        private async Task AcknowledgeAsync(
-            Guid alertId)
+        /// <param name="alert"></param>
+        private void RequestAcknowledge(
+            AlertEntity alert)
         {
-            await AlertRuleServer.AcknowledgeAlertAsync(alertId);
-            await ReloadPageAsync(showBusy: true);
+            m_PendingAcknowledge = alert;
+        }
+
+        /// <summary>
+        /// CloseAcknowledgeConfirm
+        /// </summary>
+        private void CloseAcknowledgeConfirm()
+        {
+            m_PendingAcknowledge = null;
+        }
+
+        /// <summary>
+        /// ConfirmAcknowledgeAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmAcknowledgeAsync()
+        {
+            if (m_PendingAcknowledge == null)
+            {
+                return;
+            }
+
+            m_IsBusy = true;
+
+            try
+            {
+                await AlertRuleServer.AcknowledgeAlertAsync(m_PendingAcknowledge.Id);
+                m_PendingAcknowledge = null;
+                await ReloadPageAsync(showBusy: false);
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
 
         /// <summary>

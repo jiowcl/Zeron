@@ -208,6 +208,9 @@ namespace Zeron.Server
                 CommandPublisherServer commandPublisher = app.Services.GetRequiredService<CommandPublisherServer>();
                 commandPublisher.Start();
                 app.Lifetime.ApplicationStopping.Register(() => commandPublisher.Dispose());
+
+                ZeronServerPluginHost.Start(serverSettings);
+                app.Lifetime.ApplicationStopping.Register(ZeronServerPluginHost.Stop);
             }
 
             if (!app.Environment.IsDevelopment())

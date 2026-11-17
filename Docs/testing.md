@@ -49,6 +49,12 @@ dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~DotNetGate
 | `DemandCliTests.WantsForegroundHostRecognizesConsoleFlagTest` | `--console` / `-c` foreground flags |
 | `DemandCliTests.IsTopshelfServiceCommandTest` | Topshelf `install` verb detection (Windows service path) |
 
+## Server plugin (unit)
+
+| Test | Verifies |
+|------|----------|
+| `ZeronServerPluginLoaderTests.LoadServerPluginsFindsSampleAssemblyTest` | `LoadServerPlugins` loads sample DLL |
+
 ## Plugin policy (unit)
 
 | Test | Verifies |

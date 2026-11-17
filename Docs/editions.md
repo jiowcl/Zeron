@@ -13,8 +13,9 @@ Core **Zeron.Server** and **Zeron.Demand** ship a stable OSS baseline. **Edition
 | `DemandBoot.BeforeGateBootstrap` | Demand | Policy before agent plugins load |
 | `ZeronPluginLoader.CanLoadPluginAssemblyFile` | Shared | Reject plugin DLL paths |
 | `script_plugins_allowlist` | Demand `App.config` | Config-level DLL name allow-list |
+| `Zeron:PluginsEnabled` / `PluginsDirectory` / `PluginsAllowList` | Server `appsettings` | `IZeronServerPlugin` directory scan |
 
-Sample implementation: [`Samples/Zeron.Edition.Sample`](../Samples/Zeron.Edition.Sample/).
+Sample implementation: [`Samples/Zeron.Edition.Sample`](../Samples/Zeron.Edition.Sample/). Server plugin sample: [`Samples/SampleServerObservePlugin`](../Samples/SampleServerObservePlugin/).
 
 ## Plugin trust model
 

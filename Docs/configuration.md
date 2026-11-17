@@ -17,6 +17,9 @@
 | `CatalogSyncStaleMinutes` | `15` | Online agents whose last catalog sync is older than this are stale on Sync Health |
 | `PublishAgentHeartbeatEvents` | `false` | Emit `agent.heartbeat` on the in-process event bus (noisy; see [Event Bus](./event-bus.md)) |
 | `GatePauseTimeoutMs` | `2000` | Server dispatch gate pause timeout (Cancel on expiry) |
+| `PluginsEnabled` | `false` | Load `IZeronServerPlugin` from `PluginsDirectory` |
+| `PluginsDirectory` | `plugins` | Folder under Server content root |
+| `PluginsAllowList` | `*` | Plugin DLL file names (`SampleServerObservePlugin.dll`) |
 | `DispatchIntervalMs` | `5000` | Background task dispatch interval |
 | `ScheduleIntervalMs` | `15000` | Central cron schedule poll interval |
 | `RetentionEnabled` | `true` | Prune old audit logs, install-result tips, and catalog versions |

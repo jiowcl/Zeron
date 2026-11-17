@@ -10,7 +10,7 @@ Central documentation for building, deploying, configuring, and operating Zeron.
 | [Testing Guide](./testing.md) | Unit tests, E2E integration tests, and EF migrations |
 | [Script Host](./script-host.md) | Pluggable script engines (PowerShell + external process) |
 | [Event Bus](./event-bus.md) | In-process events, script observe bridge, .NET Gate ([sample plugin](../Samples/SampleAgentGatePlugin/README.md)) |
-| [Editions](./editions.md) | Commercial edition hooks, plugin allow-list, [Edition sample](../Samples/Zeron.Edition.Sample/) |
+| [Editions](./editions.md) | Commercial edition hooks, plugin allow-list, [Edition sample](../Samples/Zeron.Edition.Sample/), [Server plugin sample](../Samples/SampleServerObservePlugin/) |
 
 ## Quick Links
 

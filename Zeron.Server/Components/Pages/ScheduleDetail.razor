@@ -22,7 +22,7 @@
                     <LoadingButton CssClass="btn btn-secondary"
                                     Text="Disable"
                                     IsLoading="@m_IsBusy"
-                                    OnClick="() => SetEnabledAsync(false)" />
+                                    OnClick="RequestDisable" />
                 }
                 else
                 {
@@ -51,6 +51,14 @@
                IsBusy="@m_IsBusy"
                OnConfirm="ConfirmRunNowAsync"
                OnCancel="CloseRunNowConfirm" />
+
+<ConfirmDialog IsOpen="@m_ShowDisableConfirm"
+               Title="Disable schedule?"
+               Message="@($"Disable '{m_Schedule?.Name ?? "this schedule"}'? Cron runs stop until you enable it again.")"
+               ConfirmText="Disable"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmDisableAsync"
+               OnCancel="CloseDisableConfirm" />
 
 <ConfirmDialog IsOpen="@m_ShowDeleteConfirm"
                Title="Delete schedule?"

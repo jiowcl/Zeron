@@ -51,6 +51,7 @@ namespace Zeron.Edition.Sample
             WebApplicationBuilder builder)
         {
             builder.Services.AddSingleton<INavMenuContribution, EditionSampleNavContribution>();
+            builder.Services.AddSingleton<IAlertRowActionContribution, EditionSampleAlertRowActionContribution>();
         }
     }
 }

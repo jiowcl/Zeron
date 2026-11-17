@@ -53,6 +53,9 @@ namespace Zeron.Server.Components.Pages
         // Pending package delete.
         private ManagedPackageInfoType? m_PendingDeletePackage;
 
+        // Pending catalog rollback version.
+        private int? m_PendingRollbackVersion;
+
         // Diff left key: "current" or version number string.
         private string m_DiffLeftKey = "current";
 
@@ -292,6 +295,40 @@ namespace Zeron.Server.Components.Pages
             }
 
             return int.TryParse(key, out int versionNumber) ? versionNumber : null;
+        }
+
+        /// <summary>
+        /// RequestRollback
+        /// </summary>
+        /// <param name="versionNumber"></param>
+        private void RequestRollback(
+            int versionNumber)
+        {
+            m_PendingRollbackVersion = versionNumber;
+        }
+
+        /// <summary>
+        /// CloseRollbackConfirm
+        /// </summary>
+        private void CloseRollbackConfirm()
+        {
+            m_PendingRollbackVersion = null;
+        }
+
+        /// <summary>
+        /// ConfirmRollbackAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmRollbackAsync()
+        {
+            if (m_PendingRollbackVersion == null)
+            {
+                return;
+            }
+
+            int version = m_PendingRollbackVersion.Value;
+            m_PendingRollbackVersion = null;
+            await RollbackAsync(version);
         }
 
         /// <summary>

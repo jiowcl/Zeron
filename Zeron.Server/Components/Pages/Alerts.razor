@@ -77,7 +77,7 @@
                                         <LoadingButton CssClass="btn-link"
                                                         Text="Acknowledge"
                                                         IsLoading="@m_IsBusy"
-                                                        OnClick="() => AcknowledgeAsync(alert.Id)" />
+                                                        OnClick="() => RequestAcknowledge(alert)" />
                                     </Authorized>
                                 </AuthorizeView>
                             }
@@ -88,3 +88,11 @@
         </table>
     }
 </div>
+
+<ConfirmDialog IsOpen="@(m_PendingAcknowledge != null)"
+               Title="Acknowledge alert?"
+               Message="@($"Mark '{m_PendingAcknowledge?.Title ?? "this alert"}' as resolved on the dashboard?")"
+               ConfirmText="Acknowledge"
+               IsBusy="@m_IsBusy"
+               OnConfirm="ConfirmAcknowledgeAsync"
+               OnCancel="CloseAcknowledgeConfirm" />

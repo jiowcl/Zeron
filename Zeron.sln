@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleAgentGatePlugin", "Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeron.Edition.Sample", "Samples\Zeron.Edition.Sample\Zeron.Edition.Sample.csproj", "{A77E59F6-1D29-47AA-9FAD-3141EC5ECBEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleServerObservePlugin", "Samples\SampleServerObservePlugin\SampleServerObservePlugin.csproj", "{78C9FF57-894E-4697-90EE-EF9F57885368}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,18 @@ Global
 		{A77E59F6-1D29-47AA-9FAD-3141EC5ECBEA}.Release|x64.Build.0 = Release|Any CPU
 		{A77E59F6-1D29-47AA-9FAD-3141EC5ECBEA}.Release|x86.ActiveCfg = Release|Any CPU
 		{A77E59F6-1D29-47AA-9FAD-3141EC5ECBEA}.Release|x86.Build.0 = Release|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Debug|x64.Build.0 = Debug|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Debug|x86.Build.0 = Debug|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Release|x64.ActiveCfg = Release|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Release|x64.Build.0 = Release|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Release|x86.ActiveCfg = Release|Any CPU
+		{78C9FF57-894E-4697-90EE-EF9F57885368}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +134,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5ECDE046-273F-4B11-9CA6-B5DB56CABCE0} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 		{A77E59F6-1D29-47AA-9FAD-3141EC5ECBEA} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
+		{78C9FF57-894E-4697-90EE-EF9F57885368} = {5D20AA90-6969-D8BD-9DCD-8634F4692FDA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7C07D593-D326-49DB-ABEC-21DE796B7456}

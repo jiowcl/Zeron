@@ -45,6 +45,9 @@ namespace Zeron.Server.Components.Pages
         // Delete confirmation.
         private bool m_ShowDeleteConfirm;
 
+        // Disable confirmation.
+        private bool m_ShowDisableConfirm;
+
         // Field Name errors.
         private string? m_NameError;
 
@@ -315,6 +318,32 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// RequestDisable
+        /// </summary>
+        private void RequestDisable()
+        {
+            m_ShowDisableConfirm = true;
+        }
+
+        /// <summary>
+        /// CloseDisableConfirm
+        /// </summary>
+        private void CloseDisableConfirm()
+        {
+            m_ShowDisableConfirm = false;
+        }
+
+        /// <summary>
+        /// ConfirmDisableAsync
+        /// </summary>
+        /// <returns>Returns Task.</returns>
+        private async Task ConfirmDisableAsync()
+        {
+            await SetEnabledAsync(false);
+            m_ShowDisableConfirm = false;
         }
 
         /// <summary>
