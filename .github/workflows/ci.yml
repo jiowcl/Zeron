@@ -36,7 +36,8 @@ jobs:
       - name: Test
         run: dotnet test Zeron.sln -c ${{ env.CONFIGURATION }} --no-build --verbosity normal
 
-  build-demand-linux:
+  publish-agent-linux:
+    needs: build-and-test
     runs-on: ubuntu-latest
 
     steps:
@@ -48,11 +49,45 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore App.config for CI
+      - name: Restore App.config
         run: cp ./Zeron.Demand/App.Sample.config ./Zeron.Demand/App.config
 
-      - name: Build Zeron.Demand (linux-x64, net10.0)
-        run: dotnet build Zeron.Demand/Zeron.Demand.csproj -c ${{ env.CONFIGURATION }} -f net10.0 -r linux-x64
+      - name: Restore (linux-x64)
+        run: dotnet restore Zeron.Demand/Zeron.Demand.csproj -f net10.0 -r linux-x64
+
+      - name: Publish Zeron.Demand (linux-x64)
+        run: >
+          dotnet publish Zeron.Demand/Zeron.Demand.csproj
+          -c ${{ env.CONFIGURATION }}
+          -f net10.0
+          -r linux-x64
+          --self-contained false
+          -o ./publish/agent-linux
+          --no-restore
+
+      - name: Prepare Linux agent package
+        run: |
+          mkdir -p artifacts
+          cp ./Zeron.Demand/App.Sample.config ./publish/agent-linux/App.Sample.config
+          cp ./Zeron.Demand/App.Sample.config ./publish/agent-linux/App.config
+          cat > ./publish/agent-linux/BUILD.txt <<EOF
+          Zeron agent deploy package
+          Commit: ${{ github.sha }}
+          Ref: ${{ github.ref_name }}
+          Runtime: linux-x64 (framework-dependent, requires .NET 10)
+          Host: foreground / systemd (set ZERON_DEMAND_FOREGROUND=1)
+          Built: $(date -u +"%Y-%m-%d %H:%M:%S") UTC
+          EOF
+          (cd ./publish/agent-linux && zip -r ../../artifacts/zeron-agent-linux-x64.zip .)
+          ls -la artifacts/
+
+      - name: Upload Linux agent package
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeron-agent-linux-x64
+          path: artifacts/zeron-agent-linux-x64.zip
+          if-no-files-found: error
+          retention-days: 30
 
   publish:
     needs: build-and-test
@@ -88,6 +123,7 @@ jobs:
         run: >
           dotnet publish Zeron.Demand/Zeron.Demand.csproj
           -c ${{ env.CONFIGURATION }}
+          -f net10.0-windows
           -r win-x64
           --self-contained false
           -o ./publish/agent

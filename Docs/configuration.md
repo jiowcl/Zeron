@@ -81,6 +81,16 @@ Start from `App.Sample.config` (production-shaped) or the published sample next 
 | `zmq_pub_addr` | Local event PUB bind (plaintext) |
 | `encryption_salt_key` | Must match Server `EncryptionSaltKey` (or `ZERON_CRYPT_SALT`) |
 | `encryption_iv_key` | Must match Server `EncryptionIvKey` (or `ZERON_CRYPT_IV`) |
+
+**Secret references (ZMQ `zmq_sub_api_key` allow-list values):** each entry may be plaintext, or:
+
+| Prefix | Platform | Example |
+|--------|----------|---------|
+| `dpapi:` | Windows only | `dpapi:` + Base64 DPAPI blob (LocalMachine) |
+| `env:` | All | `env:ZERON_AGENT_API_KEY` |
+| `file:` | All | `file:secrets/agent-api.key` (relative to agent base directory) |
+
+On Linux agents, prefer `env:` / `file:` (or plaintext in locked-down configs). Set `ZERON_CRYPT_SALT` / `ZERON_CRYPT_IV` in the environment when you do not embed encryption keys in `App.config`.
 | `script_powershell_enabled` | Enable built-in PowerShell script engine (`true` default) |
 | `script_powershell_exe` | PowerShell executable (`powershell.exe` default) |
 | `script_default_timeout_ms` | Default script timeout in ms (`300000`) |

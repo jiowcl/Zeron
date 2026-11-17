@@ -10,7 +10,7 @@ namespace Zeron.ZCore.Utils
     {
         /// <summary>
         /// Validate an encrypted client API key against configured keys.
-        /// Configured keys may be plaintext or DPAPI-protected (prefix "dpapi:").
+        /// Configured keys may be plaintext, dpapi:, env:, or file: (see <see cref="SecureKeyStorage"/>).
         /// Multiple keys are separated by | , or ;
         /// </summary>
         /// <param name="configuredKeys"></param>
@@ -52,12 +52,7 @@ namespace Zeron.ZCore.Utils
         private static string ResolveConfiguredKey(
             string configuredKey)
         {
-            if (configuredKey.StartsWith("dpapi:", StringComparison.OrdinalIgnoreCase))
-            {
-                return SecureKeyStorage.Unprotect(configuredKey["dpapi:".Length..]);
-            }
-
-            return configuredKey;
+            return SecureKeyStorage.ResolveConfiguredSecret(configuredKey);
         }
     }
 }

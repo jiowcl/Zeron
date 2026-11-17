@@ -17,7 +17,8 @@ Push a version tag (for example `v1.0.1`) to run the **Release** workflow. After
 | Asset | Contents |
 |-------|----------|
 | `zeron-server-win-x64.zip` | `Zeron.Server` publish output |
-| `zeron-agent-win-x64.zip` | `Zeron.Demand` publish output + `App.Sample.config` |
+| `zeron-agent-win-x64.zip` | `Zeron.Demand` (`net10.0-windows`) publish + `App.Sample.config` |
+| `zeron-agent-linux-x64.zip` | `Zeron.Demand` (`net10.0`) publish + systemd unit sample + `App.config` (CI artifact `zeron-agent-linux-x64`) |
 
 ```powershell
 git tag v1.0.1

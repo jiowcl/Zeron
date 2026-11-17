@@ -13,7 +13,57 @@ env:
   CONFIGURATION: Release
 
 jobs:
+  release-linux-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore App.config
+        run: cp ./Zeron.Demand/App.Sample.config ./Zeron.Demand/App.config
+
+      - name: Restore (linux-x64)
+        run: dotnet restore Zeron.Demand/Zeron.Demand.csproj -f net10.0 -r linux-x64
+
+      - name: Publish Zeron.Demand (linux-x64)
+        run: >
+          dotnet publish Zeron.Demand/Zeron.Demand.csproj
+          -c ${{ env.CONFIGURATION }}
+          -f net10.0
+          -r linux-x64
+          --self-contained false
+          -o ./publish/agent-linux
+          --no-restore
+
+      - name: Prepare Linux agent package
+        run: |
+          mkdir -p artifacts
+          cp ./Zeron.Demand/App.Sample.config ./publish/agent-linux/App.Sample.config
+          cp ./Zeron.Demand/App.Sample.config ./publish/agent-linux/App.config
+          cat > ./publish/agent-linux/BUILD.txt <<EOF
+          Zeron release agent package
+          Version: ${{ github.ref_name }}
+          Commit: ${{ github.sha }}
+          Runtime: linux-x64 (framework-dependent, requires .NET 10)
+          Built: $(date -u +"%Y-%m-%d %H:%M:%S") UTC
+          EOF
+          (cd ./publish/agent-linux && zip -r ../../artifacts/zeron-agent-linux-x64.zip .)
+
+      - name: Upload Linux agent artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeron-agent-linux-x64
+          path: artifacts/zeron-agent-linux-x64.zip
+          if-no-files-found: error
+
   release:
+    needs: release-linux-agent
     runs-on: windows-latest
 
     steps:
@@ -54,6 +104,7 @@ jobs:
         run: >
           dotnet publish Zeron.Demand/Zeron.Demand.csproj
           -c ${{ env.CONFIGURATION }}
+          -f net10.0-windows
           -r win-x64
           --self-contained false
           -o ./publish/agent
@@ -89,6 +140,12 @@ jobs:
 
           Get-ChildItem ./artifacts | Format-Table Name, Length
 
+      - name: Download Linux agent package
+        uses: actions/download-artifact@v4
+        with:
+          name: zeron-agent-linux-x64
+          path: artifacts
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -98,6 +155,7 @@ jobs:
           files: |
             artifacts/zeron-server-win-x64.zip
             artifacts/zeron-agent-win-x64.zip
+            artifacts/zeron-agent-linux-x64.zip
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

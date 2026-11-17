@@ -49,7 +49,15 @@ dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~DotNetGate
 | `DemandCliTests.WantsForegroundHostRecognizesConsoleFlagTest` | `--console` / `-c` foreground flags |
 | `DemandCliTests.IsTopshelfServiceCommandTest` | Topshelf `install` verb detection (Windows service path) |
 
-CI job `build-demand-linux` builds `Zeron.Demand` with `-f net10.0 -r linux-x64` on Ubuntu.
+## Secret resolution (unit)
+
+| Test | Verifies |
+|------|----------|
+| `SecureKeyStorageTests.ResolveConfiguredSecretEnvPrefixTest` | `env:VAR` |
+| `SecureKeyStorageTests.ResolveConfiguredSecretFilePrefixTest` | `file:` absolute path |
+| `ApiKeyValidatorTests.ValidateConfiguredEnvReferenceTest` | NetMQ key validate via `env:` |
+
+CI job `publish-agent-linux` publishes `zeron-agent-linux-x64.zip` (`-f net10.0 -r linux-x64` on Ubuntu).
 
 ## Server bus publish (unit)
 
@@ -103,6 +111,7 @@ Artifacts (retention 30 days):
 
 - `zeron-server-win-x64` → `zeron-server-win-x64.zip`
 - `zeron-agent-win-x64` → `zeron-agent-win-x64.zip`
+- `zeron-agent-linux-x64` → `zeron-agent-linux-x64.zip`
 
 Triggers: push/PR to `main`, `master`, or `develop`.
 

@@ -58,5 +58,28 @@ namespace Zeron.ZCore.Utils.Tests
 
             Assert.IsFalse(isValid);
         }
+
+        /// <summary>
+        /// ValidateConfiguredEnvReferenceTest test.
+        /// </summary>
+        [TestMethod()]
+        public void ValidateConfiguredEnvReferenceTest()
+        {
+            const string varName = "ZERON_TEST_API_KEY";
+            string? previous = Environment.GetEnvironmentVariable(varName);
+            const string secret = "env-api-key";
+
+            try
+            {
+                Environment.SetEnvironmentVariable(varName, secret);
+                string encrypted = EncryptionProvider.Encrypt(secret);
+                bool isValid = ApiKeyValidator.Validate("env:" + varName, encrypted);
+                Assert.IsTrue(isValid);
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable(varName, previous);
+            }
+        }
     }
 }
