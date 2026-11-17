@@ -49,6 +49,13 @@ dotnet test ZeronTests/ZeronTests.csproj --filter "FullyQualifiedName~DotNetGate
 | `DemandCliTests.WantsForegroundHostRecognizesConsoleFlagTest` | `--console` / `-c` foreground flags |
 | `DemandCliTests.IsTopshelfServiceCommandTest` | Topshelf `install` verb detection (Windows service path) |
 
+## Plugin policy (unit)
+
+| Test | Verifies |
+|------|----------|
+| `PluginAssemblyPolicyTests.AllowAllWhenEmptyOrStarTest` | `*` / empty allow-list |
+| `PluginAssemblyPolicyTests.AllowListMatchesFileNameOnlyTest` | Explicit DLL names |
+
 ## Secret resolution (unit)
 
 | Test | Verifies |

@@ -34,6 +34,9 @@ namespace Zeron.Server.Components.Pages
         // Events.
         private List<EventEntity> m_Events = [];
 
+        // Gate / install topics from recent agent events (ops summary).
+        private List<EventEntity> m_OperationalEvents = [];
+
         // Heartbeats.
         private List<AgentHeartbeatEntity> m_Heartbeats = [];
 
@@ -55,8 +58,26 @@ namespace Zeron.Server.Components.Pages
             m_Agent = await AgentManager.GetAgentByKeyAsync(AgentKey);
             m_Diagnostic = await AgentDiagnosticServer.GetDiagnosticAsync(AgentKey);
             m_Events = await EventIngestor.GetEventsAsync(AgentKey, null, 20);
+            m_OperationalEvents = m_Events
+                .Where(IsOperationalEventTopic)
+                .Take(10)
+                .ToList();
             m_Heartbeats = await AgentManager.GetAgentHeartbeatsAsync(AgentKey, 30);
             m_ScriptEngines = ParseScriptEngines(m_Agent?.SupportedEnginesJson);
+        }
+
+        /// <summary>
+        /// IsOperationalEventTopic
+        /// </summary>
+        /// <param name="entity">Ingested agent event.</param>
+        /// <returns>True for gate.* or install.* topics.</returns>
+        private static bool IsOperationalEventTopic(
+            EventEntity entity)
+        {
+            string topic = entity.Topic ?? "";
+
+            return topic.StartsWith("gate.", StringComparison.OrdinalIgnoreCase)
+                || topic.StartsWith("install.", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

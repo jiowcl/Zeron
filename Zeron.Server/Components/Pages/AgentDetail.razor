@@ -139,6 +139,38 @@ else
     </div>
 
     <div class="panel">
+        <h2>Gate &amp; Install activity</h2>
+        @if (m_OperationalEvents.Count == 0)
+        {
+            <EmptyState Title="No gate or install events"
+                        Message="Events appear when the agent reports gate.* or install.* (e.g. gate.cancelled, install.completed)."
+                        Compact="true" />
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Topic</th>
+                        <th>Received</th>
+                        <th>Payload</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (EventEntity evt in m_OperationalEvents)
+                    {
+                        <tr>
+                            <td>@evt.Topic</td>
+                            <td>@evt.ReceivedAt.ToLocalTime()</td>
+                            <td class="payload-cell">@evt.Payload</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <div class="panel">
         <h2>Recent Events</h2>
         @foreach (EventEntity evt in m_Events)
         {

@@ -102,6 +102,7 @@ On Linux agents, prefer `env:` / `file:` (or plaintext in locked-down configs). 
 | `script_engine_{id}_display` | Optional display name |
 | `gate_pause_timeout_ms` | Agent gate Pause timeout in ms (`300000`) |
 | `script_plugins_dir` | Directory of `IZeronAgentPlugin` DLLs (`plugins`). Skips `Zeron.*` / `System.*` / `Microsoft.*`. Sample: [`Samples/SampleAgentGatePlugin`](../Samples/SampleAgentGatePlugin/README.md) |
+| `script_plugins_allowlist` | Comma/semicolon-separated plugin **file names**, or `*` (default dev). See [Editions](./editions.md) |
 | `script_event_listener_enabled` | Run ScriptEventBridge NDJSON listener (`false` default) |
 | `script_event_listener_exe` | Listener executable |
 | `script_event_listener_args` | Listener arguments |

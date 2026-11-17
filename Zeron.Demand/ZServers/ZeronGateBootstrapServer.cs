@@ -36,6 +36,9 @@ namespace Zeron.Demand.ZServers
             set;
         } = "plugins";
 
+        // script_plugins_allowlist from App.config (empty or * = allow all file names).
+        private static string? s_PluginAllowList;
+
         /// <summary>
         /// LoadConfig
         /// </summary>
@@ -61,6 +64,7 @@ namespace Zeron.Demand.ZServers
                 PluginsDirectory = string.IsNullOrWhiteSpace(aConfig["script_plugins_dir"])
                     ? "plugins"
                     : aConfig["script_plugins_dir"]!.Trim();
+                s_PluginAllowList = aConfig["script_plugins_allowlist"]?.Trim();
             }
             catch (Exception e)
             {
@@ -82,6 +86,8 @@ namespace Zeron.Demand.ZServers
                 : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectory);
 
             StopPlugins();
+            ApplyPluginLoadPolicy();
+
             s_Plugins.AddRange(ZeronPluginLoader.LoadAgentPlugins(
                 directory,
                 ZeronEventBus.Current,
@@ -102,6 +108,25 @@ namespace Zeron.Demand.ZServers
         {
             StopPlugins();
             Zeron.ZCore.Container.ServerIntegrate.FinishSingleStop();
+        }
+
+        /// <summary>
+        /// Combines config allow-list with optional edition hook on <see cref="ZeronPluginLoader.CanLoadPluginAssemblyFile"/>.
+        /// </summary>
+        private static void ApplyPluginLoadPolicy()
+        {
+            Func<string, bool> configAllow = PluginAssemblyPolicy.CreateFileNameAllowPredicate(s_PluginAllowList);
+            Func<string, bool>? editionHook = ZeronPluginLoader.CanLoadPluginAssemblyFile;
+
+            ZeronPluginLoader.CanLoadPluginAssemblyFile = path =>
+            {
+                if (!configAllow(path))
+                {
+                    return false;
+                }
+
+                return editionHook == null || editionHook(path);
+            };
         }
 
         /// <summary>
