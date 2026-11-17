@@ -55,6 +55,9 @@ namespace Zeron.Server.Components.Pages
         // Deploy succeeded.
         private bool m_DeploySucceeded;
 
+        // Package field error.
+        private string? m_PackageError;
+
         // Busy.
         private bool m_IsBusy;
 
@@ -249,8 +252,14 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns Task.</returns>
         private async Task DeployAsync()
         {
-            m_IsBusy = true;
             m_DeployMessage = null;
+
+            if (!ValidateDeployForm())
+            {
+                return;
+            }
+
+            m_IsBusy = true;
 
             try
             {
@@ -267,13 +276,13 @@ namespace Zeron.Server.Components.Pages
                 if (error != null || response == null || !response.Success)
                 {
                     m_DeploySucceeded = false;
-                    m_DeployMessage = error ?? response?.Message ?? "Deploy failed.";
-                    
+                    MapDeployError(error ?? response?.Message ?? "Deploy failed.");
                     return;
                 }
 
                 m_DeploySucceeded = true;
                 m_DeployMessage = $"Deploy queued: {response.Command} (task {response.TaskId}).";
+                ClearDeployFieldErrors();
 
                 await ReloadAsync();
             }
@@ -281,6 +290,45 @@ namespace Zeron.Server.Components.Pages
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// ValidateDeployForm
+        /// </summary>
+        /// <returns>Returns true when valid.</returns>
+        private bool ValidateDeployForm()
+        {
+            ClearDeployFieldErrors();
+
+            m_PackageError = FormFieldValidation.Required(m_Deploy.PackageName, "Package");
+
+            return m_PackageError == null;
+        }
+
+        /// <summary>
+        /// MapDeployError
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns>Returns void.</returns>
+        private void MapDeployError(
+            string error)
+        {
+            if (error.Contains("package", StringComparison.OrdinalIgnoreCase))
+            {
+                m_PackageError = error;
+                return;
+            }
+
+            m_DeployMessage = error;
+        }
+
+        /// <summary>
+        /// ClearDeployFieldErrors
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void ClearDeployFieldErrors()
+        {
+            m_PackageError = null;
         }
 
         /// <summary>

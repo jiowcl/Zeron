@@ -134,7 +134,16 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns Task.</returns>
         private async Task EnableAgentAsync()
         {
-            m_Agent = await AgentManager.UpdateAgentAsync(AgentKey, new AgentUpdateRequestType { Status = "online" });
+            m_IsBusy = true;
+
+            try
+            {
+                m_Agent = await AgentManager.UpdateAgentAsync(AgentKey, new AgentUpdateRequestType { Status = "online" });
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
     }
 }

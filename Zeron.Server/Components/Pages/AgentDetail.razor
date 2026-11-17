@@ -17,11 +17,17 @@
         <Authorized>
             @if (m_Agent?.Status != "disabled")
             {
-                <button class="btn btn-danger" @onclick="RequestDisableAgent">Disable Agent</button>
+                <LoadingButton CssClass="btn btn-danger"
+                                Text="Disable Agent"
+                                IsLoading="@m_IsBusy"
+                                OnClick="RequestDisableAgent" />
             }
             else
             {
-                <button class="btn btn-secondary" @onclick="EnableAgentAsync">Enable Agent</button>
+                <LoadingButton CssClass="btn btn-secondary"
+                                Text="Enable Agent"
+                                IsLoading="@m_IsBusy"
+                                OnClick="EnableAgentAsync" />
             }
         </Authorized>
     </AuthorizeView>

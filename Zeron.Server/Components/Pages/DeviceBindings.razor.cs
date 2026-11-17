@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Jiowcl. All rights reserved.
 
 using Microsoft.AspNetCore.Components.Authorization;
+using Zeron.Server.Components.Shared;
 using Zeron.Server.Data.Entities;
 using Zeron.Server.ZCore.Type;
 using Zeron.Server.ZServers;
@@ -38,6 +39,10 @@ namespace Zeron.Server.Components.Pages
         // Pending unbind.
         private UserAgentBindingInfoType? m_PendingUnbind;
 
+        // Field errors (bind form).
+        private string? m_UserError;
+        private string? m_AgentError;
+
         /// <summary>
         /// OnInitializedAsync
         /// </summary>
@@ -53,9 +58,18 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns Task.</returns>
         private async Task ReloadAsync()
         {
-            m_Bindings = await BindingServer.GetBindingsAsync();
-            m_Users = await UserManager.GetUsersAsync();
-            m_Agents = await AgentManager.GetAgentsAsync();
+            m_IsBusy = true;
+
+            try
+            {
+                m_Bindings = await BindingServer.GetBindingsAsync();
+                m_Users = await UserManager.GetUsersAsync();
+                m_Agents = await AgentManager.GetAgentsAsync();
+            }
+            finally
+            {
+                m_IsBusy = false;
+            }
         }
 
         /// <summary>
@@ -64,8 +78,14 @@ namespace Zeron.Server.Components.Pages
         /// <returns>Returns Task.</returns>
         private async Task BindAsync()
         {
-            m_IsBusy = true;
             m_Message = null;
+
+            if (!ValidateBindForm())
+            {
+                return;
+            }
+
+            m_IsBusy = true;
 
             try
             {
@@ -81,7 +101,7 @@ namespace Zeron.Server.Components.Pages
                 if (error != null)
                 {
                     m_Succeeded = false;
-                    m_Message = error;
+                    MapServerError(error);
                     return;
                 }
 
@@ -89,12 +109,60 @@ namespace Zeron.Server.Components.Pages
                 m_Message = $"Bound '{binding!.Username}' to '{binding.AgentKey}'.";
                 m_Form.UserId = "";
                 m_Form.AgentKey = "";
+                ClearFieldErrors();
                 await ReloadAsync();
             }
             finally
             {
                 m_IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// ValidateBindForm
+        /// </summary>
+        /// <returns>Returns true when valid.</returns>
+        private bool ValidateBindForm()
+        {
+            ClearFieldErrors();
+
+            m_UserError = FormFieldValidation.Required(m_Form.UserId, "User");
+            m_AgentError = FormFieldValidation.Required(m_Form.AgentKey, "Agent");
+
+            return m_UserError == null && m_AgentError == null;
+        }
+
+        /// <summary>
+        /// MapServerError
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns>Returns void.</returns>
+        private void MapServerError(
+            string error)
+        {
+            if (error.Contains("User", StringComparison.OrdinalIgnoreCase))
+            {
+                m_UserError = error;
+                return;
+            }
+
+            if (error.Contains("Agent", StringComparison.OrdinalIgnoreCase))
+            {
+                m_AgentError = error;
+                return;
+            }
+
+            m_Message = error;
+        }
+
+        /// <summary>
+        /// ClearFieldErrors
+        /// </summary>
+        /// <returns>Returns void.</returns>
+        private void ClearFieldErrors()
+        {
+            m_UserError = null;
+            m_AgentError = null;
         }
 
         /// <summary>

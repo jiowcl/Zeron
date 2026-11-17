@@ -74,13 +74,17 @@ else
             </label>
             <label>
                 Package
-                <InputSelect @bind-Value="m_Deploy.PackageName">
+                <InputSelect id="my-device-package"
+                             @bind-Value="m_Deploy.PackageName"
+                             aria-invalid="@(!string.IsNullOrWhiteSpace(m_PackageError))"
+                             aria-describedby="@FormFieldValidation.DescribedBy("my-device-package-error", m_PackageError)">
                     <option value="">Select package</option>
                     @foreach (ManagedPackageInfoType package in m_Packages)
                     {
                         <option value="@package.Name">@package.Name</option>
                     }
                 </InputSelect>
+                <FormFieldError Id="my-device-package-error" Message="@m_PackageError" />
             </label>
             <label>
                 Extra Args
